@@ -1,50 +1,259 @@
 {% extends 'base.html' %}
 {% block content %}
-<header>
-  <h1>Hej, jeg er {{ author }}</h1>
-  <p>Jeg bygger asynkrone Python backends, data pipelines og API'er med fokus på performance og kvalitet.</p>
+
+<!-- Hero Section -->
+<header class="major">
+  <h1>Python Backend Developer</h1>
+  <p>Specialist i asynkrone systemer, data processing og skalerbare API'er.<br/>
+  Jeg designer og bygger robuste løsninger med fokus på performance, testbarhed og vedligeholdelse.</p>
 </header>
 
+<!-- Kompetencer Section -->
+<section>
+  <header class="major">
+    <h2>Kompetencer & Teknologier</h2>
+  </header>
+  <div class="tech-grid">
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" />
+      <span>Python</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg" alt="FastAPI" />
+      <span>FastAPI</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg" alt="Pandas" />
+      <span>Pandas</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/microsoftsqlserver/microsoftsqlserver-plain.svg" alt="MS SQL" />
+      <span>MS SQL</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flask/flask-original.svg" alt="Quart" />
+      <span>Quart</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlalchemy/sqlalchemy-original.svg" alt="SQLAlchemy" />
+      <span>SQLAlchemy</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azuredevops/azuredevops-original.svg" alt="Azure DevOps" />
+      <span>Azure DevOps</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" />
+      <span>GitHub</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/windows8/windows8-original.svg" alt="Windows Server" />
+      <span>Windows Server</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" alt="NumPy" />
+      <span>NumPy</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg" alt="Automation" />
+      <span>Automation</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VS Code" />
+      <span>VS Code</span>
+    </div>
+  </div>
+</section>
+
+<!-- Projects Section -->
 <section>
   <header class="major">
     <h2>Udvalgte Projekter</h2>
+    <p>Eksempler på tekniske løsninger jeg har udviklet</p>
   </header>
-  <div class="tiles">
+  <div class="posts">
     {% for p in projects %}
-    {% set style_idx = loop.index % 6 if loop.index % 6 != 0 else 6 %}
-    <article class="style{{ style_idx }}">
-      <span class="image">
-  <img src="/static/assets/images/pic0{{ style_idx }}.svg" alt="projekt billede {{ loop.index }}" />
-      </span>
-      <a href="{{ p.repo_url or p.live_url or '#' }}" {% if p.repo_url or p.live_url %}target="_blank"{% endif %}>
-        <h2>{{ p.title }}</h2>
-        <div class="content">
-          <p>{{ p.description }}</p>
-          <p>
-            {% for t in p.technologies %}<code>{{ t }}</code>{% if not loop.last %} {% endif %}{% endfor %}
-          </p>
-          {% if p.repo_url or p.live_url %}
-          <p class="small">
-            {% if p.repo_url %}<span>Repo</span>{% endif %}
-            {% if p.live_url %}{% if p.repo_url %} • {% endif %}<span>Live</span>{% endif %}
-          </p>
-          {% endif %}
-        </div>
-      </a>
+    <article>
+      <h3>{{ p.title }}</h3>
+      <p>{{ p.description }}</p>
+      <p class="tech-tags">
+        {% for t in p.technologies %}<span class="tech-badge">{{ t }}</span>{% if not loop.last %} {% endif %}{% endfor %}
+      </p>
+      <ul class="actions">
+        {% if p.repo_url %}
+        <li><a href="{{ p.repo_url }}" class="button" target="_blank" rel="noopener">Se Kode</a></li>
+        {% endif %}
+        {% if p.live_url %}
+        <li><a href="{{ p.live_url }}" class="button alt" target="_blank" rel="noopener">Live Demo</a></li>
+        {% endif %}
+      </ul>
     </article>
     {% endfor %}
   </div>
 </section>
 
+<!-- Code Example Section -->
 <section>
   <header class="major">
-    <h2>Kode Eksempel</h2>
+    <h2>Code Sample</h2>
   </header>
-  <pre><code>async def build_portfolio():
-    return {
-        "stack": ["FastAPI", "Pydantic", "asyncio"],
-        "quality": ["tests", "type hints", "CI"],
-    }
+  <pre><code class="language-python">from fastapi import FastAPI
+from pydantic import BaseModel
+import asyncio
+
+app = FastAPI()
+
+class DataResponse(BaseModel):
+    items: list[dict]
+    total: int
+    
+@app.get("/api/data", response_model=DataResponse)
+async def get_data(limit: int = 100):
+    """High-performance async endpoint with type safety"""
+    async with get_db_pool() as conn:
+        items = await conn.fetch(
+            "SELECT * FROM analytics LIMIT $1", limit
+        )
+    return DataResponse(
+        items=[dict(r) for r in items],
+        total=len(items)
+    )
 </code></pre>
 </section>
+
+<!-- CTA Section -->
+<section>
+  <header class="major">
+    <h2>Lad os arbejde sammen</h2>
+  </header>
+  <p>Jeg er altid interesseret i spændende projekter og muligheder for at bygge skalerbare, høj-kvalitets løsninger.</p>
+  <ul class="actions">
+    <li><a href="/om" class="button big">Læs mere om mig</a></li>
+    <li><a href="https://github.com/Ajollyworld79" class="button big alt" target="_blank" rel="noopener">GitHub Profil</a></li>
+  </ul>
+</section>
+
+<style>
+/* Tech Stack Grid */
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.5em;
+  margin: 2em 0;
+  max-width: 900px;
+}
+
+.tech-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5em 1em;
+  background: rgba(255, 255, 255, 0.05);
+  border: solid 1px rgba(255, 255, 255, 0.15);
+  border-radius: 0.5em;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.tech-tile:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #f2849e;
+  box-shadow: 0 8px 20px rgba(242, 132, 158, 0.2);
+}
+
+.tech-tile img {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 0.75em;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.tech-tile span {
+  font-size: 0.85em;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Tech badges styling for projects */
+.tech-tags {
+  margin: 1em 0;
+}
+.tech-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.075);
+  border: solid 1px rgba(255, 255, 255, 0.15);
+  border-radius: 0.25em;
+  padding: 0.25em 0.65em;
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  margin: 0.125em;
+  text-transform: uppercase;
+}
+
+/* Projects grid styling */
+.posts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2em;
+  margin-top: 2em;
+}
+
+.posts article {
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 0.5em;
+  padding: 2em;
+  border: solid 1px rgba(255, 255, 255, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.posts article:hover {
+  transform: translateY(-3px);
+  border-color: rgba(242, 132, 158, 0.5);
+}
+
+.posts article h3 {
+  margin-top: 0;
+  font-size: 1.5em;
+}
+
+/* Code block improvements */
+pre {
+  background: rgba(0, 0, 0, 0.3);
+  border-left: solid 0.25em #f2849e;
+  padding: 1.5em;
+  overflow-x: auto;
+}
+
+code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 736px) {
+  .tech-grid {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 1em;
+  }
+  
+  .tech-tile {
+    padding: 1em 0.5em;
+  }
+  
+  .tech-tile img {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .tech-tile span {
+    font-size: 0.75em;
+  }
+}
+</style>
+
 {% endblock %}

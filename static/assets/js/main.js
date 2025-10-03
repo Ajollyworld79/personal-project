@@ -186,22 +186,6 @@
 					$menu._hide();
 			});
 
-		// Synkroniser ARIA med fallback trigger hvis findes
-		var $trigger = $('#menuToggle');
-		function syncAria(){
-			var open = $body.hasClass('is-menu-visible');
-			if ($trigger.length){
-				$trigger.attr('aria-expanded', open ? 'true' : 'false');
-			}
-			$menu.attr('aria-hidden', open ? 'false' : 'true');
-		}
-		// Hook ind i vores _show/_hide/_toggle
-		var _show = $menu._show, _hide = $menu._hide, _toggle = $menu._toggle;
-		$menu._show = function(){ _show.call(this); syncAria(); };
-		$menu._hide = function(){ _hide.call(this); syncAria(); };
-		$menu._toggle = function(){ _toggle.call(this); syncAria(); };
-		syncAria();
-
 })(jQuery);
 
 // Fallback: hvis jQuery/breakpoints init fejler, sørg for at menu kan toggles

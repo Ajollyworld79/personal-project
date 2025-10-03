@@ -31,19 +31,6 @@
                     </nav>
                 </div>
             </header>
-            <!-- Menu -->
-            <nav id="menu" aria-hidden="true" aria-label="Side menu">
-                <div class="inner">
-                    <h2>Menu</h2>
-                    <ul>
-                        <li><a href="/">Forside</a></li>
-                        <li><a href="/om">Om</a></li>
-                        <li><a href="/api/projects" target="_blank">API</a></li>
-                        <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
-                    </ul>
-                    <a href="#menu" class="close">Close</a>
-                </div>
-            </nav>
             <!-- Main -->
             <div id="main">
                 <div class="inner">
@@ -59,26 +46,25 @@
                 </div>
             </footer>
         </div>
+        <!-- Menu skal være UDEN FOR wrapper så Phantom JS kan appendTo body -->
+        <nav id="menu" aria-hidden="true" aria-label="Side menu">
+            <div class="inner">
+                <h2>Menu</h2>
+                <ul>
+                    <li><a href="/">Forside</a></li>
+                    <li><a href="/om">Om</a></li>
+                    <li><a href="/api/projects" target="_blank">API</a></li>
+                    <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
+                </ul>
+                <a href="#menu" class="close">Close</a>
+            </div>
+        </nav>
         <!-- Scripts -->
     <script src="/static/assets/js/jquery.min.js"></script>
     <script src="/static/assets/js/browser.min.js"></script>
     <script src="/static/assets/js/breakpoints.min.js"></script>
     <script src="/static/assets/js/util.js"></script>
     <script src="/static/assets/js/main.js"></script>
-        <script>
-        // Ultra-fallback: hvis noget gik galt tidligere, sørg for klik virker
-        (function(){
-            const body=document.body; const trigger=document.getElementById('menuToggle'); const menu=document.getElementById('menu');
-            if(!trigger||!menu) return;
-            const updateAria=()=>{ const open=body.classList.contains('is-menu-visible'); trigger.setAttribute('aria-expanded',open?'true':'false'); menu.setAttribute('aria-hidden',open?'false':'true'); };
-            if(!menu.querySelector('.close')){ const c=document.createElement('a'); c.href='#menu'; c.className='close'; c.textContent='Close'; menu.querySelector('.inner')?menu.querySelector('.inner').appendChild(c):menu.appendChild(c);} 
-            function toggle(e){ if(e){e.preventDefault();} body.classList.toggle('is-menu-visible'); updateAria(); }
-            if(!trigger._fallbackBound){ trigger.addEventListener('click',toggle,{passive:false}); trigger._fallbackBound=true; }
-            menu.addEventListener('click',e=>{ if(e.target.matches('a.close')){ e.preventDefault(); toggle(); }});
-            document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ body.classList.remove('is-menu-visible'); updateAria(); }});
-            updateAria();
-        })();
-        </script>
         {% block scripts_extra %}{% endblock %}
     </body>
 </html>
