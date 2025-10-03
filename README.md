@@ -67,11 +67,26 @@ Aktuelt UI benytter **HTML5UP Phantom** tema (CC BY 3.0) med en lokal-first stra
    - Font Awesome (ikoner)
    - Phantom's originale JS (jquery, browser, breakpoints, util, main) hentes pt. fra HTML5UP’s demo-kilder.
 
-Struktur (aktuel):
+Aktuel struktur (forenklet efter oprydning):
 ```
-static/phantom/css/main.css        # Trimmet lokal version (ingen @import)
-static/phantom/css/noscript.css    # Minimal fallback
-static/phantom/LICENSE_html5up.txt # Licens + attribution krav
+static/
+  assets/
+    css/
+      main.css
+      noscript.css
+      fontawesome-all.min.css
+    js/
+      jquery.min.js
+      browser.min.js
+      breakpoints.min.js
+      util.js
+      main.js
+    images/
+      bg-pattern.svg
+      pic01.svg ... (øvrige billeder)
+    webfonts/
+      fa-*.woff2 (Font Awesome filer)
+LICENSE_html5up.txt
 ```
 
 Attribution (krævet af CC BY 3.0): Footer indeholder link til HTML5UP. Fjern den ikke hvis du beholder temaet.
@@ -90,12 +105,9 @@ static/phantom/vendor/
 Opdater derefter `templates/base.html` til at pege på de lokale filer. Husk at Google Fonts kræver lokal hosting af WOFF/WOFF2 hvis du vil undgå netværkskald.
 
 ### Skift tilbage til tidligere custom tema
-I `base.html` kan du erstatte Phantom link tags med dine egne, fx:
-```html
-<link rel="stylesheet" href="/static/css/theme.css">
-<link rel="stylesheet" href="/static/css/styles.css">
-```
-De ældre filer ligger stadig i `static/css/` (ubrugt pt.). Du kan også slette dem hvis de ikke skal bruges.
+Vil du skifte væk fra Phantom, kan du erstatte CSS referencerne i `templates/base.html` med dine egne filer, fx et nyt `custom.css` placeret i `static/assets/css/`.
+
+Hvis du ønsker at eksperimentere separat, kan du oprette en mappe `static/legacy/` og lægge gamle tema-filer der midlertidigt.
 
 ### Licenser
 - Phantom: CC BY 3.0 (kræver tydelig kredit)

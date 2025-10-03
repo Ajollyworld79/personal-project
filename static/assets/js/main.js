@@ -97,7 +97,7 @@
 			$menu.wrapInner('<div class="inner"></div>');
 		}
 
-		// Ensure close link exists inside .inner
+		// Close link forventes nu allerede i template; hvis ikke, opret kort.
 		if ($menu.find('> .inner > a.close').length === 0) {
 			$menu.children('.inner').append('<a class="close" href="#menu">Close</a>');
 		}
@@ -182,12 +182,25 @@
 
 			})
 			.on('keydown', function(event) {
-
-				// Hide on escape.
-					if (event.keyCode == 27)
-						$menu._hide();
-
+				if (event.keyCode == 27)
+					$menu._hide();
 			});
+
+		// Synkroniser ARIA med fallback trigger hvis findes
+		var $trigger = $('#menuToggle');
+		function syncAria(){
+			var open = $body.hasClass('is-menu-visible');
+			if ($trigger.length){
+				$trigger.attr('aria-expanded', open ? 'true' : 'false');
+			}
+			$menu.attr('aria-hidden', open ? 'false' : 'true');
+		}
+		// Hook ind i vores _show/_hide/_toggle
+		var _show = $menu._show, _hide = $menu._hide, _toggle = $menu._toggle;
+		$menu._show = function(){ _show.call(this); syncAria(); };
+		$menu._hide = function(){ _hide.call(this); syncAria(); };
+		$menu._toggle = function(){ _toggle.call(this); syncAria(); };
+		syncAria();
 
 })(jQuery);
 
@@ -199,13 +212,7 @@
 	const body=document.body;
 	const menu=document.getElementById('menu');
 	if(!menu) return;
-	if(!menu.querySelector('.close')){
-		const close=document.createElement('a');
-		close.href='#menu';
-		close.className='close';
-		close.textContent='Close';
-		menu.appendChild(close);
-	}
+	// close link allerede i template (eller tilføjet ovenfor)
 	const toggle=(e)=>{e&&e.preventDefault();body.classList.toggle('is-menu-visible');};
 	document.querySelectorAll('a[href="#menu"]').forEach(a=>a.addEventListener('click',toggle));
 	menu.addEventListener('click',e=>{

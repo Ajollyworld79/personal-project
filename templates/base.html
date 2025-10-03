@@ -6,9 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <meta name="description" content="Professionel Python udvikler portfolio" />
     <!-- Phantom theme CSS: prøv fuld version hvis udfyldt, ellers trimmed -->
-    <link rel="stylesheet" href="/static/phantom/assets/css/main.css" />
-    <link rel="stylesheet" href="/static/phantom/assets/css/fontawesome-all.min.css" />
-    <noscript><link rel="stylesheet" href="/static/phantom/assets/css/noscript.css" /></noscript>
+    <link rel="stylesheet" href="/static/assets/css/main.css" />
+    <link rel="stylesheet" href="/static/assets/css/fontawesome-all.min.css" />
+    <noscript><link rel="stylesheet" href="/static/assets/css/noscript.css" /></noscript>
     <style>/* menu fallback basics */#menu ul{list-style:none;margin:0;padding:0;}#menu .close{cursor:pointer;}</style>
     <!-- Font og ikoner forventes embedded via main.css (@import fontawesome + Google Fonts) -->
         {% block head_extra %}{% endblock %}
@@ -24,15 +24,15 @@
                         <span class="symbol">🐍</span><span class="title">{{ author }}</span>
                     </a>
                     <!-- Nav -->
-                    <nav>
+                    <nav aria-label="Primær navigation">
                         <ul>
-                            <li><a href="#menu">Menu</a></li>
+                            <li><a id="menuToggle" href="#menu" aria-controls="menu" aria-expanded="false">Menu</a></li>
                         </ul>
                     </nav>
                 </div>
             </header>
             <!-- Menu -->
-            <nav id="menu">
+            <nav id="menu" aria-hidden="true" aria-label="Side menu">
                 <div class="inner">
                     <h2>Menu</h2>
                     <ul>
@@ -60,21 +60,23 @@
             </footer>
         </div>
         <!-- Scripts -->
-    <script src="/static/phantom/assets/js/jquery.min.js"></script>
-    <script src="/static/phantom/assets/js/browser.min.js"></script>
-    <script src="/static/phantom/assets/js/breakpoints.min.js"></script>
-    <script src="/static/phantom/assets/js/util.js"></script>
-    <script src="/static/phantom/assets/js/main.js"></script>
+    <script src="/static/assets/js/jquery.min.js"></script>
+    <script src="/static/assets/js/browser.min.js"></script>
+    <script src="/static/assets/js/breakpoints.min.js"></script>
+    <script src="/static/assets/js/util.js"></script>
+    <script src="/static/assets/js/main.js"></script>
         <script>
         // Ultra-fallback: hvis noget gik galt tidligere, sørg for klik virker
         (function(){
-            const body=document.body; const trigger=document.querySelector('a[href="#menu"]'); const menu=document.getElementById('menu');
+            const body=document.body; const trigger=document.getElementById('menuToggle'); const menu=document.getElementById('menu');
             if(!trigger||!menu) return;
-            if(!menu.querySelector('.close')){ const c=document.createElement('a'); c.href='#menu'; c.className='close'; c.textContent='Close'; menu.appendChild(c);} 
-            function toggle(e){ if(e){e.preventDefault();} body.classList.toggle('is-menu-visible'); }
+            const updateAria=()=>{ const open=body.classList.contains('is-menu-visible'); trigger.setAttribute('aria-expanded',open?'true':'false'); menu.setAttribute('aria-hidden',open?'false':'true'); };
+            if(!menu.querySelector('.close')){ const c=document.createElement('a'); c.href='#menu'; c.className='close'; c.textContent='Close'; menu.querySelector('.inner')?menu.querySelector('.inner').appendChild(c):menu.appendChild(c);} 
+            function toggle(e){ if(e){e.preventDefault();} body.classList.toggle('is-menu-visible'); updateAria(); }
             if(!trigger._fallbackBound){ trigger.addEventListener('click',toggle,{passive:false}); trigger._fallbackBound=true; }
             menu.addEventListener('click',e=>{ if(e.target.matches('a.close')){ e.preventDefault(); toggle(); }});
-            document.addEventListener('keydown',e=>{ if(e.key==='Escape') body.classList.remove('is-menu-visible'); });
+            document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ body.classList.remove('is-menu-visible'); updateAria(); }});
+            updateAria();
         })();
         </script>
         {% block scripts_extra %}{% endblock %}

@@ -1,3 +1,0 @@
-/* Minimal noscript fallback mirroring Phantom intent */
-body.is-preload .tiles article{transform:none;opacity:1}
-body.is-preload *{animation:none !important;transition:none !important}
