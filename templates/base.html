@@ -9,28 +9,130 @@
     <link rel="stylesheet" href="/static/assets/css/main.css" />
     <link rel="stylesheet" href="/static/assets/css/fontawesome-all.min.css" />
     <noscript><link rel="stylesheet" href="/static/assets/css/noscript.css" /></noscript>
-    <style>/* menu fallback basics */#menu ul{list-style:none;margin:0;padding:0;}#menu .close{cursor:pointer;}</style>
+    <style>
+/* Python Dict Navigation Styling */
+.nav-header-wrapper {
+    padding: 2em 0;
+}
+
+.py-nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2em;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.75em;
+    line-height: 1.8;
+    text-align: left;
+}
+
+.py-line {
+    white-space: nowrap;
+}
+
+.py-indent {
+    padding-left: 2em;
+}
+
+.py-var {
+    color: #9cdcfe;
+}
+
+.py-operator {
+    color: #d4d4d4;
+}
+
+.py-bracket {
+    color: #ffd700;
+}
+
+.py-string {
+    color: #ce9178;
+}
+
+.py-link {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.3);
+    transition: all 0.2s ease;
+}
+
+.py-link:hover {
+    color: #ffffff;
+    text-decoration-color: rgba(242, 132, 158, 0.8);
+}
+
+.py-link.active {
+    color: rgba(242, 132, 158, 1);
+    text-decoration-color: rgba(242, 132, 158, 1);
+    font-weight: bold;
+}
+
+/* Responsive */
+@media screen and (max-width: 980px) {
+    .py-nav {
+        padding: 0 1em;
+        font-size: 0.7em;
+    }
+}
+
+@media screen and (max-width: 736px) {
+    .nav-header-wrapper {
+        padding: 1.5em 0;
+    }
+    
+    .py-nav {
+        font-size: 0.65em;
+        padding: 0 1em;
+    }
+    
+    .py-indent {
+        padding-left: 1em;
+    }
+}
+
+/* Old menu hide */
+#menu { display: none !important; }
+    </style>
     <!-- Font og ikoner forventes embedded via main.css (@import fontawesome + Google Fonts) -->
         {% block head_extra %}{% endblock %}
     </head>
     <body class="is-preload">
+        <!-- Navigation Header -->
+        <div class="nav-header-wrapper">
+            <nav class="py-nav">
+                <div class="py-line"><span class="py-var">navigation</span> <span class="py-operator">=</span> <span class="py-bracket">{</span></div>
+                <div class="py-indent">
+                    <div class="py-line">
+                        <span class="py-string">"forside"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/"</span><span class="py-bracket">,</span>
+                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/" class="py-link">Forside</a>"</span>
+                        <span class="py-bracket">},</span>
+                    </div>
+                    <div class="py-line">
+                        <span class="py-string">"om"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/om"</span><span class="py-bracket">,</span>
+                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/om" class="py-link">Om Mig</a>"</span>
+                        <span class="py-bracket">},</span>
+                    </div>
+                    <div class="py-line">
+                        <span class="py-string">"projekter"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/api/projects"</span><span class="py-bracket">,</span>
+                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/api/projects" class="py-link">Projekter</a>"</span>
+                        <span class="py-bracket">},</span>
+                    </div>
+                    <div class="py-line">
+                        <span class="py-string">"github"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"https://github.com/Ajollyworld79"</span><span class="py-bracket">,</span>
+                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://github.com/Ajollyworld79" class="py-link" target="_blank">GitHub</a>"</span>
+                        <span class="py-bracket">}</span>
+                    </div>
+                </div>
+                <div class="py-line"><span class="py-bracket">}</span></div>
+            </nav>
+        </div>
+        
         <!-- Wrapper -->
         <div id="wrapper">
-            <!-- Header -->
-            <header id="header">
-                <div class="inner">
-                    <!-- Logo -->
-                    <a href="/" class="logo">
-                        <span class="symbol">🐍</span><span class="title">{{ author }}</span>
-                    </a>
-                    <!-- Nav -->
-                    <nav aria-label="Primær navigation">
-                        <ul>
-                            <li><a id="menuToggle" href="#menu" aria-controls="menu" aria-expanded="false">Menu</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </header>
             <!-- Main -->
             <div id="main">
                 <div class="inner">
@@ -65,6 +167,19 @@
     <script src="/static/assets/js/breakpoints.min.js"></script>
     <script src="/static/assets/js/util.js"></script>
     <script src="/static/assets/js/main.js"></script>
+    <script>
+// Python Dict Navigation - Detect Active Page
+document.addEventListener('DOMContentLoaded', function() {
+    const pyLinks = document.querySelectorAll('.py-link');
+    const currentPath = window.location.pathname;
+    
+    pyLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+});
+    </script>
         {% block scripts_extra %}{% endblock %}
     </body>
 </html>

@@ -3,7 +3,7 @@
 
 <!-- Hero Section -->
 <header class="major">
-  <h1>Python Backend Developer</h1>
+  <h1>Python and Datawarehouse Developer</h1>
   <p>Specialist i asynkrone systemer, data processing og skalerbare API'er.<br/>
   Jeg designer og bygger robuste løsninger med fokus på performance, testbarhed og vedligeholdelse.</p>
 </header>
@@ -14,6 +14,7 @@
     <h2>Kompetencer & Teknologier</h2>
   </header>
   <div class="tech-grid">
+    <!-- Python ecosystem -->
     <div class="tech-tile">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" />
       <span>Python</span>
@@ -23,21 +24,49 @@
       <span>FastAPI</span>
     </div>
     <div class="tech-tile">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg" alt="Pandas" />
-      <span>Pandas</span>
-    </div>
-    <div class="tech-tile">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/microsoftsqlserver/microsoftsqlserver-plain.svg" alt="MS SQL" />
-      <span>MS SQL</span>
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flask/flask-original.svg" alt="Flask" />
+      <span>Flask</span>
     </div>
     <div class="tech-tile">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flask/flask-original.svg" alt="Quart" />
       <span>Quart</span>
     </div>
     <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg" alt="Pandas" />
+      <span>Pandas</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" alt="NumPy" />
+      <span>NumPy</span>
+    </div>
+    <div class="tech-tile">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlalchemy/sqlalchemy-original.svg" alt="SQLAlchemy" />
       <span>SQLAlchemy</span>
     </div>
+    
+    <!-- Databases & Data -->
+    <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/microsoftsqlserver/microsoftsqlserver-plain.svg" alt="MS SQL" />
+      <span>MS SQL</span>
+    </div>
+    <div class="tech-tile">
+      <svg viewBox="0 0 100 100" style="width: 60px; height: 60px; margin-bottom: 0.75em;">
+        <defs>
+          <linearGradient id="etlGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#f2849e;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#7ecff4;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <circle cx="20" cy="50" r="12" fill="url(#etlGrad)" />
+        <rect x="40" y="45" width="20" height="10" fill="url(#etlGrad)" />
+        <polygon points="70,30 90,30 80,50 90,70 70,70 80,50" fill="url(#etlGrad)" />
+        <path d="M 32 50 L 38 50" stroke="url(#etlGrad)" stroke-width="3" fill="none" />
+        <path d="M 60 50 L 68 50" stroke="url(#etlGrad)" stroke-width="3" fill="none" />
+      </svg>
+      <span>ETL</span>
+    </div>
+    
+    <!-- DevOps & Tools -->
     <div class="tech-tile">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azuredevops/azuredevops-original.svg" alt="Azure DevOps" />
       <span>Azure DevOps</span>
@@ -47,16 +76,18 @@
       <span>GitHub</span>
     </div>
     <div class="tech-tile">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg" alt="Automation" />
+      <span>Automation</span>
+    </div>
+    
+    <!-- Systems & Editors -->
+    <div class="tech-tile">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/windows8/windows8-original.svg" alt="Windows Server" />
       <span>Windows Server</span>
     </div>
     <div class="tech-tile">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" alt="NumPy" />
-      <span>NumPy</span>
-    </div>
-    <div class="tech-tile">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg" alt="Automation" />
-      <span>Automation</span>
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" alt="Linux" />
+      <span>Linux</span>
     </div>
     <div class="tech-tile">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VS Code" />
@@ -97,28 +128,110 @@
   <header class="major">
     <h2>Code Sample</h2>
   </header>
-  <pre><code class="language-python">from fastapi import FastAPI
-from pydantic import BaseModel
-import asyncio
-
-app = FastAPI()
-
-class DataResponse(BaseModel):
-    items: list[dict]
-    total: int
-    
-@app.get("/api/data", response_model=DataResponse)
-async def get_data(limit: int = 100):
-    """High-performance async endpoint with type safety"""
-    async with get_db_pool() as conn:
-        items = await conn.fetch(
-            "SELECT * FROM analytics LIMIT $1", limit
-        )
-    return DataResponse(
-        items=[dict(r) for r in items],
-        total=len(items)
-    )
-</code></pre>
+  <div class="terminal-code-wrapper">
+    <div class="terminal-code-header">
+      <span class="terminal-dots">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+      </span>
+      <span class="terminal-code-title">~/projects/api.py — Python</span>
+    </div>
+    <div class="terminal-code-content">
+<table class="code-table">
+<tr><td class="line-number">1</td><td class="code-line"><span class="py-decorator">@app.route</span>(<span class="py-str">"/api/debug-emergency-check/&lt;database&gt;"</span>)</td></tr>
+<tr><td class="line-number">2</td><td class="code-line"><span class="py-decorator">@check_session_timeout</span></td></tr>
+<tr><td class="line-number">3</td><td class="code-line"><span class="py-decorator">@login_required</span></td></tr>
+<tr><td class="line-number">4</td><td class="code-line"><span class="py-keyword">async def</span> <span class="py-function">debug_emergency_check</span>(database):</td></tr>
+<tr><td class="line-number">5</td><td class="code-line">    <span class="py-comment">"""Check emergency scaling conditions for specific database"""</span></td></tr>
+<tr><td class="line-number">6</td><td class="code-line">    <span class="py-keyword">try</span>:</td></tr>
+<tr><td class="line-number">7</td><td class="code-line">        <span class="py-comment"># Find full database name</span></td></tr>
+<tr><td class="line-number">8</td><td class="code-line">        full_db_name = db_manager.db_name_mapping.<span class="py-function">get</span>(database, database)</td></tr>
+<tr><td class="line-number">9</td><td class="code-line"></td></tr>
+<tr><td class="line-number">10</td><td class="code-line">        <span class="py-keyword">if</span> full_db_name <span class="py-keyword">not in</span> db_manager.configs:</td></tr>
+<tr><td class="line-number">11</td><td class="code-line">            <span class="py-keyword">return</span> <span class="py-function">jsonify</span>({<span class="py-str">"error"</span>: <span class="py-str">f"Database {database} not found"</span>}), <span class="py-num">400</span></td></tr>
+<tr><td class="line-number">12</td><td class="code-line"></td></tr>
+<tr><td class="line-number">13</td><td class="code-line">        config = db_manager.configs[full_db_name]</td></tr>
+<tr><td class="line-number">14</td><td class="code-line"></td></tr>
+<tr><td class="line-number">15</td><td class="code-line">        <span class="py-comment"># Get current metrics</span></td></tr>
+<tr><td class="line-number">16</td><td class="code-line">        tracker_stats = db_manager.connection_tracker.<span class="py-function">get_stats</span>(database)</td></tr>
+<tr><td class="line-number">17</td><td class="code-line">        active_connections = tracker_stats[<span class="py-str">"total_connections"</span>]</td></tr>
+<tr><td class="line-number">18</td><td class="code-line"></td></tr>
+<tr><td class="line-number">19</td><td class="code-line">        current_size = config.pool_size + config.max_overflow</td></tr>
+<tr><td class="line-number">20</td><td class="code-line"></td></tr>
+<tr><td class="line-number">21</td><td class="code-line">        <span class="py-keyword">if</span> current_size &lt;= <span class="py-num">0</span>:</td></tr>
+<tr><td class="line-number">22</td><td class="code-line">            <span class="py-keyword">return</span> <span class="py-function">jsonify</span>({<span class="py-str">"error"</span>: <span class="py-str">"Invalid current_size"</span>}), <span class="py-num">400</span></td></tr>
+<tr><td class="line-number">23</td><td class="code-line"></td></tr>
+<tr><td class="line-number">24</td><td class="code-line">        pool_usage_ratio = <span class="py-function">round</span>(active_connections / current_size, <span class="py-num">4</span>)</td></tr>
+<tr><td class="line-number">25</td><td class="code-line">        activity_usage_ratio = db_manager.<span class="py-function">_calculate_activity_based_usage</span>(database)</td></tr>
+<tr><td class="line-number">26</td><td class="code-line">        effective_usage_ratio = <span class="py-function">max</span>(pool_usage_ratio, activity_usage_ratio)</td></tr>
+<tr><td class="line-number">27</td><td class="code-line"></td></tr>
+<tr><td class="line-number">28</td><td class="code-line">        <span class="py-comment"># Check emergency conditions</span></td></tr>
+<tr><td class="line-number">29</td><td class="code-line">        is_emergency_needed = config.<span class="py-function">should_emergency_scale</span>(effective_usage_ratio) <span class="py-keyword">or</span> (</td></tr>
+<tr><td class="line-number">30</td><td class="code-line">            activity_usage_ratio &gt; <span class="py-num">0.5</span></td></tr>
+<tr><td class="line-number">31</td><td class="code-line">        )</td></tr>
+<tr><td class="line-number">32</td><td class="code-line"></td></tr>
+<tr><td class="line-number">33</td><td class="code-line">        <span class="py-comment"># Check cooldowns</span></td></tr>
+<tr><td class="line-number">34</td><td class="code-line">        emergency_cooldown_ok = <span class="py-bool">True</span></td></tr>
+<tr><td class="line-number">35</td><td class="code-line">        normal_cooldown_ok = <span class="py-bool">True</span></td></tr>
+<tr><td class="line-number">36</td><td class="code-line"></td></tr>
+<tr><td class="line-number">37</td><td class="code-line">        <span class="py-keyword">if</span> config.last_emergency_scale:</td></tr>
+<tr><td class="line-number">38</td><td class="code-line">            time_since_emergency = (</td></tr>
+<tr><td class="line-number">39</td><td class="code-line">                datetime.<span class="py-function">now</span>() - config.last_emergency_scale</td></tr>
+<tr><td class="line-number">40</td><td class="code-line">            ).<span class="py-function">total_seconds</span>()</td></tr>
+<tr><td class="line-number">41</td><td class="code-line">            emergency_cooldown_ok = time_since_emergency &gt; config.emergency_cooldown</td></tr>
+<tr><td class="line-number">42</td><td class="code-line"></td></tr>
+<tr><td class="line-number">43</td><td class="code-line">        <span class="py-keyword">if</span> config.last_scale_time:</td></tr>
+<tr><td class="line-number">44</td><td class="code-line">            time_since_scale = (datetime.<span class="py-function">now</span>() - config.last_scale_time).<span class="py-function">total_seconds</span>()</td></tr>
+<tr><td class="line-number">45</td><td class="code-line">            normal_cooldown_ok = time_since_scale &gt; config.scale_cooldown</td></tr>
+<tr><td class="line-number">46</td><td class="code-line"></td></tr>
+<tr><td class="line-number">47</td><td class="code-line">        <span class="py-keyword">return</span> <span class="py-function">jsonify</span>(</td></tr>
+<tr><td class="line-number">48</td><td class="code-line">            {</td></tr>
+<tr><td class="line-number">49</td><td class="code-line">                <span class="py-str">"database"</span>: database,</td></tr>
+<tr><td class="line-number">50</td><td class="code-line">                <span class="py-str">"current_metrics"</span>: {</td></tr>
+<tr><td class="line-number">51</td><td class="code-line">                    <span class="py-str">"active_connections"</span>: active_connections,</td></tr>
+<tr><td class="line-number">52</td><td class="code-line">                    <span class="py-str">"current_size"</span>: current_size,</td></tr>
+<tr><td class="line-number">53</td><td class="code-line">                    <span class="py-str">"pool_usage_ratio"</span>: pool_usage_ratio,</td></tr>
+<tr><td class="line-number">54</td><td class="code-line">                    <span class="py-str">"activity_usage_ratio"</span>: activity_usage_ratio,</td></tr>
+<tr><td class="line-number">55</td><td class="code-line">                    <span class="py-str">"effective_usage_ratio"</span>: effective_usage_ratio,</td></tr>
+<tr><td class="line-number">56</td><td class="code-line">                },</td></tr>
+<tr><td class="line-number">57</td><td class="code-line">                <span class="py-str">"emergency_conditions"</span>: {</td></tr>
+<tr><td class="line-number">58</td><td class="code-line">                    <span class="py-str">"critical_threshold"</span>: config.critical_usage_threshold,</td></tr>
+<tr><td class="line-number">59</td><td class="code-line">                    <span class="py-str">"meets_critical_usage"</span>: effective_usage_ratio</td></tr>
+<tr><td class="line-number">60</td><td class="code-line">                    &gt;= config.critical_usage_threshold,</td></tr>
+<tr><td class="line-number">61</td><td class="code-line">                    <span class="py-str">"meets_activity_threshold"</span>: activity_usage_ratio &gt; <span class="py-num">0.5</span>,</td></tr>
+<tr><td class="line-number">62</td><td class="code-line">                    <span class="py-str">"is_emergency_needed"</span>: is_emergency_needed,</td></tr>
+<tr><td class="line-number">63</td><td class="code-line">                    <span class="py-str">"emergency_cooldown_ok"</span>: emergency_cooldown_ok,</td></tr>
+<tr><td class="line-number">64</td><td class="code-line">                    <span class="py-str">"normal_cooldown_ok"</span>: normal_cooldown_ok,</td></tr>
+<tr><td class="line-number">65</td><td class="code-line">                },</td></tr>
+<tr><td class="line-number">66</td><td class="code-line">                <span class="py-str">"config_info"</span>: {</td></tr>
+<tr><td class="line-number">67</td><td class="code-line">                    <span class="py-str">"pool_size"</span>: config.pool_size,</td></tr>
+<tr><td class="line-number">68</td><td class="code-line">                    <span class="py-str">"max_overflow"</span>: config.max_overflow,</td></tr>
+<tr><td class="line-number">69</td><td class="code-line">                    <span class="py-str">"critical_usage_threshold"</span>: config.critical_usage_threshold,</td></tr>
+<tr><td class="line-number">70</td><td class="code-line">                    <span class="py-str">"emergency_cooldown"</span>: config.emergency_cooldown,</td></tr>
+<tr><td class="line-number">71</td><td class="code-line">                    <span class="py-str">"last_emergency_scale"</span>: (</td></tr>
+<tr><td class="line-number">72</td><td class="code-line">                        config.last_emergency_scale.<span class="py-function">isoformat</span>()</td></tr>
+<tr><td class="line-number">73</td><td class="code-line">                        <span class="py-keyword">if</span> config.last_emergency_scale</td></tr>
+<tr><td class="line-number">74</td><td class="code-line">                        <span class="py-keyword">else</span> <span class="py-bool">None</span></td></tr>
+<tr><td class="line-number">75</td><td class="code-line">                    ),</td></tr>
+<tr><td class="line-number">76</td><td class="code-line">                    <span class="py-str">"last_scale_time"</span>: (</td></tr>
+<tr><td class="line-number">77</td><td class="code-line">                        config.last_scale_time.<span class="py-function">isoformat</span>()</td></tr>
+<tr><td class="line-number">78</td><td class="code-line">                        <span class="py-keyword">if</span> config.last_scale_time</td></tr>
+<tr><td class="line-number">79</td><td class="code-line">                        <span class="py-keyword">else</span> <span class="py-bool">None</span></td></tr>
+<tr><td class="line-number">80</td><td class="code-line">                    ),</td></tr>
+<tr><td class="line-number">81</td><td class="code-line">                },</td></tr>
+<tr><td class="line-number">82</td><td class="code-line">                <span class="py-str">"scaling_enabled"</span>: db_manager.<span class="py-function">is_scaling_enabled_for_database</span>(database),</td></tr>
+<tr><td class="line-number">83</td><td class="code-line">                <span class="py-str">"should_emergency_scale_now"</span>: is_emergency_needed</td></tr>
+<tr><td class="line-number">84</td><td class="code-line">                <span class="py-keyword">and</span> emergency_cooldown_ok</td></tr>
+<tr><td class="line-number">85</td><td class="code-line">                <span class="py-keyword">and</span> db_manager.<span class="py-function">is_scaling_enabled_for_database</span>(database),</td></tr>
+<tr><td class="line-number">86</td><td class="code-line">            }</td></tr>
+<tr><td class="line-number">87</td><td class="code-line">        )</td></tr>
+<tr><td class="line-number">88</td><td class="code-line"></td></tr>
+<tr><td class="line-number">89</td><td class="code-line">    <span class="py-keyword">except</span> <span class="py-class">Exception</span> <span class="py-keyword">as</span> e:</td></tr>
+<tr><td class="line-number">90</td><td class="code-line">        <span class="py-keyword">return</span> <span class="py-function">jsonify</span>({<span class="py-str">"error"</span>: <span class="py-function">str</span>(e)}), <span class="py-num">500</span></td></tr>
+</table>
+    </div>
+  </div>
 </section>
 
 <!-- CTA Section -->
@@ -221,17 +334,116 @@ async def get_data(limit: int = 100):
   font-size: 1.5em;
 }
 
-/* Code block improvements */
-pre {
-  background: rgba(0, 0, 0, 0.3);
-  border-left: solid 0.25em #f2849e;
-  padding: 1.5em;
+/* Python Terminal Code Block */
+.terminal-code-wrapper {
+  background: #000000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  margin: 2em 0;
+}
+
+.terminal-code-header {
+  background: #000000;
+  padding: 0.75em 1em;
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}
+
+.terminal-code-header .terminal-dots {
+  display: flex;
+  gap: 0.4em;
+}
+
+.terminal-code-header .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.terminal-code-header .dot.red {
+  background: #ff5f56;
+}
+
+.terminal-code-header .dot.yellow {
+  background: #ffbd2e;
+}
+
+.terminal-code-header .dot.green {
+  background: #27c93f;
+}
+
+.terminal-code-title {
+  font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+  font-size: 0.75em;
+  color: #a0a0a0;
+  letter-spacing: 0.03em;
+}
+
+.terminal-code-content {
+  background: #000000;
+  padding: 1.5em 0;
   overflow-x: auto;
 }
 
-code {
-  font-family: 'Courier New', monospace;
-  font-size: 0.9em;
+.code-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+  font-size: 0.8em;
+  line-height: 1.6;
+  background: #000000;
+}
+
+.line-number {
+  color: #858585;
+  text-align: right;
+  padding: 0 1em;
+  user-select: none;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.code-line {
+  color: #d4d4d4;
+  padding: 0 1.5em;
+  white-space: pre;
+}
+
+/* Python Syntax Highlighting */
+.py-keyword {
+  color: #569cd6;
+  font-weight: normal;
+}
+
+.py-function {
+  color: #dcdcaa;
+}
+
+.py-str {
+  color: #ce9178;
+}
+
+.py-comment {
+  color: #6a9955;
+  font-style: italic;
+}
+
+.py-decorator {
+  color: #9cdcfe;
+}
+
+.py-num {
+  color: #b5cea8;
+}
+
+.py-bool {
+  color: #569cd6;
+}
+
+.py-class {
+  color: #4ec9b0;
 }
 
 /* Responsive adjustments */
