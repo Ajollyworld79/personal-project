@@ -1,6 +1,6 @@
 # Personlig Portfolio (FastAPI)
 
-En simpel asynkron Python webapplikation bygget med FastAPI som viser din professionelle profil som Python udvikler.
+En simpel asynkron Python webapplikation bygget med FastAPI.
 
 ## Funktioner (første version)
 - Forside med kort introduktion
@@ -114,5 +114,4 @@ De ældre filer ligger stadig i `static/css/` (ubrugt pt.). Du kan også slette 
 - CI workflow (GitHub Actions) til tests og linting
 - Docker container
 
-## Licens
-MIT (eller hvad du foretrækker).
+
