@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Hej, jeg er {{ author }}</h1>
+<p>Jeg bygger robuste, asynkrone Python løsninger: API'er, data pipelines og backend services.</p>
+<section>
+    <h2>Udvalgte Projekter</h2>
+    <div class="projects">
+        {% for p in projects %}
+        <div class="project-card">
+            <h3>{{ p.title }}</h3>
+            <p>{{ p.description }}</p>
+            <p class="tech">Tech: {{ ', '.join(p.technologies) }}</p>
+            {% if p.repo_url %}<a href="{{ p.repo_url }}" target="_blank">Repo</a>{% endif %}
+            {% if p.live_url %} | <a href="{{ p.live_url }}" target="_blank">Live</a>{% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

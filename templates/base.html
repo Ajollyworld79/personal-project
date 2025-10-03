@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title if title else 'Portfolio' }}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <meta name="description" content="Professionel Python udvikler portfolio">
+</head>
+<body>
+    <header>
+        <nav class="nav">
+            <a href="/">Hjem</a>
+            <a href="/om">Om mig</a>
+            <a href="/api/projects" target="_blank">API</a>
+            <a href="https://github.com" target="_blank">GitHub</a>
+        </nav>
+    </header>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; {{ author }} {{ current_year }}</p>
+    </footer>
+</body>
+</html>

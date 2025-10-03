@@ -1,0 +1,10 @@
+body { font-family: system-ui, Arial, sans-serif; margin:0; background:#111; color:#eee; }
+.nav { display:flex; gap:1rem; padding:1rem; background:#181818; }
+.nav a { color:#8fd1ff; text-decoration:none; }
+.nav a:hover { text-decoration:underline; }
+.container { max-width:900px; margin:2rem auto; padding:0 1rem; }
+.projects { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1rem; }
+.project-card { background:#1e1e1e; padding:1rem; border-radius:8px; border:1px solid #2c2c2c; }
+.project-card h3 { margin-top:0; }
+.tech { font-size:0.85rem; color:#bbb; }
+footer { text-align:center; padding:2rem 0; font-size:0.8rem; color:#777; }
