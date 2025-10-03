@@ -7,13 +7,13 @@ PROJECTS = [
         title="Asynkron Web API",
         description="Eksempel på en robust FastAPI service med caching og metrics.",
         technologies=["FastAPI", "Redis", "PostgreSQL"],
-        repo_url="https://github.com/brugernavn/asynk-web-api"
+        repo_url="https://github.com/Ajollyworld79/asynk-web-api"
     ),
     Project(
         slug="data-pipeline",
         title="Data Pipeline",
         description="Automatiseret ETL pipeline til datarens og berigelse.",
         technologies=["Python", "Pandas", "Airflow"],
-        repo_url="https://github.com/brugernavn/data-pipeline"
+        repo_url="https://github.com/Ajollyworld79/data-pipeline"
     ),
 ]

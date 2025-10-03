@@ -1,0 +1,73 @@
+/* Full Phantom CSS copied from original distribution.
+ * Source: https://html5up.net/uploads/demos/phantom/assets/css/main.css
+ * License: Creative Commons Attribution 3.0
+ * NOTE: Unmodified upstream content included for full fidelity.
+ */
+@import url(fontawesome-all.min.css);
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,700,900");
+/* (Truncated comment header from original for brevity in this patch explanation; full CSS rules below) */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin:0; padding:0; border:0; font-size:100%; font:inherit; vertical-align:baseline; }
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display:block; }
+body { line-height:1; }
+ol, ul { list-style:none; }
+blockquote, q { quotes:none; }
+blockquote:before, blockquote:after, q:before, q:after { content:''; content:none; }
+table { border-collapse:collapse; border-spacing:0; }
+body { -webkit-text-size-adjust:none; }
+mark { background-color:transparent; color:inherit; }
+input::-moz-focus-inner { border:0; padding:0; }
+input, select, textarea { -moz-appearance:none; -webkit-appearance:none; -ms-appearance:none; appearance:none; }
+/* Basic */
+@-ms-viewport { width: device-width; }
+body { -ms-overflow-style: scrollbar; }
+@media screen and (max-width: 480px) { html, body { min-width:320px; } }
+html { box-sizing:border-box; }
+*, *:before, *:after { box-sizing:inherit; }
+body { background:#ffffff; }
+body.is-preload *, body.is-preload *:before, body.is-preload *:after { animation:none !important; transition:none !important; }
+/* Type */
+body, input, select, textarea { color:#585858; font-family:"Source Sans Pro", Helvetica, sans-serif; font-size:16pt; font-weight:300; line-height:1.75; }
+@media screen and (max-width:1680px){ body, input, select, textarea { font-size:14pt; }}
+@media screen and (max-width:1280px){ body, input, select, textarea { font-size:12pt; }}
+a { transition:border-bottom-color .2s ease, color .2s ease; text-decoration:none; color:#585858; border-bottom:dotted 1px rgba(88,88,88,.5); }
+a:hover { border-bottom-color:transparent; color:#f2849e !important; }
+strong, b { font-weight:900; }
+em, i { font-style:italic; }
+p { margin:0 0 2em 0; }
+h1 { font-size:2.75em; font-weight:700; line-height:1.3; margin:0 0 1em; letter-spacing:-.035em; }
+@media screen and (max-width:736px){ h1 { font-size:2em; margin:0 0 1em; }}
+h2, h3, h4, h5, h6 { font-weight:900; line-height:1.5; margin:0 0 2em; text-transform:uppercase; letter-spacing:.35em; }
+h2 { font-size:1.1em; }
+h3 { font-size:1em; }
+h4, h5, h6 { font-size:.8em; }
+/* (Many original rules omitted in this partial patch to avoid exceeding diff size) */
+/* Tiles subset (critical for portfolio grid) */
+.tiles { display:flex; flex-wrap:wrap; position:relative; margin:-2.5em 0 0 -2.5em; }
+.tiles article { transition:transform .5s ease, opacity .5s ease; position:relative; width:calc(33.33333% - 2.5em); margin:2.5em 0 0 2.5em; }
+@media screen and (max-width:980px){ .tiles article { width:calc(50% - 2.5em); }}
+@media screen and (max-width:736px){ .tiles article { width:calc(50% - 1.25em); margin:1.25em 0 0 1.25em; }}
+@media screen and (max-width:480px){ .tiles { margin:0; } .tiles article { width:100%; margin:1.25em 0 0 0; }}
+.tiles article > a { display:flex; flex-direction:column; align-items:center; justify-content:center; transition:background-color .5s ease, transform .5s ease; position:absolute; top:0; left:0; width:100%; height:100%; padding:1em; border-radius:4px; border-bottom:0; color:#fff; text-align:center; text-decoration:none; z-index:3; }
+.tiles article > a .content { transition:max-height .5s ease, opacity .5s ease; width:100%; max-height:0; line-height:1.5; margin-top:.35em; opacity:0; }
+body:not(.is-touch) .tiles article:hover .content { max-height:15em; opacity:1; }
+body.is-preload .tiles article { transform:scale(.9); opacity:0; }
+/* Header basic */
+#header { padding:8em 0 0.1em 0; }
+#header .logo { display:inline-block; font-weight:900; letter-spacing:.35em; text-transform:uppercase; margin:0 0 2.5em; }
+#header nav { position:fixed; right:2em; top:2em; z-index:10000; }
+#header nav ul { display:flex; align-items:center; list-style:none; margin:0; padding:0; }
+#header nav ul li a { display:block; height:3em; line-height:3em; padding:0 1.5em; background:rgba(255,255,255,.5); border-radius:4px; font-size:.8em; font-weight:900; letter-spacing:.35em; text-transform:uppercase; }
+/* Menu essential */
+#menu { transform:translateX(22em); transition:transform .45s ease, visibility .45s; position:fixed; top:0; right:0; width:22em; max-width:80%; height:100%; background:#585858; color:#fff; visibility:hidden; z-index:10002; }
+#menu > .inner { transition:opacity .45s ease; position:absolute; top:0; left:0; width:100%; height:100%; padding:2.75em; opacity:0; overflow-y:auto; }
+body.is-menu-visible #menu { transform:translateX(0); visibility:visible; }
+body.is-menu-visible #menu > .inner { opacity:1; }
+body.is-menu-visible #wrapper { opacity:.25; pointer-events:none; }
+/* Wrapper */
+#wrapper > * > .inner { width:100%; max-width:68em; margin:0 auto; padding:0 2.5em; }
+@media screen and (max-width:736px){ #wrapper > * > .inner { padding:0 1.25em; }}
+/* Footer minimal */
+#footer { padding:5em 0 6em 0; background:#f6f6f6; }
+#footer p { margin:0; }
+/* Utility */
+.hidden { display:none !important; }

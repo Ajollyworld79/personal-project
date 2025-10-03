@@ -3,7 +3,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     app_name: str = "Min Portfolio"
-    author_name: str = "Dit Navn"  # Opdater dit navn
+    author_name: str = "Gustav Christensen"  # Opdater dit navn
     debug: bool = True
     version: str = "0.1.0"
 

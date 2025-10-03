@@ -1,26 +1,82 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="da">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title if title else 'Portfolio' }}</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
-    <meta name="description" content="Professionel Python udvikler portfolio">
-</head>
-<body>
-    <header>
-        <nav class="nav">
-            <a href="/">Hjem</a>
-            <a href="/om">Om mig</a>
-            <a href="/api/projects" target="_blank">API</a>
-            <a href="https://github.com" target="_blank">GitHub</a>
-        </nav>
-    </header>
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
-    <footer>
-        <p>&copy; {{ author }} {{ current_year }}</p>
-    </footer>
-</body>
+    <head>
+        <title>{{ title if title else 'Python Udvikler Portfolio' }}</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <meta name="description" content="Professionel Python udvikler portfolio" />
+    <!-- Phantom theme CSS: prøv fuld version hvis udfyldt, ellers trimmed -->
+    <link rel="stylesheet" href="/static/phantom/assets/css/main.css" />
+    <link rel="stylesheet" href="/static/phantom/assets/css/fontawesome-all.min.css" />
+    <noscript><link rel="stylesheet" href="/static/phantom/assets/css/noscript.css" /></noscript>
+    <style>/* menu fallback basics */#menu ul{list-style:none;margin:0;padding:0;}#menu .close{cursor:pointer;}</style>
+    <!-- Font og ikoner forventes embedded via main.css (@import fontawesome + Google Fonts) -->
+        {% block head_extra %}{% endblock %}
+    </head>
+    <body class="is-preload">
+        <!-- Wrapper -->
+        <div id="wrapper">
+            <!-- Header -->
+            <header id="header">
+                <div class="inner">
+                    <!-- Logo -->
+                    <a href="/" class="logo">
+                        <span class="symbol">🐍</span><span class="title">{{ author }}</span>
+                    </a>
+                    <!-- Nav -->
+                    <nav>
+                        <ul>
+                            <li><a href="#menu">Menu</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+            <!-- Menu -->
+            <nav id="menu">
+                <div class="inner">
+                    <h2>Menu</h2>
+                    <ul>
+                        <li><a href="/">Forside</a></li>
+                        <li><a href="/om">Om</a></li>
+                        <li><a href="/api/projects" target="_blank">API</a></li>
+                        <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
+                    </ul>
+                    <a href="#menu" class="close">Close</a>
+                </div>
+            </nav>
+            <!-- Main -->
+            <div id="main">
+                <div class="inner">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+            <!-- Footer -->
+            <footer id="footer">
+                <div class="inner">
+                    <section>
+                        <p>&copy; {{ current_year }} {{ author }} • Bygget med FastAPI • Design: <a href="https://html5up.net">HTML5 UP (Phantom)</a> (CC BY 3.0).<br/><code>async def build()</code></p>
+                    </section>
+                </div>
+            </footer>
+        </div>
+        <!-- Scripts -->
+    <script src="/static/phantom/assets/js/jquery.min.js"></script>
+    <script src="/static/phantom/assets/js/browser.min.js"></script>
+    <script src="/static/phantom/assets/js/breakpoints.min.js"></script>
+    <script src="/static/phantom/assets/js/util.js"></script>
+    <script src="/static/phantom/assets/js/main.js"></script>
+        <script>
+        // Ultra-fallback: hvis noget gik galt tidligere, sørg for klik virker
+        (function(){
+            const body=document.body; const trigger=document.querySelector('a[href="#menu"]'); const menu=document.getElementById('menu');
+            if(!trigger||!menu) return;
+            if(!menu.querySelector('.close')){ const c=document.createElement('a'); c.href='#menu'; c.className='close'; c.textContent='Close'; menu.appendChild(c);} 
+            function toggle(e){ if(e){e.preventDefault();} body.classList.toggle('is-menu-visible'); }
+            if(!trigger._fallbackBound){ trigger.addEventListener('click',toggle,{passive:false}); trigger._fallbackBound=true; }
+            menu.addEventListener('click',e=>{ if(e.target.matches('a.close')){ e.preventDefault(); toggle(); }});
+            document.addEventListener('keydown',e=>{ if(e.key==='Escape') body.classList.remove('is-menu-visible'); });
+        })();
+        </script>
+        {% block scripts_extra %}{% endblock %}
+    </body>
 </html>

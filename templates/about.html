@@ -1,11 +1,31 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Om mig</h1>
-<p>Jeg er en passioneret Python udvikler med fokus på performance, læsbar kode og skalerbare systemer.</p>
-<ul>
-    <li>Erfaring med FastAPI, Django, AsyncIO</li>
-    <li>Data behandling: Pandas, Polars, SQL</li>
-    <li>Cloud & DevOps: Docker, CI/CD, Monitoring</li>
-</ul>
-<p>Jeg arbejder struktureret med fokus på testbarhed og automatisering.</p>
+<section class="section">
+    <div class="section-title">Profil</div>
+    <h1 class="mt-0">Om mig</h1>
+    <p class="muted">Jeg er en passioneret Python udvikler med fokus på performance, læsbar kode og skalerbare systemer.</p>
+    <div class="cards mt-2">
+        <div class="card">
+            <h3>Backend & API</h3>
+            <p>FastAPI, Django, ASGI, async patterns, caching, auth, webhooks.</p>
+        </div>
+        <div class="card">
+            <h3>Data & Pipelines</h3>
+            <p>Pandas, Polars, ETL, planlægning, kvalitet og validering.</p>
+        </div>
+        <div class="card">
+            <h3>DevOps & Drift</h3>
+            <p>Docker, CI/CD, monitoring, logging, metrics og tracing.</p>
+        </div>
+    </div>
+    <div class="separator"></div>
+    <h3>Fokusområder</h3>
+    <ul>
+        <li>Testbar, modulær arkitektur</li>
+        <li>Observability og fejlhåndtering</li>
+        <li>Performance og ressourceoptimering</li>
+        <li>Automatisering og infrastruktur som kode</li>
+    </ul>
+    <p>Mit arbejde handler om at bygge løsninger der er nemme at vedligeholde og kan vokse uden at kollapse under kompleksitet.</p>
+</section>
 {% endblock %}

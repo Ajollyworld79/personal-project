@@ -1,19 +1,50 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Hej, jeg er {{ author }}</h1>
-<p>Jeg bygger robuste, asynkrone Python løsninger: API'er, data pipelines og backend services.</p>
+<header>
+  <h1>Hej, jeg er {{ author }}</h1>
+  <p>Jeg bygger asynkrone Python backends, data pipelines og API'er med fokus på performance og kvalitet.</p>
+</header>
+
 <section>
+  <header class="major">
     <h2>Udvalgte Projekter</h2>
-    <div class="projects">
-        {% for p in projects %}
-        <div class="project-card">
-            <h3>{{ p.title }}</h3>
-            <p>{{ p.description }}</p>
-            <p class="tech">Tech: {{ ', '.join(p.technologies) }}</p>
-            {% if p.repo_url %}<a href="{{ p.repo_url }}" target="_blank">Repo</a>{% endif %}
-            {% if p.live_url %} | <a href="{{ p.live_url }}" target="_blank">Live</a>{% endif %}
+  </header>
+  <div class="tiles">
+    {% for p in projects %}
+    {% set style_idx = loop.index % 6 if loop.index % 6 != 0 else 6 %}
+    <article class="style{{ style_idx }}">
+      <span class="image">
+        <img src="/static/phantom/assets/images/pic0{{ style_idx }}.svg" alt="projekt billede {{ loop.index }}" />
+      </span>
+      <a href="{{ p.repo_url or p.live_url or '#' }}" {% if p.repo_url or p.live_url %}target="_blank"{% endif %}>
+        <h2>{{ p.title }}</h2>
+        <div class="content">
+          <p>{{ p.description }}</p>
+          <p>
+            {% for t in p.technologies %}<code>{{ t }}</code>{% if not loop.last %} {% endif %}{% endfor %}
+          </p>
+          {% if p.repo_url or p.live_url %}
+          <p class="small">
+            {% if p.repo_url %}<span>Repo</span>{% endif %}
+            {% if p.live_url %}{% if p.repo_url %} • {% endif %}<span>Live</span>{% endif %}
+          </p>
+          {% endif %}
         </div>
-        {% endfor %}
-    </div>
+      </a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section>
+  <header class="major">
+    <h2>Kode Eksempel</h2>
+  </header>
+  <pre><code>async def build_portfolio():
+    return {
+        "stack": ["FastAPI", "Pydantic", "asyncio"],
+        "quality": ["tests", "type hints", "CI"],
+    }
+</code></pre>
 </section>
 {% endblock %}
