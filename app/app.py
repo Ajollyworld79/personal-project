@@ -1,73 +1,87 @@
-import os, sys
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from typing import List
+from datetime import datetime, timezone
+import os
+import sys
 
-# Sikrer at roden er på sys.path når filen køres direkte (python app/app.py)
+# Ensure project root in path
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from app.config import get_settings  # type: ignore
-from app.models import ProjectsResponse  # type: ignore
-from app.data import PROJECTS  # type: ignore
-from datetime import datetime
-import orjson
+from quart import Quart, render_template, jsonify, Response, request
+import json
+from app.config import get_settings
+from app.models import Project, ProjectsResponse
+from app.data import PROJECTS
+import io
+from fpdf import FPDF, XPos, YPos
 
 settings = get_settings()
 
-app = FastAPI(
-    title=settings.app_name,
-    version=settings.version,
-    debug=settings.debug,
-)
+app = Quart(__name__, template_folder=os.path.join(PROJECT_ROOT, 'templates'))
 
-# Mount static
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Serve static files via Quart's builtin static folder (static/ already exists)
+app.static_folder = 'static'
 
-templates = Jinja2Templates(directory="templates")
 
-# JSON response override with orjson for speed
-class ORJSONResponse(HTMLResponse):
-    media_type = "application/json"
+def generate_cv_pdf(author: str, projects: List[Project]):
+    pdf = FPDF(orientation='P', unit='mm', format='A4')
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font('Helvetica', 'B', 20)
+    pdf.cell(0, 10, f"{author}", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_font('Helvetica', '', 12)
+    # Avoid Unicode-only characters in the core font to keep PDF generation simple
+    pdf.cell(0, 8, "CV - Python & AI / LLMs", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.ln(4)
+    pdf.set_font('Helvetica', 'B', 14)
+    pdf.cell(0, 8, "Udvalgte Projekter", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.ln(2)
+    pdf.set_font('Helvetica', '', 11)
+    for p in projects:
+        title = (p.title or '').replace('—', '-').replace('\u2014', '-')
+        techs = ' | '.join(p.technologies or [])
+        pdf.multi_cell(0, 6, f"- {title} - {techs}")
+        pdf.ln(1)
+    buffer = io.BytesIO()
+    # Get the generated PDF bytes and write them into a BytesIO buffer.
+    raw = pdf.output()  # returns a bytearray
+    buffer.write(bytes(raw))
+    buffer.seek(0)
+    return buffer
 
-    def render(self, content: dict) -> bytes:
-        return orjson.dumps(content)
 
-@app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    context = {
-        "projects": PROJECTS,
-        "author": settings.author_name,
-        "current_year": datetime.utcnow().year,
-    }
-    # Ny signatur: TemplateResponse(request, name, context)
-    return templates.TemplateResponse(request, "index.html", context)
+@app.route('/')
+async def index():
+    return await render_template('index.html', projects=PROJECTS, author=settings.author_name, current_year=datetime.now(timezone.utc).year)
 
-@app.get("/om", response_class=HTMLResponse)
-async def about(request: Request):
-    context = {
-        "author": settings.author_name,
-        "current_year": datetime.utcnow().year,
-    }
-    return templates.TemplateResponse(request, "about.html", context)
 
-@app.get("/api/projects", response_model=ProjectsResponse)
-async def list_projects():
-    return ProjectsResponse(projects=PROJECTS)
+@app.route('/om')
+async def about():
+    return await render_template('about.html', author=settings.author_name, current_year=datetime.utcnow().year)
 
-@app.get("/healthz")
+
+@app.route('/api/projects')
+async def api_projects():
+    # Return JSON-serializable data using Pydantic model_dump_json
+    return jsonify({'projects': [json.loads(p.model_dump_json()) for p in PROJECTS]})
+
+
+@app.route('/download_cv')
+async def download_cv():
+    # Generate a small PDF CV on the fly
+    packet = generate_cv_pdf(settings.author_name, PROJECTS)
+    data = packet.getvalue()
+    filename = f"CV_{settings.author_name.replace(' ', '_')}.pdf"
+    headers = {"Content-Disposition": f"attachment; filename=\"{filename}\""}
+    return Response(data, mimetype='application/pdf', headers=headers)
+
+
+@app.route('/healthz')
 async def healthz():
-    return {"status": "ok", "version": settings.version}
+    return jsonify({'status': 'ok', 'version': settings.version})
 
-if __name__ == "__main__":
-    # Muliggør: python app/app.py
+
+if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(
-        "app.app:app",
-        host="127.0.0.1",
-        port=8000,
-        reload=True,
-        factory=False,
-    )
+    uvicorn.run('app.app:app', host='127.0.0.1', port=8000, reload=True)

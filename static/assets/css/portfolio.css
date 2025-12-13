@@ -1,0 +1,101 @@
+/* Portfolio-specific custom styles */
+:root {
+  --bg: #0b0f13;
+  --bg-2: #0f1419;
+  --card: rgba(255,255,255,0.04);
+  --text: #e6eef6;
+  --muted: #9aa7b4;
+  --accent: #f2849e;
+  --accent-2: #7ecff4;
+  --container-width: 1200px;
+  --radius: 12px;
+}
+
+html, body {
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 1.25rem 1rem;
+}
+
+/* Header hero */
+header.major h1 {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.01em;
+}
+header.major p {
+  color: var(--muted);
+  margin-top: 0;
+}
+
+/* Buttons */
+.button, .button.alt {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: white;
+  border: none;
+  padding: 0.7em 1.15em;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-block;
+}
+.button.alt {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Skills tiles - improve readability */
+.tech-tile {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Simple animations */
+.tech-tile, .posts article {
+  transition: transform 300ms cubic-bezier(.2,.7,.2,1), box-shadow 300ms ease, border-color 300ms ease;
+}
+
+/* Card focus highlight */
+.posts article:hover, .tech-tile:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  border-color: rgba(242, 132, 158, 0.35);
+}
+
+/* Project expand animation */
+.projects-expanded {
+  animation: fadeIn 250ms ease both;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: none }}
+
+/* Theme toggling: light support */
+.light {
+  --bg: #ffffff;
+  --bg-2: #f9fafb;
+  --card: rgba(10,20,30,0.04);
+  --text: #0b1220;
+  --muted: #475569;
+}
+
+/* Simple responsive improvements */
+@media screen and (max-width: 980px) {
+  header.major h1 { font-size: 1.5rem; }
+}
+
+/* Add skill filter */
+.filter-bar { display:flex; gap: 0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:1rem; }
+.filter-btn { padding: 0.4rem 0.65rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 5px; cursor: pointer; }
+.filter-btn.active { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: black; }
+
+/* Project card details */
+.project-body { max-height: 0; overflow: hidden; transition: max-height 300ms ease; }
+.project-open .project-body { max-height: 480px; }
+
+/* Small helpers */
+.center { text-align: center; }
+

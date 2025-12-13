@@ -1,6 +1,6 @@
-# Personlig Portfolio (FastAPI)
+# Personlig Portfolio (Quart + Uvicorn)
 
-En simpel asynkron Python webapplikation bygget med FastAPI.
+En moderne asynkron Python webapplikation bygget med Quart og Uvicorn.
 
 ## Funktioner (første version)
 - Forside med kort introduktion
@@ -21,15 +21,23 @@ pip install -r requirements.txt
 ```
 
 ## Kør lokalt
-Standard (anbefalet udvikling):
+1. Opret og aktivér et virtuelt miljø og installer dependencies:
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2. Kør lokalt (udvikling):
 ```bash
 uvicorn app.app:app --reload
 ```
 
-Eller direkte kørsel af filen (nu understøttet):
+3. Eller kør direkte (under udvikling):
 ```bash
 python app/app.py
 ```
+
 Åbn herefter: http://127.0.0.1:8000
 
 Alternativ og mere "pakke-korrekt" måde (undgår relative import problemer):
@@ -43,10 +51,17 @@ Denne metode sikrer at Python forstår `app` som en pakke.
 pytest -q
 ```
 
+## Docker (Valgfrit)
+Byg og kør container lokalt:
+```bash
+docker build -t gustav-portfolio .
+docker run -p 8000:8000 gustav-portfolio
+```
+
 ## Struktur
 ```
 app/
-  app.py            # FastAPI instans og routes
+  app.py            # Quart instans og routes
   config.py         # Indlæsning af settings fra miljøvariabler
   models.py         # Pydantic modeller
   data.py           # Midlertidig in-memory data kilde

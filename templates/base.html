@@ -4,9 +4,14 @@
         <title>{{ title if title else 'Python Udvikler Portfolio' }}</title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-        <meta name="description" content="Professionel Python udvikler portfolio" />
+        <meta name="description" content="Professionel Python udvikler portfolio med fokus på AI, LLMs og Python udvikling" />
+        <meta name="keywords" content="Gustav Christensen, Python, AI, LLM, Machine Learning, Data Engineer, Portfolio, CV" />
+        <meta property="og:title" content="{{ title if title else 'Gustav Christensen — Python & AI Developer' }}" />
+        <meta property="og:description" content="Portfolio — Python development, AI / LLM projects, and technical experience." />
+        <meta property="og:type" content="website" />
     <!-- Phantom theme CSS: prøv fuld version hvis udfyldt, ellers trimmed -->
     <link rel="stylesheet" href="/static/assets/css/main.css" />
+    <link rel="stylesheet" href="/static/assets/css/portfolio.css" />
     <link rel="stylesheet" href="/static/assets/css/fontawesome-all.min.css" />
     <noscript><link rel="stylesheet" href="/static/assets/css/noscript.css" /></noscript>
     <style>
@@ -128,6 +133,10 @@
                     </div>
                 </div>
                 <div class="py-line"><span class="py-bracket">}</span></div>
+                <div class="py-line" style="padding-top: 0.75em;">
+                    <a href="/download_cv" class="py-link" style="margin-right:1rem;">Download CV</a>
+                    <button id="theme-toggle" class="py-link" aria-label="Skift tema">Skift Tema</button>
+                </div>
             </nav>
         </div>
         
@@ -143,7 +152,7 @@
             <footer id="footer">
                 <div class="inner">
                     <section>
-                        <p>&copy; {{ current_year }} {{ author }} • Bygget med FastAPI • Design: <a href="https://html5up.net">HTML5 UP (Phantom)</a> (CC BY 3.0).<br/><code>async def build()</code></p>
+                        <p>&copy; {{ current_year }} {{ author }} • Bygget med Quart • Design: <a href="https://html5up.net">HTML5 UP (Phantom)</a> (CC BY 3.0).<br/><code>async def build()</code></p>
                     </section>
                 </div>
             </footer>
@@ -167,6 +176,7 @@
     <script src="/static/assets/js/breakpoints.min.js"></script>
     <script src="/static/assets/js/util.js"></script>
     <script src="/static/assets/js/main.js"></script>
+    <script src="/static/assets/js/portfolio.js"></script>
     <script>
 // Python Dict Navigation - Detect Active Page
 document.addEventListener('DOMContentLoaded', function() {

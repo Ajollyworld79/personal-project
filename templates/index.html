@@ -3,9 +3,13 @@
 
 <!-- Hero Section -->
 <header class="major">
-  <h1>Python and Datawarehouse Developer</h1>
-  <p>Specialist i asynkrone systemer, data processing og skalerbare API'er.<br/>
-  Jeg designer og bygger robuste løsninger med fokus på performance, testbarhed og vedligeholdelse.</p>
+  <h1>Gustav Christensen — AI, LLM & Python Developer</h1>
+  <p>Jeg bygger produktionsklare AI-arkitekturer og Python-løsninger med fokus på Large Language Models, data engineering og skalerbarhed.<br/>
+  Specialiseret i model-opsætning, prompt engineering, pipeline-automation og backend udvikling.</p>
+  <p class="actions center">
+    <a href="/download_cv" class="button big">Download CV (PDF)</a>
+    <a href="/om" class="button big alt">Kontakt / Om Mig</a>
+  </p>
 </header>
 
 <!-- Kompetencer Section -->
@@ -38,6 +42,21 @@
     <div class="tech-tile">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" alt="NumPy" />
       <span>NumPy</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/pytorch/pytorch-original.svg" alt="PyTorch" />
+      <span>PyTorch</span>
+    </div>
+    <div class="tech-tile">
+      <img src="https://raw.githubusercontent.com/hwchase17/langchain/master/langchain/docs/img/llm.svg" alt="LangChain" style="width:60px; height:60px;"/>
+      <span>LangChain</span>
+    </div>
+    <div class="tech-tile">
+      <svg viewBox="0 0 24 24" style="width: 60px; height: 60px; margin-bottom: 0.75em;">
+        <circle cx="12" cy="12" r="12" fill="#111" />
+        <text x="12" y="16" font-size="8" text-anchor="middle" fill="#f2849e">LLM</text>
+      </svg>
+      <span>LLM</span>
     </div>
     <div class="tech-tile">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlalchemy/sqlalchemy-original.svg" alt="SQLAlchemy" />
@@ -100,8 +119,17 @@
 <section>
   <header class="major">
     <h2>Udvalgte Projekter</h2>
-    <p>Eksempler på tekniske løsninger jeg har udviklet</p>
+    <p>Eksempler på tekniske løsninger jeg har udviklet, med særlig vægt på AI/LLMs, Python og systemarkitektur.</p>
   </header>
+  <div class="filter-bar">
+    <span>Filtrer:</span>
+    <button class="filter-btn" data-tech="Python">Python</button>
+    <button class="filter-btn" data-tech="LLM">LLM</button>
+    <button class="filter-btn" data-tech="FastAPI">FastAPI</button>
+    <button class="filter-btn" data-tech="Quart">Quart</button>
+    <button class="filter-btn" data-tech="Pandas">Pandas</button>
+    <button class="filter-btn" data-tech="Redis">Redis</button>
+  </div>
   <div class="posts">
     {% for p in projects %}
     <article>
@@ -110,14 +138,21 @@
       <p class="tech-tags">
         {% for t in p.technologies %}<span class="tech-badge">{{ t }}</span>{% if not loop.last %} {% endif %}{% endfor %}
       </p>
-      <ul class="actions">
+      <div class="project-actions">
+        <button class="button toggle-details">Detaljer</button>
         {% if p.repo_url %}
-        <li><a href="{{ p.repo_url }}" class="button" target="_blank" rel="noopener">Se Kode</a></li>
+        <a href="{{ p.repo_url }}" class="button" target="_blank" rel="noopener">Se Kode</a>
         {% endif %}
         {% if p.live_url %}
-        <li><a href="{{ p.live_url }}" class="button alt" target="_blank" rel="noopener">Live Demo</a></li>
+        <a href="{{ p.live_url }}" class="button alt" target="_blank" rel="noopener">Live Demo</a>
         {% endif %}
-      </ul>
+      </div>
+      <div class="project-body">
+        <p><strong>Detaljer:</strong> {{ p.description }}</p>
+        {% if p.repo_url %}
+        <p><strong>Repository:</strong> <a href="{{ p.repo_url }}" target="_blank" rel="noopener">{{ p.repo_url }}</a></p>
+        {% endif %}
+      </div>
     </article>
     {% endfor %}
   </div>
