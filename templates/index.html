@@ -3,13 +3,21 @@
 
 <!-- Hero Section -->
 <header class="major">
-  <h1>Gustav Christensen — AI, LLM & Python Developer</h1>
-  <p>Jeg bygger produktionsklare AI-arkitekturer og Python-løsninger med fokus på Large Language Models, data engineering og skalerbarhed.<br/>
-  Specialiseret i model-opsætning, prompt engineering, pipeline-automation og backend udvikling.</p>
-  <p class="actions center">
-    <a href="/download_cv" class="button big">Download CV (PDF)</a>
-    <a href="/om" class="button big alt">Kontakt / Om Mig</a>
-  </p>
+  <div class="container hero">
+    <div class="hero-left">
+      <h1>Gustav Christensen — AI, LLM & Python Developer</h1>
+      <p>Jeg bygger produktionsklare AI-arkitekturer og Python-løsninger med fokus på Large Language Models, data engineering og skalerbarhed.<br/>
+      Specialiseret i model-opsætning, prompt engineering, pipeline-automation og backend udvikling.</p>
+      <p class="actions">
+        <a href="/download_cv" class="button big">Download CV (PDF)</a>
+        <a href="/om" class="button big alt">Kontakt / Om Mig</a>
+      </p>
+    </div>
+    <div class="hero-right">
+      <div class="avatar" aria-hidden="true" title="Gustav C">GC</div>
+      <p class="subtle">Python • AI / LLMs • Systems</p>
+    </div>
+  </div>
 </header>
 
 <!-- Kompetencer Section -->
@@ -132,7 +140,7 @@
   </div>
   <div class="posts">
     {% for p in projects %}
-    <article>
+    <article class="{% if loop.first %}featured{% endif %}">
       <h3>{{ p.title }}</h3>
       <p>{{ p.description }}</p>
       <p class="tech-tags">
@@ -438,23 +446,24 @@
   color: #9cdcfe;
 }
 
-.py-num {
-  color: #b5cea8;
+.posts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2em;
 }
-
-.py-bool {
-  color: #569cd6;
+.posts article {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: solid 1px rgba(255, 255, 255, 0.12);
+  transition: transform 300ms cubic-bezier(.2,.7,.2,1), box-shadow 300ms ease, border-color 300ms ease;
 }
-
-.py-class {
-  color: #4ec9b0;
+.posts article:hover {
+  transform: translateY(-6px);
+  border-color: rgba(242, 132, 158, 0.5);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.55);
 }
-
-/* Responsive adjustments */
-@media screen and (max-width: 736px) {
-  .tech-grid {
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-    gap: 1em;
   }
   
   .tech-tile {

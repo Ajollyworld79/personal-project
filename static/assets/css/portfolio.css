@@ -26,7 +26,7 @@ html, body {
 
 /* Header hero */
 header.major h1 {
-  font-size: 2rem;
+  font-size: 2.25rem;
   margin-bottom: 0.25rem;
   letter-spacing: -0.01em;
 }
@@ -34,6 +34,17 @@ header.major p {
   color: var(--muted);
   margin-top: 0;
 }
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 2rem;
+  align-items: center;
+}
+
+.hero-left { padding: 1rem 0; }
+.hero-right { text-align: center; }
+.avatar { width: 180px; height: 180px; border-radius: 999px; display:inline-flex; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font-weight:700; font-size:36px; align-items:center; justify-content:center; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
 
 /* Buttons */
 .button, .button.alt {
@@ -49,11 +60,17 @@ header.major p {
   background: transparent;
   border: 1px solid rgba(255,255,255,0.08);
 }
+.button:focus, .button.alt:focus { outline: 3px solid rgba(126,207,244,0.15); outline-offset: 2px; }
 
 /* Skills tiles - improve readability */
 .tech-tile {
   background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+  padding: 1.2rem 0.75rem;
+  min-height: 110px;
 }
+
+.tech-tile span { font-size: 0.9em; font-weight:600; }
 
 /* Simple animations */
 .tech-tile, .posts article {
@@ -98,4 +115,23 @@ header.major p {
 
 /* Small helpers */
 .center { text-align: center; }
+
+/* Cards used on about */
+.cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; }
+.card { background: rgba(255,255,255,0.03); padding:1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); }
+.section-title { font-size: 0.85rem; color: var(--accent-2); text-transform: uppercase; letter-spacing: 0.15em; }
+.separator { height: 1px; width: 100%; background: rgba(255,255,255,0.03); margin: 1.25rem 0; }
+
+/* Featured project style */
+.posts article.featured {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 1.25rem;
+  align-items: center;
+  background: linear-gradient(90deg, rgba(242,132,158,0.08), rgba(126,207,244,0.05));
+  border: 1px solid rgba(242,132,158,0.14);
+}
+
+.posts article.featured .project-body { max-height: none; }
 

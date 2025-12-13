@@ -13,17 +13,22 @@ document.addEventListener('DOMContentLoaded', function(){
 
   // Project expand/collapse
   document.querySelectorAll('.posts article .toggle-details').forEach(btn => {
+    // initialize aria-expanded
+    btn.setAttribute('aria-expanded', 'false');
     btn.addEventListener('click', function(e){
       const article = e.target.closest('article');
-      article.classList.toggle('project-open');
+      const open = article.classList.toggle('project-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   });
 
   // Filter projects by technology
   document.querySelectorAll('.filter-btn').forEach(b => {
+    b.setAttribute('aria-pressed', 'false');
     b.addEventListener('click', function(e){
       const tech = e.target.dataset.tech;
       const active = e.target.classList.toggle('active');
+      e.target.setAttribute('aria-pressed', active ? 'true' : 'false');
       // compute active filters
       const activeFilters = Array.from(document.querySelectorAll('.filter-btn.active')).map(n => n.dataset.tech);
       document.querySelectorAll('.posts article').forEach(a => {
