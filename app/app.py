@@ -20,10 +20,10 @@ from fpdf import FPDF, XPos, YPos
 
 settings = get_settings()
 
-app = Quart(__name__, template_folder=os.path.join(PROJECT_ROOT, 'templates'))
+app = Quart(__name__, template_folder=os.path.join(PROJECT_ROOT, 'templates'), static_folder=os.path.join(PROJECT_ROOT, 'static'))
 
 # Serve static files via Quart's builtin static folder (static/ already exists)
-app.static_folder = 'static'
+app.static_folder = os.path.join(PROJECT_ROOT, 'static')
 
 
 def _html_to_plaintext(html: str) -> str:
@@ -71,20 +71,20 @@ def generate_cv_pdf(author: str, projects: List[Project], about_html: str | None
         pdf.set_font('Helvetica', 'B', 14)
         pdf.cell(0, 8, "Profil", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         pdf.ln(2)
-        pdf.set_font('Helvetica', '', 10)
+        pdf.set_font('Helvetica', '', 11)
         for line in text.split('\n'):
             line = line.strip()
             if not line:
-                pdf.ln(2)
+                pdf.ln(3)
                 continue
-            line = _break_long_words(line, maxlen=60)
+            line = _break_long_words(line, maxlen=70)
             # Limit line length for readability in PDF
             max_w = max(20, pdf.w - pdf.l_margin - pdf.r_margin)
             try:
-                pdf.multi_cell(max_w, 5, line)
+                pdf.multi_cell(max_w, 6, line)
             except Exception:
-                safe_line = line.encode('latin-1', errors='replace').decode('latin-1')
-                pdf.multi_cell(max_w, 5, safe_line)
+                safe_line = line.encode('utf-8', errors='replace').decode('utf-8')
+                pdf.multi_cell(max_w, 6, safe_line)
         pdf.ln(4)
 
     # Projects section
@@ -97,11 +97,20 @@ def generate_cv_pdf(author: str, projects: List[Project], about_html: str | None
         techs = ' | '.join(p.technologies or [])
         max_w = max(20, pdf.w - pdf.l_margin - pdf.r_margin)
         try:
-            pdf.multi_cell(max_w, 6, f"- {title} - {techs}")
+            # Title on one line
+            pdf.multi_cell(max_w, 6, title)
+            # Techs on next line, indented
+            if techs:
+                pdf.cell(10, 6, "", new_x=XPos.LMARGIN, new_y=YPos.NEXT)  # indent
+                pdf.multi_cell(max_w - 10, 5, f"Teknologier: {techs}")
         except Exception:
-            safe = (f"- {title} - {techs}").encode('latin-1', errors='replace').decode('latin-1')
-            pdf.multi_cell(max_w, 6, safe)
-        pdf.ln(1)
+            safe_title = title.encode('utf-8', errors='replace').decode('utf-8')
+            safe_techs = techs.encode('utf-8', errors='replace').decode('utf-8')
+            pdf.multi_cell(max_w, 6, safe_title)
+            if safe_techs:
+                pdf.cell(10, 6, "", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+                pdf.multi_cell(max_w - 10, 5, f"Teknologier: {safe_techs}")
+        pdf.ln(2)
 
     buffer = io.BytesIO()
     raw = pdf.output()  # returns a bytearray
@@ -171,7 +180,7 @@ async def download_cv():
     if skills:
         about_lines.append('Top Skills: ' + ', '.join(skills))
     if langs:
-        about_lines.append('Sprog: ' + re.sub(r"<[^>]+>", "", langs))
+        about_lines.append('Sprog: ' + langs)
     if certs:
         about_lines.append('Certificeringer: ' + '; '.join(certs))
 
@@ -184,9 +193,9 @@ async def download_cv():
     return Response(data, mimetype='application/pdf', headers=headers)
 
 
-@app.route('/healthz')
-async def healthz():
-    return jsonify({'status': 'ok', 'version': settings.version})
+@app.route('/static/<path:filename>')
+async def static_files(filename):
+    return await app.send_static_file(filename)
 
 
 if __name__ == '__main__':
