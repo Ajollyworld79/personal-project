@@ -1,32 +1,85 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="section">
+<section class="section" aria-labelledby="about-heading">
     <div class="section-title">Profil</div>
-    <h1 class="mt-0">Om mig</h1>
-    <p class="muted">Jeg er en passioneret Python udvikler og AI-ingeniør, med stærkt fokus på at bygge produktionsteknologi omkring Large Language Models og avanceret data engineering.</p>
+    <h1 id="about-heading" class="mt-0">Gustav Wind Christensen</h1>
+    <p class="muted">SQL- og Python-udvikler med bred erfaring inden for support, drift og udvikling. Passioneret omkring automation, data engineering og produktion af robuste løsninger, særligt med fokus på Python og AI/LLM-integration.</p>
+
     <div class="cards mt-2">
         <div class="card">
-            <h3>AI & LLM</h3>
-            <p>Design af LLM-infrastrukturer, prompt engineering, finetuning pipelines, sikkerheds- og driftsovervejelser for model-opsætninger.</p>
+            <h3>Kontakt</h3>
+            <p>Telefon: <a href="tel:+4560253418">+45 60 25 34 18</a> (Work)<br>
+            Email: <a href="mailto:guch79@gmail.com">guch79@gmail.com</a><br>
+            LinkedIn: <a href="https://www.linkedin.com/in/gustav-wind-christensen-b61a0330" target="_blank" rel="noopener">/in/gustav-wind-christensen-b61a0330</a></p>
         </div>
         <div class="card">
-            <h3>Python & Systemarkitektur</h3>
-            <p>Asynkrone Python apps, API design, testdrevet udvikling, performance-optimering, modulære services.</p>
+            <h3>Top Skills</h3>
+            <ul>
+                <li>Lagrede procedurer</li>
+                <li>Forespørgselsskrivning (SQL)</li>
+                <li>XML</li>
+            </ul>
         </div>
         <div class="card">
-            <h3>Data & ML Ops</h3>
-            <p>ETL pipelines, feature engineering, model-deployment, observability og MLOps tooling.</p>
+            <h3>Sprog</h3>
+            <p>Danish — Native or Bilingual<br>English — Professional working proficiency</p>
         </div>
     </div>
+
     <div class="separator"></div>
-    <h3>Erfaring & Kompetencer</h3>
+
+    <h2>Resumé</h2>
+    <p>Developer med mange års erfaring i IT på tværs af support, drift og udvikling. Jeg trives med automatisering (foretrækker Python) og tæt integration mellem applikationer og databaser. Stærk i troubleshooting og udvikling af komplekse løsninger; god til at kommunikere og arbejde tværfagligt fra planlægning til levering.</p>
+
+    <div class="separator"></div>
+
+    <h2>Certificeringer</h2>
     <ul>
-        <li>Udviklet modelopsætninger med LLMs og transformer biblioteker</li>
-        <li>Implementeret skalerbare, asynkrone API'er ved brug af moderne frameworks</li>
-        <li>Opbygget datarørledninger for ML-udrulninger</li>
-        <li>CI/CD pipelines for ML og backend</li>
+        <li>Complete Python Developer in 2023 — Zero to Mastery</li>
+        <li>MCPS: Microsoft Certified Professional</li>
+        <li>Python objects with special methods — Create better classes!</li>
+        <li>[PCEP-30-02] PCEP™ – Certified Entry-Level Python Programmer</li>
+        <li>MS: Windows 7, Enterprise Desktop Support Technician</li>
     </ul>
-    <p>Jeg er interesseret i projekter som kombinerer AI, produktudvikling og robuste engineering-principper.</p>
-    <p>Kontakt: <a href="mailto:gustav@example.org">gustav@example.org</a> • <a href="https://github.com/Ajollyworld79" target="_blank">GitHub</a></p>
+
+    <div class="separator"></div>
+
+    <h2>Erfaring</h2>
+    <div>
+        <h3>3F – Fagligt Fælles Forbund</h3>
+        <p><em>Datawarehouse</em> — October 2020 - Present (3 years 9 months), København<br>
+        Data engineering og automation.</p>
+
+        <p><em>IT Operation</em> — February 2014 - November 2022 (8 years 10 months), Server operation, SCOM-udvikling, SLA-rapportering, Orchestrator batch-automation.</p>
+
+        <p><em>IT-Support</em> — September 2008 - February 2014 (5 years 6 months)</p>
+    </div>
+
+    <div class="separator"></div>
+
+    <h3>Tidligere roller</h3>
+    <ul>
+        <li>EDC — IT-Support (2008)</li>
+        <li>Bolignet — Technical Consultant (2007-2008)</li>
+        <li>Debitel — IP Support (2006-2007)</li>
+        <li>DLG TELE — IT Supporter and DSL Support (2004-2006)</li>
+        <li>TELE2 — Support (2002-2004)</li>
+        <li>Jan Byg — Unskilled carpenter (2001-2002)</li>
+        <li>Carl F — Sales assistant (1997-2001)</li>
+    </ul>
+
+    <div class="separator"></div>
+
+    <h2>Uddannelse</h2>
+    <ul>
+        <li>Zero To Mastery Academy — Python Developer in 2023 (April 2023 - December 2023)</li>
+        <li>Business College Syd — Sales (2001)</li>
+        <li>Køge Handelsskole (1996-1997)</li>
+        <li>Bernstorffsminde Efterskole — 10th Grade (1995-1996)</li>
+    </ul>
+
+    <div class="separator"></div>
+
+    <p class="center">Kontakt mig for case-baserede samtaler om AI-integrationer, data pipelines og Python-automatisering.</p>
 </section>
 {% endblock %}
