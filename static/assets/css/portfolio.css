@@ -1,12 +1,12 @@
 /* Portfolio-specific custom styles */
 :root {
-  --bg: #0b0f13;
-  --bg-2: #0f1419;
+  --bg: #0b0713;
+  --bg-2: #10051a;
   --card: rgba(255,255,255,0.04);
   --text: #e6eef6;
-  --muted: #9aa7b4;
-  --accent: #6ee7b7; /* soft teal accent */
-  --accent-2: #7ecff4; /* secondary accent */
+  --muted: #b6aede;
+  --accent: #7c3aed; /* mørk lilla accent */
+  --accent-2: #a78bfa; /* lysere lilla sekundær */
   --container-width: 1200px;
   --radius: 12px;
 }
@@ -84,13 +84,14 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 
 /* Posts / project cards */
 .posts { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem }
-.posts article { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.04); transition: transform 260ms cubic-bezier(.2,.8,.2,1), box-shadow 260ms ease; }
-.posts article:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(2,6,23,0.6); border-color: rgba(110,231,183,0.12); }
-.posts article h3 { font-size: 1.15rem; margin: 0 0 0.5rem 0 }
+.posts article { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 12px; padding: 1.75rem; border: 1px solid rgba(255,255,255,0.04); transition: transform 260ms cubic-bezier(.2,.8,.2,1), box-shadow 260ms ease; }
+.posts article:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(2,6,23,0.6); border-color: rgba(124,58,237,0.12); }
+.posts article h3 { font-size: 1.15rem; margin: 0 0 1rem 0 }
 
 /* Project actions */
 .project-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
-.project-actions .button { flex: 1; min-height: 2.5rem; display: flex; align-items: center; justify-content: center; }
+.project-actions .button { flex: 1; min-height: 2.25rem; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; padding: 0.45rem 0.75rem; }
+@media screen and (max-width: 480px) { .project-actions .button { font-size: 0.9rem; padding: 0.4rem 0.6rem; } }
 
 /* Expandable details */
 .project-body { max-height: 0; overflow: hidden; transition: max-height 320ms ease; }
@@ -168,9 +169,9 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 .section { margin-bottom: 3rem; }
 .section-title { font-size: 0.9rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
-.card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.04); }
+.card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 12px; padding: 1.75rem; border: 1px solid rgba(255,255,255,0.04); }
 .card h3 { margin: 0 0 1rem 0; color: var(--accent); }
-.card p { margin: 0.5rem 0; }
+.card p { margin: 0.75rem 0; }
 .card a { color: var(--text); text-decoration: none; }
 .card a:hover { color: var(--accent); }
 .separator { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); margin: 2rem 0; }

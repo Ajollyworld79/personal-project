@@ -1,14 +1,21 @@
 document.addEventListener('DOMContentLoaded', function(){
   // Theme toggle
   const themeToggle = document.getElementById('theme-toggle');
-  const currentTheme = localStorage.getItem('theme');
+  const currentTheme = localStorage.getItem('theme') || 'purple';
   if (currentTheme === 'light') {
     document.documentElement.classList.add('light');
+    document.body.classList.add('light');
+  } else {
+    // default/persisted purple theme (no .light class)
+    document.documentElement.classList.remove('light');
+    document.body.classList.remove('light');
+    localStorage.setItem('theme', 'purple');
   }
   themeToggle?.addEventListener('click', function(){
-    document.documentElement.classList.toggle('light');
-    const isLight = document.documentElement.classList.contains('light');
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    const isLight = document.documentElement.classList.toggle('light');
+    // mirror on body as well to be robust across styles
+    if (isLight) document.body.classList.add('light'); else document.body.classList.remove('light');
+    localStorage.setItem('theme', isLight ? 'light' : 'purple');
   });
 
   // Project expand/collapse
