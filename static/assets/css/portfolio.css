@@ -24,6 +24,10 @@
   --accent: #6c3a74; /* dusty mørk lilla accent */
   --accent-2: #8f6fb7; /* dustier sekundær */
   --accent-weak: rgba(108,58,116,0.12);
+  --accent-15: rgba(108,58,116,0.15);
+  --accent-2-12: rgba(143,111,183,0.12);
+  --accent-06: rgba(108,58,116,0.06);
+  --accent-2-03: rgba(143,111,183,0.03);
 }
 
 html, body {
