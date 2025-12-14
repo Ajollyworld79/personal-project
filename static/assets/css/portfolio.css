@@ -7,6 +7,7 @@
   --muted: #9aa7b4;
   --accent: #6ee7b7; /* soft teal accent */
   --accent-2: #7ecff4; /* secondary accent */
+  --accent-weak: rgba(110,231,183,0.12);
   --container-width: 1200px;
   --radius: 12px;
 }
@@ -15,9 +16,10 @@
 .purple-theme {
   --bg: #0b0713;
   --bg-2: #10051a;
-  --muted: #b6aede;
-  --accent: #7c3aed; /* mørk lilla accent */
-  --accent-2: #a78bfa; /* lysere lilla sekundær */
+  --muted: #a78aa8;
+  --accent: #6c3a74; /* dusty mørk lilla accent */
+  --accent-2: #8f6fb7; /* dustier sekundær */
+  --accent-weak: rgba(108,58,116,0.12);
 }
 
 html, body {
@@ -51,7 +53,7 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 .hero-right { text-align: center; }
 .avatar {
   width: 180px; height: 180px; border-radius: 999px; display:inline-flex;
-  background: linear-gradient(135deg, rgba(110,231,183,0.15), rgba(126,207,244,0.12));
+  background: linear-gradient(135deg, rgba(110,231,183,0.15), rgba(126,207,244,0.12)); /* avatar gradient uses original teal */
   color: var(--text); font-weight:800; font-size:42px; align-items:center; justify-content:center;
   box-shadow: 0 12px 40px rgba(0,0,0,0.45), inset 0 -6px 18px rgba(0,0,0,0.08);
   border: 1px solid rgba(255,255,255,0.03);
@@ -86,7 +88,7 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 .tech-tile span { font-size: 0.92em; font-weight:700; color: var(--text); }
 .tech-tile span { font-size: 0.92em; font-weight:700; color: var(--text); }
 
-.tech-tile:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(2,6,23,0.6); border-color: rgba(110,231,183,0.15); }
+.tech-tile:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(2,6,23,0.6); border-color: var(--accent-weak); }
 
 /* Tech badges for projects */
 .tech-badge { display:inline-block; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); color: var(--text); border-radius: 999px; padding: 0.3em 0.6em; font-size:0.78em; font-weight:700; margin:0.15em; }
@@ -145,7 +147,7 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 .filter-btn.active { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: black; }
 
 /* Featured project */
-.posts article.featured { grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 420px; gap:1rem; align-items:center; background: linear-gradient(90deg, rgba(110,231,183,0.06), rgba(126,207,244,0.03)); border: 1px solid rgba(110,231,183,0.08); }
+.posts article.featured { grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 420px; gap:1rem; align-items:center; background: linear-gradient(90deg, rgba(110,231,183,0.06), rgba(126,207,244,0.03)); border: 1px solid var(--accent-weak); }
 .posts article.featured .project-body { max-height: none }
 
 @media screen and (max-width: 980px) {
