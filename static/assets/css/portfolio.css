@@ -8,6 +8,10 @@
   --accent: #6ee7b7; /* soft teal accent */
   --accent-2: #7ecff4; /* secondary accent */
   --accent-weak: rgba(110,231,183,0.12);
+  --accent-15: rgba(110,231,183,0.15);
+  --accent-2-12: rgba(126,207,244,0.12);
+  --accent-06: rgba(110,231,183,0.06);
+  --accent-2-03: rgba(126,207,244,0.03);
   --container-width: 1200px;
   --radius: 12px;
 }
@@ -53,7 +57,7 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 .hero-right { text-align: center; }
 .avatar {
   width: 180px; height: 180px; border-radius: 999px; display:inline-flex;
-  background: linear-gradient(135deg, rgba(110,231,183,0.15), rgba(126,207,244,0.12)); /* avatar gradient uses original teal */
+  background: linear-gradient(135deg, var(--accent-15), var(--accent-2-12));
   color: var(--text); font-weight:800; font-size:42px; align-items:center; justify-content:center;
   box-shadow: 0 12px 40px rgba(0,0,0,0.45), inset 0 -6px 18px rgba(0,0,0,0.08);
   border: 1px solid rgba(255,255,255,0.03);
@@ -147,7 +151,7 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 .filter-btn.active { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: black; }
 
 /* Featured project */
-.posts article.featured { grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 420px; gap:1rem; align-items:center; background: linear-gradient(90deg, rgba(110,231,183,0.06), rgba(126,207,244,0.03)); border: 1px solid var(--accent-weak); }
+.posts article.featured { grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 420px; gap:1rem; align-items:center; background: linear-gradient(90deg, var(--accent-06), var(--accent-2-03)); border: 1px solid var(--accent-weak); }
 .posts article.featured .project-body { max-height: none }
 
 @media screen and (max-width: 980px) {
