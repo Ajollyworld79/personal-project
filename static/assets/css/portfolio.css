@@ -1,14 +1,23 @@
 /* Portfolio-specific custom styles */
 :root {
-  --bg: #0b0713;
-  --bg-2: #10051a;
+  --bg: #0b0f13;
+  --bg-2: #0f1419;
   --card: rgba(255,255,255,0.04);
   --text: #e6eef6;
+  --muted: #9aa7b4;
+  --accent: #6ee7b7; /* soft teal accent */
+  --accent-2: #7ecff4; /* secondary accent */
+  --container-width: 1200px;
+  --radius: 12px;
+}
+
+/* Dark purple theme (applies when .purple-theme is added to html/body) */
+.purple-theme {
+  --bg: #0b0713;
+  --bg-2: #10051a;
   --muted: #b6aede;
   --accent: #7c3aed; /* mørk lilla accent */
   --accent-2: #a78bfa; /* lysere lilla sekundær */
-  --container-width: 1200px;
-  --radius: 12px;
 }
 
 html, body {
@@ -90,8 +99,9 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 
 /* Project actions */
 .project-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
-.project-actions .button { flex: 1; min-height: 2.25rem; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; padding: 0.45rem 0.75rem; }
-@media screen and (max-width: 480px) { .project-actions .button { font-size: 0.9rem; padding: 0.4rem 0.6rem; } }
+.project-actions .button { flex: 0 1 auto; min-height: 2rem; display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem; padding: 0.35rem 0.6rem; white-space: nowrap; min-width: 4.5rem; }
+@media screen and (max-width: 480px) { .project-actions .button { font-size: 0.85rem; padding: 0.3rem 0.5rem; } }
+.project-actions .button.alt { padding: 0.32rem 0.5rem; }
 
 /* Expandable details */
 .project-body { max-height: 0; overflow: hidden; transition: max-height 320ms ease; }

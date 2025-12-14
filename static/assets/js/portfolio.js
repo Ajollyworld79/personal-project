@@ -1,21 +1,20 @@
 document.addEventListener('DOMContentLoaded', function(){
   // Theme toggle
   const themeToggle = document.getElementById('theme-toggle');
-  const currentTheme = localStorage.getItem('theme') || 'purple';
-  if (currentTheme === 'light') {
-    document.documentElement.classList.add('light');
-    document.body.classList.add('light');
+  const currentTheme = localStorage.getItem('theme');
+  // Default to original theme (no purple). If user previously picked 'purple', restore it.
+  if (currentTheme === 'purple') {
+    document.documentElement.classList.add('purple-theme');
+    document.body.classList.add('purple-theme');
   } else {
-    // default/persisted purple theme (no .light class)
-    document.documentElement.classList.remove('light');
-    document.body.classList.remove('light');
-    localStorage.setItem('theme', 'purple');
+    document.documentElement.classList.remove('purple-theme');
+    document.body.classList.remove('purple-theme');
+    if (!currentTheme) localStorage.setItem('theme', 'default');
   }
   themeToggle?.addEventListener('click', function(){
-    const isLight = document.documentElement.classList.toggle('light');
-    // mirror on body as well to be robust across styles
-    if (isLight) document.body.classList.add('light'); else document.body.classList.remove('light');
-    localStorage.setItem('theme', isLight ? 'light' : 'purple');
+    const hasPurple = document.documentElement.classList.toggle('purple-theme');
+    if (hasPurple) document.body.classList.add('purple-theme'); else document.body.classList.remove('purple-theme');
+    localStorage.setItem('theme', hasPurple ? 'purple' : 'default');
   });
 
   // Project expand/collapse
