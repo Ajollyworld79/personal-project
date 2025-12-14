@@ -1,27 +1,27 @@
 from .models import Project
 
-# Midlertidig in-memory data. Kan senere hentes fra database eller YAML/JSON fil.
+# Temporary in-memory data. Can later be fetched from database or YAML/JSON file.
 PROJECTS = [
     Project(
         slug="llm-assistant",
         title="LLM Assistant & Retrieval System",
-        description="Et produktionsklart LLM assistentprojekt med vektor-søgning, embeddings og prompt management.",
-        technologies=["Python", "LangChain", "FAISS", "Docker", "LLM"],
+        description="A production-ready LLM assistant project with vector search, embeddings, and prompt management.",
+        technologies=["Python", "Qdrant", "Azure AI", "LLM"],
         repo_url="https://github.com/Ajollyworld79/llm-assistant",
         live_url="https://example-llm-project.example.com"
     ),
     Project(
         slug="asynk-web-api",
-        title="Asynkron Web API",
-        description="Eksempel på en robust Quart service med caching og metrics.",
-        technologies=["Quart", "Redis", "PostgreSQL"],
+        title="Asynchronous Web API",
+        description="Example of a robust Quart service with caching and metrics.",
+        technologies=["Quart", "Azure AI", "PostgreSQL"],
         repo_url="https://github.com/Ajollyworld79/asynk-web-api"
     ),
     Project(
         slug="data-pipeline",
         title="Data Pipeline",
-        description="Automatiseret ETL pipeline til dataindsamling, transformation og modellering.",
-        technologies=["Python", "Pandas", "Airflow"],
+        description="Automated ETL pipeline for data collection, transformation, and modeling.",
+        technologies=["Python", "Pandas", "Async", "Threading"],
         repo_url="https://github.com/Ajollyworld79/data-pipeline"
     ),
 ]

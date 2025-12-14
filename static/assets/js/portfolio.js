@@ -1,22 +1,4 @@
 document.addEventListener('DOMContentLoaded', function(){
-  // Theme toggle
-  const themeToggle = document.getElementById('theme-toggle');
-  const currentTheme = localStorage.getItem('theme');
-  // Default to original theme (no purple). If user previously picked 'purple', restore it.
-  if (currentTheme === 'purple') {
-    document.documentElement.classList.add('purple-theme');
-    document.body.classList.add('purple-theme');
-  } else {
-    document.documentElement.classList.remove('purple-theme');
-    document.body.classList.remove('purple-theme');
-    if (!currentTheme) localStorage.setItem('theme', 'default');
-  }
-  themeToggle?.addEventListener('click', function(){
-    const hasPurple = document.documentElement.classList.toggle('purple-theme');
-    if (hasPurple) document.body.classList.add('purple-theme'); else document.body.classList.remove('purple-theme');
-    localStorage.setItem('theme', hasPurple ? 'purple' : 'default');
-  });
-
   // Project expand/collapse
   document.querySelectorAll('.posts article .toggle-details').forEach(btn => {
     // initialize aria-expanded

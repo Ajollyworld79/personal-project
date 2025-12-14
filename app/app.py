@@ -59,58 +59,89 @@ def generate_cv_pdf(author: str, projects: List[Project], about_html: str | None
     pdf = FPDF(orientation='P', unit='mm', format='A4')
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
-    pdf.set_font('Helvetica', 'B', 20)
-    pdf.cell(0, 10, f"{author}", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-    pdf.set_font('Helvetica', '', 12)
-    pdf.cell(0, 8, "CV - Python & AI / LLMs", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-    pdf.ln(6)
+
+    # Header with background
+    pdf.set_fill_color(32, 43, 56)  # Dark blue like theme
+    pdf.rect(0, 0, pdf.w, 30, 'F')
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font('Helvetica', 'B', 24)
+    pdf.set_y(10)
+    pdf.cell(0, 10, f"{author}", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_font('Helvetica', '', 14)
+    pdf.set_y(20)
+    pdf.cell(0, 8, "AI, LLM & Python Developer", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_text_color(0, 0, 0)  # Reset to black
+    pdf.ln(10)
 
     # If about_html provided, include it (rendered and cleaned)
     if about_html:
-        text = _html_to_plaintext(about_html)
-        pdf.set_font('Helvetica', 'B', 14)
-        pdf.cell(0, 8, "Profil", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        pdf.ln(2)
-        pdf.set_font('Helvetica', '', 11)
-        for line in text.split('\n'):
+        sections = {}
+        current_section = None
+        for line in about_html.split('\n'):
             line = line.strip()
             if not line:
-                pdf.ln(3)
                 continue
-            line = _break_long_words(line, maxlen=70)
-            # Limit line length for readability in PDF
+            if ':' in line and line.split(':')[0] in ['Contact', 'Top Skills', 'Languages', 'Resume', 'Certifications', 'Experience', 'Education']:
+                current_section = line.split(':')[0]
+                sections[current_section] = line.split(':', 1)[1].strip()
+            elif current_section:
+                sections[current_section] += ' ' + line
+
+        # Profile section
+        pdf.set_fill_color(240, 240, 240)
+        pdf.rect(10, pdf.get_y(), pdf.w - 20, 0.1, 'F')
+        pdf.set_font('Helvetica', 'B', 16)
+        pdf.set_text_color(32, 43, 56)
+        pdf.cell(0, 10, "Profile", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        pdf.set_text_color(0, 0, 0)
+        pdf.ln(2)
+        pdf.set_font('Helvetica', '', 11)
+        for sec, content in sections.items():
+            pdf.set_font('Helvetica', 'B', 12)
+            pdf.cell(0, 8, sec, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+            pdf.set_font('Helvetica', '', 11)
+            # Clean unicode characters
+            content = content.replace('\u2014', '-').replace('\u2013', '-').replace('\u2018', "'").replace('\u2019', "'").replace('\u201c', '"').replace('\u201d', '"').replace('\xa0', ' ')
+            content = _break_long_words(content, maxlen=70)
             max_w = max(20, pdf.w - pdf.l_margin - pdf.r_margin)
             try:
-                pdf.multi_cell(max_w, 6, line)
+                pdf.multi_cell(max_w, 6, content)
             except Exception:
-                safe_line = line.encode('utf-8', errors='replace').decode('utf-8')
-                pdf.multi_cell(max_w, 6, safe_line)
+                safe_content = content.encode('latin-1', errors='replace').decode('latin-1')
+                pdf.multi_cell(max_w, 6, safe_content)
+            pdf.ln(2)
         pdf.ln(4)
 
     # Projects section
-    pdf.set_font('Helvetica', 'B', 14)
-    pdf.cell(0, 8, "Udvalgte Projekter", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-    pdf.ln(2)
+    pdf.set_fill_color(240, 240, 240)
+    pdf.rect(10, pdf.get_y(), pdf.w - 20, 0.1, 'F')
+    pdf.set_font('Helvetica', 'B', 16)
+    pdf.set_text_color(32, 43, 56)
+    pdf.cell(0, 10, "Selected Projects", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_text_color(0, 0, 0)
     pdf.set_font('Helvetica', '', 11)
     for p in projects:
         title = (p.title or '').replace('—', '-').replace('\u2014', '-')
         techs = ' | '.join(p.technologies or [])
         max_w = max(20, pdf.w - pdf.l_margin - pdf.r_margin)
         try:
-            # Title on one line
+            # Title in bold
+            pdf.set_font('Helvetica', 'B', 12)
             pdf.multi_cell(max_w, 6, title)
-            # Techs on next line, indented
+            pdf.set_font('Helvetica', '', 10)
             if techs:
                 pdf.cell(10, 6, "", new_x=XPos.LMARGIN, new_y=YPos.NEXT)  # indent
-                pdf.multi_cell(max_w - 10, 5, f"Teknologier: {techs}")
+                pdf.multi_cell(max_w - 10, 5, f"Technologies: {techs}")
         except Exception:
-            safe_title = title.encode('utf-8', errors='replace').decode('utf-8')
-            safe_techs = techs.encode('utf-8', errors='replace').decode('utf-8')
+            safe_title = title.encode('latin-1', errors='replace').decode('latin-1')
+            safe_techs = techs.encode('latin-1', errors='replace').decode('latin-1')
+            pdf.set_font('Helvetica', 'B', 12)
             pdf.multi_cell(max_w, 6, safe_title)
+            pdf.set_font('Helvetica', '', 10)
             if safe_techs:
                 pdf.cell(10, 6, "", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-                pdf.multi_cell(max_w - 10, 5, f"Teknologier: {safe_techs}")
-        pdf.ln(2)
+                pdf.multi_cell(max_w - 10, 5, f"Technologies: {safe_techs}")
+        pdf.ln(-1)
 
     buffer = io.BytesIO()
     raw = pdf.output()  # returns a bytearray
@@ -124,15 +155,14 @@ async def index():
     return await render_template('index.html', projects=PROJECTS, author=settings.author_name, current_year=datetime.now(timezone.utc).year)
 
 
-@app.route('/om')
+@app.route('/about')
 async def about():
     return await render_template('about.html', author=settings.author_name, current_year=datetime.utcnow().year)
 
 
-@app.route('/api/projects')
-async def api_projects():
-    # Return JSON-serializable data using Pydantic model_dump_json
-    return jsonify({'projects': [json.loads(p.model_dump_json()) for p in PROJECTS]})
+@app.route('/projects')
+async def projects():
+    return await render_template('projects.html', projects=PROJECTS, author=settings.author_name, current_year=datetime.now(timezone.utc).year)
 
 
 @app.route('/download_cv')
@@ -157,15 +187,28 @@ async def download_cv():
     if skills_block:
         skills = re.findall(r"<li>(.*?)</li>", skills_block.group(1), flags=re.S)
         skills = [re.sub(r"<[^>]+>", "", s).strip() for s in skills]
+    # Languages
+    lang_block = re.search(r"<h3>Languages</h3>.*?<p>(.*?)</p>", cleaned, flags=re.S)
+    langs = lang_block.group(1).strip() if lang_block else ''
     # Certifications
-    cert_block = re.search(r"<h2>Certificeringer</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S)
+    cert_block = re.search(r"<h2>Certifications</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S)
     certs = []
     if cert_block:
         certs = re.findall(r"<li>(.*?)</li>", cert_block.group(1), flags=re.S)
         certs = [re.sub(r"<[^>]+>", "", c).strip() for c in certs]
-    # Languages
-    lang_block = re.search(r"<h3>Sprog</h3>.*?<p>(.*?)</p>", cleaned, flags=re.S)
-    langs = lang_block.group(1).strip() if lang_block else ''
+    # Resume
+    resume_block = re.search(r"<h2>Resume</h2>.*?<p>(.*?)</p>", cleaned, flags=re.S)
+    resume = resume_block.group(1).strip() if resume_block else ''
+    # Experience
+    exp_block = re.search(r"<h2>Experience</h2>(.*?)<div class=\"separator\"></div>", cleaned, flags=re.S)
+    exp = exp_block.group(1).strip() if exp_block else ''
+    exp = re.sub(r"<[^>]+>", "", exp).strip()
+    # Education
+    edu_block = re.search(r"<h2>Education</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S)
+    edus = []
+    if edu_block:
+        edus = re.findall(r"<li>(.*?)</li>", edu_block.group(1), flags=re.S)
+        edus = [re.sub(r"<[^>]+>", "", e).strip() for e in edus]
 
     about_lines = []
     contact_line = []
@@ -176,13 +219,19 @@ async def download_cv():
     if linkedin_m:
         contact_line.append(linkedin_m.group(0).strip())
     if contact_line:
-        about_lines.append('Kontakt: ' + ' • '.join(contact_line))
+        about_lines.append('Contact: ' + ' | '.join(contact_line))
     if skills:
         about_lines.append('Top Skills: ' + ', '.join(skills))
     if langs:
-        about_lines.append('Sprog: ' + langs)
+        about_lines.append('Languages: ' + langs)
+    if resume:
+        about_lines.append('Resume: ' + resume)
     if certs:
-        about_lines.append('Certificeringer: ' + '; '.join(certs))
+        about_lines.append('Certifications: ' + '; '.join(certs))
+    if exp:
+        about_lines.append('Experience: ' + exp)
+    if edus:
+        about_lines.append('Education: ' + '; '.join(edus))
 
     about_plain = '\n'.join(about_lines)
 

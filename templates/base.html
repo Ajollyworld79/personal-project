@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
-<html lang="da">
+<html lang="en">
     <head>
-        <title>{{ title if title else 'Python Udvikler Portfolio' }}</title>
+        <title>{{ title if title else 'Python Developer Portfolio' }}</title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-        <meta name="description" content="Professionel Python udvikler portfolio med fokus på AI, LLMs og Python udvikling" />
+        <meta name="description" content="Professional Python developer portfolio with focus on AI, LLMs and Python development" />
         <meta name="keywords" content="Gustav Christensen, Python, AI, LLM, Machine Learning, Data Engineer, Portfolio, CV" />
         <meta property="og:title" content="{{ title if title else 'Gustav Christensen — Python & AI Developer' }}" />
         <meta property="og:description" content="Portfolio — Python development, AI / LLM projects, and technical experience." />
@@ -112,21 +112,21 @@
                 <div class="py-line"><span class="py-var">navigation</span> <span class="py-operator">=</span> <span class="py-bracket">{</span></div>
                 <div class="py-indent">
                     <div class="py-line">
-                        <span class="py-string">"forside"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"home"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
                         <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/" class="py-link">Forside</a>"</span>
+                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/" class="py-link">Home</a>"</span>
                         <span class="py-bracket">},</span>
                     </div>
                     <div class="py-line">
-                        <span class="py-string">"om"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
-                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/om"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/om" class="py-link">Om Mig</a>"</span>
+                        <span class="py-string">"about"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/about"</span><span class="py-bracket">,</span>
+                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/about" class="py-link">About Me</a>"</span>
                         <span class="py-bracket">},</span>
                     </div>
                     <div class="py-line">
-                        <span class="py-string">"projekter"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
-                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/api/projects"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/api/projects" class="py-link">Projekter</a>"</span>
+                        <span class="py-string">"projects"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/projects"</span><span class="py-bracket">,</span>
+                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/projects" class="py-link">Projects</a>"</span>
                         <span class="py-bracket">},</span>
                     </div>
                     <div class="py-line">
@@ -139,7 +139,6 @@
                 <div class="py-line"><span class="py-bracket">}</span></div>
                 <div class="py-line" style="padding-top: 0.75em;">
                     <a href="/download_cv" class="py-link" style="margin-right:1rem;">Download CV</a>
-                    <button id="theme-toggle" class="py-link" aria-label="Skift tema">Skift Tema</button>
                 </div>
             </nav>
         </div>
@@ -156,7 +155,7 @@
             <footer id="footer">
                 <div class="inner">
                     <section>
-                        <p>&copy; {{ current_year }} {{ author }} • Bygget med Quart • Design: <a href="https://html5up.net">HTML5 UP (Phantom)</a> (CC BY 3.0).<br/><code>async def build()</code></p>
+                        <p>&copy; {{ current_year }} {{ author }} • Built with Quart • Design: <a href="https://html5up.net">HTML5 UP (Phantom)</a> (CC BY 3.0).<br/><code>async def build()</code></p>
                     </section>
                 </div>
             </footer>
