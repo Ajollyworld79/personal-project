@@ -55,96 +55,212 @@ def _break_long_words(text: str, maxlen: int = 60) -> str:
     return re.sub(r"\S{%(n)d,}" % {'n': maxlen}, repl, text)
 
 
-def generate_cv_pdf(author: str, projects: List[Project], about_html: str | None = None):
+def _clean_text_for_pdf(text: str) -> str:
+    """Remove special characters that can't be encoded in latin-1"""
+    if not text:
+        return text
+    # Replace special characters
+    replacements = {
+        '\u2122': '',  # ™ trademark
+        '\u00ae': '',  # ® registered
+        '\u00a9': '',  # © copyright
+        '\u2014': '-',  # em dash
+        '\u2013': '-',  # en dash
+        '\u2018': "'",  # left single quote
+        '\u2019': "'",  # right single quote
+        '\u201c': '"',  # left double quote
+        '\u201d': '"',  # right double quote
+        '\xa0': ' ',    # non-breaking space
+        '&': 'and',     # ampersand
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    # Remove any remaining non-latin-1 characters
+    try:
+        text.encode('latin-1')
+    except UnicodeEncodeError:
+        text = text.encode('latin-1', errors='ignore').decode('latin-1')
+    return text
+
+def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | None = None, skills: list | None = None, 
+                      languages: str | None = None, summary: str | None = None, certifications: list | None = None, 
+                      experience: str | None = None, education: list | None = None):
+    """Generate a professional CV PDF with clean formatting"""
     pdf = FPDF(orientation='P', unit='mm', format='A4')
-    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.set_auto_page_break(auto=True, margin=20)
     pdf.add_page()
+    pdf.set_left_margin(20)
+    pdf.set_right_margin(20)
+    
+    # Clean all text inputs
+    if summary:
+        summary = _clean_text_for_pdf(summary)
+    if languages:
+        languages = _clean_text_for_pdf(languages)
+    if experience:
+        experience = _clean_text_for_pdf(experience)
+    if certifications:
+        certifications = [_clean_text_for_pdf(c) for c in certifications]
+    if education:
+        education = [_clean_text_for_pdf(e) for e in education]
+    if skills:
+        skills = [_clean_text_for_pdf(s) for s in skills]
 
-    # Header with background
-    pdf.set_fill_color(32, 43, 56)  # Dark blue like theme
-    pdf.rect(0, 0, pdf.w, 30, 'F')
+    # Header
+    pdf.set_fill_color(45, 55, 72)
+    pdf.rect(0, 0, pdf.w, 35, 'F')
     pdf.set_text_color(255, 255, 255)
-    pdf.set_font('Helvetica', 'B', 24)
+    pdf.set_font('Helvetica', 'B', 22)
     pdf.set_y(10)
-    pdf.cell(0, 10, f"{author}", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-    pdf.set_font('Helvetica', '', 14)
-    pdf.set_y(20)
-    pdf.cell(0, 8, "AI, LLM & Python Developer", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-    pdf.set_text_color(0, 0, 0)  # Reset to black
-    pdf.ln(10)
+    pdf.cell(0, 8, author, align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_font('Helvetica', '', 11)
+    pdf.cell(0, 6, "AI, LLM & Python Developer", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    
+    # Add generation date in bottom right of header
+    from datetime import datetime
+    gen_date = datetime.now().strftime("%B %Y")
+    pdf.set_font('Helvetica', '', 8)
+    pdf.set_text_color(200, 200, 200)  # Light gray
+    pdf.set_xy(pdf.w - 50, 28)  # Position in bottom right
+    pdf.cell(40, 4, f"Generated: {gen_date}", align='R')
+    
+    pdf.set_text_color(50, 50, 50)
+    pdf.ln(12)
 
-    # If about_html provided, include it (rendered and cleaned)
-    if about_html:
-        sections = {}
-        current_section = None
-        for line in about_html.split('\n'):
+    def add_section_header(title):
+        pdf.set_font('Helvetica', 'B', 11)
+        pdf.set_text_color(45, 55, 72)
+        pdf.cell(0, 6, title.upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        pdf.set_draw_color(180, 180, 180)
+        pdf.set_line_width(0.3)
+        pdf.line(pdf.l_margin, pdf.get_y(), pdf.w - pdf.r_margin, pdf.get_y())
+        pdf.ln(3)
+
+    # Get max width for multi_cell - use effective page width
+    max_w = pdf.epw  # effective page width (excludes margins)
+
+    # Contact
+    if contact_info:
+        add_section_header("Contact")
+        pdf.set_font('Helvetica', '', 9)
+        pdf.set_text_color(60, 60, 60)
+        
+        label_width = 25  # Fixed width for all labels
+        
+        if contact_info.get('phone'):
+            pdf.cell(label_width, 4, "Phone:", new_x=XPos.RIGHT, new_y=YPos.TOP)
+            pdf.cell(0, 4, contact_info['phone'], new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        
+        if contact_info.get('email'):
+            email = contact_info['email']
+            pdf.cell(label_width, 4, "Email:", new_x=XPos.RIGHT, new_y=YPos.TOP)
+            pdf.set_text_color(0, 0, 255)  # Blue for link
+            pdf.cell(0, 4, email, new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=f"mailto:{email}")
+            pdf.set_text_color(60, 60, 60)  # Reset color
+        
+        if contact_info.get('linkedin'):
+            linkedin_username = contact_info['linkedin']
+            linkedin_url = f"https://www.linkedin.com/in/{linkedin_username}" if not linkedin_username.startswith('http') else linkedin_username
+            pdf.cell(label_width, 4, "LinkedIn:", new_x=XPos.RIGHT, new_y=YPos.TOP)
+            pdf.set_text_color(0, 0, 255)  # Blue for link
+            pdf.cell(0, 4, linkedin_username, new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=linkedin_url)
+            pdf.set_text_color(60, 60, 60)  # Reset color
+        
+        pdf.ln(3)
+
+    # Summary
+    if summary:
+        add_section_header("Professional Summary")
+        pdf.set_font('Helvetica', '', 9)
+        pdf.set_text_color(50, 50, 50)
+        pdf.multi_cell(max_w, 5, summary)
+        pdf.ln(3)
+
+    # Skills
+    if skills:
+        add_section_header("Core Skills")
+        pdf.set_font('Helvetica', '', 9)
+        pdf.set_text_color(60, 60, 60)
+        pdf.cell(0, 5, ", ".join(skills), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        pdf.ln(3)
+
+    # Experience
+    if experience:
+        add_section_header("Professional Experience")
+        pdf.set_font('Helvetica', '', 9)
+        pdf.set_text_color(50, 50, 50)
+        
+        # Parse experience into structured format
+        exp_lines = experience.split('\n')
+        for line in exp_lines:
             line = line.strip()
             if not line:
                 continue
-            if ':' in line and line.split(':')[0] in ['Contact', 'Top Skills', 'Languages', 'Resume', 'Certifications', 'Experience', 'Education']:
-                current_section = line.split(':')[0]
-                sections[current_section] = line.split(':', 1)[1].strip()
-            elif current_section:
-                sections[current_section] += ' ' + line
-
-        # Profile section
-        pdf.set_fill_color(240, 240, 240)
-        pdf.rect(10, pdf.get_y(), pdf.w - 20, 0.1, 'F')
-        pdf.set_font('Helvetica', 'B', 16)
-        pdf.set_text_color(32, 43, 56)
-        pdf.cell(0, 10, "Profile", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        pdf.set_text_color(0, 0, 0)
+            # Check if it's a company/role line (contains dates or em dashes)
+            if any(x in line for x in ['–', '-', '20', '(']):
+                # Split into parts
+                parts = line.split('–')
+                if len(parts) >= 2:
+                    pdf.set_font('Helvetica', 'B', 9)
+                    pdf.set_text_color(45, 55, 72)
+                    pdf.cell(0, 5, parts[0].strip(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+                    pdf.set_font('Helvetica', '', 8)
+                    pdf.set_text_color(80, 80, 80)
+                    pdf.multi_cell(max_w, 4, ' – '.join(parts[1:]).strip())
+                else:
+                    pdf.set_font('Helvetica', '', 9)
+                    pdf.set_text_color(60, 60, 60)
+                    pdf.multi_cell(max_w, 5, line)
+            else:
+                pdf.set_font('Helvetica', '', 8)
+                pdf.set_text_color(70, 70, 70)
+                pdf.multi_cell(max_w, 4, line)
+            pdf.ln(1)
         pdf.ln(2)
-        pdf.set_font('Helvetica', '', 11)
-        for sec, content in sections.items():
-            pdf.set_font('Helvetica', 'B', 12)
-            pdf.cell(0, 8, sec, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-            pdf.set_font('Helvetica', '', 11)
-            # Clean unicode characters
-            content = content.replace('\u2014', '-').replace('\u2013', '-').replace('\u2018', "'").replace('\u2019', "'").replace('\u201c', '"').replace('\u201d', '"').replace('\xa0', ' ')
-            content = _break_long_words(content, maxlen=70)
-            max_w = max(20, pdf.w - pdf.l_margin - pdf.r_margin)
-            try:
-                pdf.multi_cell(max_w, 6, content)
-            except Exception:
-                safe_content = content.encode('latin-1', errors='replace').decode('latin-1')
-                pdf.multi_cell(max_w, 6, safe_content)
-            pdf.ln(2)
-        pdf.ln(4)
 
-    # Projects section
-    pdf.set_fill_color(240, 240, 240)
-    pdf.rect(10, pdf.get_y(), pdf.w - 20, 0.1, 'F')
-    pdf.set_font('Helvetica', 'B', 16)
-    pdf.set_text_color(32, 43, 56)
-    pdf.cell(0, 10, "Selected Projects", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-    pdf.set_text_color(0, 0, 0)
-    pdf.set_font('Helvetica', '', 11)
-    for p in projects:
-        title = (p.title or '').replace('—', '-').replace('\u2014', '-')
-        techs = ' | '.join(p.technologies or [])
-        max_w = max(20, pdf.w - pdf.l_margin - pdf.r_margin)
-        try:
-            # Title in bold
-            pdf.set_font('Helvetica', 'B', 12)
-            pdf.multi_cell(max_w, 6, title)
-            pdf.set_font('Helvetica', '', 10)
-            if techs:
-                pdf.cell(10, 6, "", new_x=XPos.LMARGIN, new_y=YPos.NEXT)  # indent
-                pdf.multi_cell(max_w - 10, 5, f"Technologies: {techs}")
-        except Exception:
-            safe_title = title.encode('latin-1', errors='replace').decode('latin-1')
-            safe_techs = techs.encode('latin-1', errors='replace').decode('latin-1')
-            pdf.set_font('Helvetica', 'B', 12)
-            pdf.multi_cell(max_w, 6, safe_title)
-            pdf.set_font('Helvetica', '', 10)
-            if safe_techs:
-                pdf.cell(10, 6, "", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-                pdf.multi_cell(max_w - 10, 5, f"Technologies: {safe_techs}")
-        pdf.ln(-1)
+    # Certifications
+    if certifications:
+        add_section_header("Certifications")
+        pdf.set_font('Helvetica', '', 8)
+        pdf.set_text_color(60, 60, 60)
+        bullet_width = 5
+        text_width = max_w - bullet_width
+        for cert in certifications:
+            x_start = pdf.get_x()
+            # Simple dash bullet
+            pdf.cell(bullet_width, 5, "-", new_x=XPos.RIGHT, new_y=YPos.TOP)
+            # Text next to bullet
+            pdf.multi_cell(text_width, 5, cert)
+            # Reset x for next item
+            pdf.set_x(x_start)
+        pdf.ln(2)
+
+    # Education
+    if education:
+        add_section_header("Education")
+        pdf.set_font('Helvetica', '', 8)
+        pdf.set_text_color(60, 60, 60)
+        bullet_width = 5
+        text_width = max_w - bullet_width
+        for edu in education:
+            x_start = pdf.get_x()
+            pdf.cell(bullet_width, 5, "-", new_x=XPos.RIGHT, new_y=YPos.TOP)
+            pdf.multi_cell(text_width, 5, edu)
+            pdf.set_x(x_start)
+        pdf.ln(2)
+
+    # Languages
+    if languages:
+        add_section_header("Languages")
+        pdf.set_font('Helvetica', '', 9)
+        pdf.set_text_color(60, 60, 60)
+        pdf.multi_cell(max_w, 5, languages)
+        pdf.ln(3)
+
+    # Projects section removed from PDF - available on website instead
 
     buffer = io.BytesIO()
-    raw = pdf.output()  # returns a bytearray
+    raw = pdf.output()
     buffer.write(bytes(raw))
     buffer.seek(0)
     return buffer
@@ -187,55 +303,67 @@ async def download_cv():
     if skills_block:
         skills = re.findall(r"<li>(.*?)</li>", skills_block.group(1), flags=re.S)
         skills = [re.sub(r"<[^>]+>", "", s).strip() for s in skills]
+        skills = [html_lib.unescape(s) for s in skills]
     # Languages
     lang_block = re.search(r"<h3>Languages</h3>.*?<p>(.*?)</p>", cleaned, flags=re.S)
     langs = lang_block.group(1).strip() if lang_block else ''
+    langs = re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", langs).strip()
+    langs = html_lib.unescape(langs)
     # Certifications
     cert_block = re.search(r"<h2>Certifications</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S)
     certs = []
     if cert_block:
         certs = re.findall(r"<li>(.*?)</li>", cert_block.group(1), flags=re.S)
         certs = [re.sub(r"<[^>]+>", "", c).strip() for c in certs]
-    # Resume
-    resume_block = re.search(r"<h2>Resume</h2>.*?<p>(.*?)</p>", cleaned, flags=re.S)
-    resume = resume_block.group(1).strip() if resume_block else ''
+        # Remove HTML entities and special characters
+        certs = [re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", c).strip() for c in certs]
+        certs = [html_lib.unescape(c) for c in certs]
+    # Summary (changed from Resume)
+    summary_block = re.search(r"<h2>Summary</h2>.*?<p>(.*?)</p>", cleaned, flags=re.S)
+    summary = summary_block.group(1).strip() if summary_block else ''
+    summary = re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", summary).strip()
+    summary = html_lib.unescape(summary)
     # Experience
     exp_block = re.search(r"<h2>Experience</h2>(.*?)<div class=\"separator\"></div>", cleaned, flags=re.S)
     exp = exp_block.group(1).strip() if exp_block else ''
     exp = re.sub(r"<[^>]+>", "", exp).strip()
+    exp = re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", exp).strip()
+    exp = html_lib.unescape(exp)
     # Education
     edu_block = re.search(r"<h2>Education</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S)
     edus = []
     if edu_block:
         edus = re.findall(r"<li>(.*?)</li>", edu_block.group(1), flags=re.S)
         edus = [re.sub(r"<[^>]+>", "", e).strip() for e in edus]
+        edus = [re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", e).strip() for e in edus]
+        edus = [html_lib.unescape(e) for e in edus]
 
-    about_lines = []
-    contact_line = []
+    # Prepare contact info
+    contact_info = {}
     if phone_m:
-        contact_line.append(phone_m.group(0).strip())
+        contact_info['phone'] = phone_m.group(0).strip()
     if email_m:
-        contact_line.append(email_m.group(0).strip())
+        contact_info['email'] = email_m.group(0).strip()
     if linkedin_m:
-        contact_line.append(linkedin_m.group(0).strip())
-    if contact_line:
-        about_lines.append('Contact: ' + ' | '.join(contact_line))
-    if skills:
-        about_lines.append('Top Skills: ' + ', '.join(skills))
-    if langs:
-        about_lines.append('Languages: ' + langs)
-    if resume:
-        about_lines.append('Resume: ' + resume)
-    if certs:
-        about_lines.append('Certifications: ' + '; '.join(certs))
-    if exp:
-        about_lines.append('Experience: ' + exp)
-    if edus:
-        about_lines.append('Education: ' + '; '.join(edus))
+        linkedin_url = linkedin_m.group(0).strip()
+        if 'linkedin.com/in/' in linkedin_url:
+            contact_info['linkedin'] = linkedin_url.split('linkedin.com/in/')[-1].rstrip('/')
+        else:
+            contact_info['linkedin'] = linkedin_url
 
-    about_plain = '\n'.join(about_lines)
-
-    packet = generate_cv_pdf(settings.author_name, PROJECTS, about_html=about_plain)
+    # Generate PDF with structured data
+    packet = generate_cv_pdf(
+        author=settings.author_name,
+        projects=PROJECTS,
+        contact_info=contact_info if contact_info else None,
+        skills=skills if skills else None,
+        languages=langs if langs else None,
+        summary=summary if summary else None,
+        certifications=certs if certs else None,
+        experience=exp if exp else None,
+        education=edus if edus else None
+    )
+    
     data = packet.getvalue()
     filename = f"CV_{settings.author_name.replace(' ', '_')}.pdf"
     headers = {"Content-Disposition": f"attachment; filename=\"{filename}\""}
