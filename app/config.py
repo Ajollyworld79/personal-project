@@ -2,8 +2,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
 class Settings(BaseSettings):
-    app_name: str = "Min Portfolio"
-    author_name: str = "Gustav Christensen"  # Opdater dit navn
+    app_name: str = "My Portfolio"
+    author_name: str = "Gustav Wind Christensen"  
     debug: bool = True
     version: str = "0.1.0"
 

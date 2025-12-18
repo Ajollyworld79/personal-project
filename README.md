@@ -1,144 +1,130 @@
-# Personlig Portfolio (Quart + Uvicorn)
+# Personal Portfolio (Quart + Uvicorn)
 
-En moderne asynkron Python webapplikation bygget med Quart og Uvicorn.
+A modern asynchronous Python web application built with Quart and Uvicorn.
 
-## Funktioner (første version)
-- Forside med kort introduktion
-- "Om mig" side
-- Simpel JSON API med liste af projekter
+## Features (first version)
+- Home page with a short introduction
+- "About me" page
+- Simple JSON API listing projects
 - HTML templates (Jinja2)
-- Statisk CSS fil
-- Klar til udvidelse med blog, kontaktformular, database mv.
+- Static CSS file
+- Ready for expansion with a blog, contact form, database, etc.
 
-## Krav
-Python 3.11+ anbefales.
+## Requirements
+Python 3.11+ is recommended.
 
 ## Installation
-```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
-pip install -r requirements.txt
-```
-
-## Kør lokalt
-1. Opret og aktivér et virtuelt miljø og installer dependencies:
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-2. Kør lokalt (udvikling):
+## Run locally
+1. Create and activate a virtual environment and install dependencies:
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2. Run locally (development):
 ```bash
 uvicorn app.app:app --reload
 ```
 
-3. Eller kør direkte (under udvikling):
+3. Or run directly (for development):
 ```bash
 python app/app.py
 ```
 
-Åbn herefter: http://127.0.0.1:8000
+Then open: http://127.0.0.1:8000
 
-Alternativ og mere "pakke-korrekt" måde (undgår relative import problemer):
+Alternative and more "package-correct" approach (avoids relative import issues):
 ```bash
 python -m app.app
 ```
-Denne metode sikrer at Python forstår `app` som en pakke.
+This ensures Python treats `app` as a package.
 
 ## Test
 ```bash
 pytest -q
 ```
 
-## Docker (Valgfrit)
-Byg og kør container lokalt:
+## Docker (Optional)
+Build and run the container locally:
 ```bash
 docker build -t gustav-portfolio .
 docker run -p 8000:8000 gustav-portfolio
 ```
 
-## Struktur
+## Structure
 ```
 app/
-  app.py            # Quart instans og routes
-  config.py         # Indlæsning af settings fra miljøvariabler
-  models.py         # Pydantic modeller
-  data.py           # Midlertidig in-memory data kilde
+  app.py            # Quart instance and routes
+  config.py         # Load settings from environment variables
+  models.py         # Pydantic models
+  data.py           # Temporary in-memory data source
 static/
   css/styles.css
 templates/
   base.html
   index.html
   about.html
+```
 
 ## Theme
-Aktuelt UI benytter **HTML5UP Phantom** tema (CC BY 3.0) med en lokal-first strategi:
+The current UI uses the **HTML5UP Phantom** theme (CC BY 3.0) with a local-first strategy:
 
-1. Lokal trimmed CSS (`static/phantom/css/main.css`) der indeholder de centrale layout- og typografi‑regler for hurtig visning uden netværksafhængighed.
-2. Lokal `noscript.css` der sikrer at siden ikke sidder fast i preload‑tilstand hvis JS er slået fra.
-3. Eksterne (remote) assets i `<head>` for fuld oplevelse:
+1. Locally trimmed CSS (`static/phantom/css/main.css`) containing the core layout and typography rules for fast display without network dependency.
+2. Local `noscript.css` to ensure the site doesn't remain stuck in preload state if JS is disabled.
+3. External (remote) assets in `<head>` for full experience:
    - Google Fonts (Source Sans Pro)
-   - Font Awesome (ikoner)
-   - Phantom's originale JS (jquery, browser, breakpoints, util, main) hentes pt. fra HTML5UP’s demo-kilder.
+   - Font Awesome (icons)
+   - Phantom's original JS (jquery, browser, breakpoints, util, main) currently loaded from HTML5UP’s demo sources.
 
-Aktuel struktur (forenklet efter oprydning):
-```
-static/
-  assets/
-    css/
-      main.css
-      noscript.css
-      fontawesome-all.min.css
-    js/
-      jquery.min.js
-      browser.min.js
-      breakpoints.min.js
-      util.js
-      main.js
-    images/
-      bg-pattern.svg
-      pic01.svg ... (øvrige billeder)
-    webfonts/
-      fa-*.woff2 (Font Awesome filer)
-LICENSE_html5up.txt
-```
+Attribution (required by CC BY 3.0): keep a footer link to HTML5UP if you keep the theme.
 
-Attribution (krævet af CC BY 3.0): Footer indeholder link til HTML5UP. Fjern den ikke hvis du beholder temaet.
-
-### Offline / Air‑gapped brug
-Hvis du ønsker fuldt offline setup:
+## Offline / Air‑gapped usage
+If you want a fully offline setup:
 ```
 static/phantom/vendor/
-  fonts/... (udtræk fra Font Awesome + evt. Google Font host selv)
+  fonts/... (extract from Font Awesome + local Google Font files)
   js/jquery.min.js
   js/browser.min.js
   js/breakpoints.min.js
   js/util.js
   js/main.js
 ```
-Opdater derefter `templates/base.html` til at pege på de lokale filer. Husk at Google Fonts kræver lokal hosting af WOFF/WOFF2 hvis du vil undgå netværkskald.
+Then update `templates/base.html` to point to the local files. Note that Google Fonts requires local hosting of WOFF/WOFF2 to avoid network calls.
 
-### Skift tilbage til tidligere custom tema
-Vil du skifte væk fra Phantom, kan du erstatte CSS referencerne i `templates/base.html` med dine egne filer, fx et nyt `custom.css` placeret i `static/assets/css/`.
+## Switch back to an older custom theme
+If you want to replace Phantom, swap CSS references in `templates/base.html` with your own files (e.g., a new `custom.css` in `static/`).
 
-Hvis du ønsker at eksperimentere separat, kan du oprette en mappe `static/legacy/` og lægge gamle tema-filer der midlertidigt.
-
-### Licenser
-- Phantom: CC BY 3.0 (kræver tydelig kredit)
-- Font Awesome (free subset): Se deres licens (SIL OFL / MIT / CC BY 4.0 kombination afhængig af del)
-- Google Fonts: Open Font License (for Source Sans Pro)
-- water.css (hvis genbrugt): MIT
-- Øvrige egne filer: MIT (som angivet nedenfor) med mindre du ændrer det.
-
-```
-
-## Næste Mulige Trin
-- SEO metadata og Open Graph tags
-- Projekt data fra database (SQLite/PostgreSQL)
-- Blog sektion med Markdown indlæg
-- Kontaktformular med e-mail afsendelse
-- CI workflow (GitHub Actions) til tests og linting
-- Docker container
+## Licenses
+- Phantom: CC BY 3.0 (requires clear attribution)
+- Font Awesome (free subset): check their license (SIL OFL / MIT / CC BY 4.0 combinations depending on parts used)
+- Google Fonts: Open Font License (Source Sans Pro)
+- water.css (if reused): MIT
+- Other personal files: MIT (unless changed)
 
 
+Copyright (c) 2025 Gustav Christensen
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
