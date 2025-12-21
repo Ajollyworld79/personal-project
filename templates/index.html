@@ -150,6 +150,9 @@
         {% if p.repo_url %}
         <a href="{{ p.repo_url }}" class="button" target="_blank" rel="noopener">Se Kode</a>
         {% endif %}
+        {% if p.live_url %}
+        <a href="{{ p.live_url }}" class="button primary" target="_blank" rel="noopener">Demo</a>
+        {% endif %}
       </div>
       <div class="project-body">
         <p><strong>Detaljer:</strong> {{ p.description }}</p>

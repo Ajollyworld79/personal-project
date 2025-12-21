@@ -9,7 +9,7 @@ PROJECTS = [
         description="A production-ready LLM assistant project with vector search, embeddings, and prompt management.",
         technologies=["Python", "Qdrant", "Azure AI", "LLM"],
         repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/llm-assistant"),
-        live_url=cast(HttpUrl,"https://example-llm-project.example.com")
+        live_url=cast(HttpUrl,"https://llm-assistant-production.up.railway.app")
     ),
     Project(
         slug="personal-project",
