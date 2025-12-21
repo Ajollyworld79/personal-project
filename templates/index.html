@@ -146,16 +146,16 @@
         {% for t in p.technologies %}<span class="tech-badge">{{ t }}</span>{% if not loop.last %} {% endif %}{% endfor %}
       </p>
       <div class="project-actions">
-        <button class="button toggle-details">Detaljer</button>
+        <button class="button toggle-details">Details</button>
         {% if p.repo_url %}
-        <a href="{{ p.repo_url }}" class="button" target="_blank" rel="noopener">Se Kode</a>
+        <a href="{{ p.repo_url }}" class="button" target="_blank" rel="noopener">View Code</a>
         {% endif %}
         {% if p.live_url %}
         <a href="{{ p.live_url }}" class="button primary" target="_blank" rel="noopener">Demo</a>
         {% endif %}
       </div>
       <div class="project-body">
-        <p><strong>Detaljer:</strong> {{ p.description }}</p>
+        <p><strong>Details:</strong> {{ p.description }}</p>
         {% if p.repo_url %}
         <p><strong>Repository:</strong> <a href="{{ p.repo_url }}" target="_blank" rel="noopener">{{ p.repo_url }}</a></p>
         {% endif %}
@@ -243,7 +243,7 @@
   <p>I am always interested in exciting projects and opportunities to build scalable, high-quality solutions.</p>
   <ul class="actions">
     <li><a href="/about" class="button big">Read more about me</a></li>
-    <li><a href="https://github.com/Ajollyworld79" class="button big alt" target="_blank" rel="noopener">GitHub Profil</a></li>
+    <li><a href="https://github.com/Ajollyworld79" class="button big alt" target="_blank" rel="noopener">GitHub Profile</a></li>
   </ul>
 </section>
 
