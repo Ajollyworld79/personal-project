@@ -20,9 +20,9 @@ PROJECTS = [
     ),
     Project(
         slug="data-pipeline",
-        title="Data Pipeline",
-        description="Automated ETL pipeline for data collection, transformation, and modeling.",
-        technologies=["Python", "Pandas", "Async", "Threading"],
+        title="Dataverse to SQL Extract Pipeline",
+        description="Production-ready script for extracting data from Microsoft Dataverse to SQL Server with parallel processing, connection pooling, and circuit breakers.",
+        technologies=["Python", "Pandas", "SQLAlchemy", "Dataverse"],
         repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/data-pipeline")
     ),
 ]
