@@ -5,9 +5,9 @@ from pydantic import HttpUrl
 PROJECTS = [
     Project(
         slug="llm-assistant",
-        title="LLM Assistant & Retrieval System",
-        description="A production-ready LLM assistant project with vector search, embeddings, and prompt management.",
-        technologies=["Python", "Qdrant", "Azure AI", "LLM"],
+        title="AI-Powered Document Assistant with RAG",
+        description="Production-ready Retrieval-Augmented Generation (RAG) system with multi-format document parsing (PDF, DOCX, CSV with link extraction), intelligent semantic chunking, and vector search using Qdrant. Features Azure OpenAI integration with conversation history, content filtering, adaptive garbage collection, API monitoring with performance alerts, and demo mode for offline testing. Built with async Quart backend, multiple embedding providers (SentenceTransformers, Azure, FastEmbed), and comprehensive lifecycle management.",
+        technologies=["Python", "Quart", "Qdrant", "Azure OpenAI", "RAG", "Vector Search", "NLP"],
         repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/llm-assistant"),
         live_url=cast(HttpUrl,"https://llm-assistant-production.up.railway.app")
     ),
