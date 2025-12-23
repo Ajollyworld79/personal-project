@@ -18,7 +18,13 @@
                         <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
-                <h2 class="project-title">{{ project.title }}</h2>
+                <h2 class="project-title">
+                    {% if 'RAG' in project.title %}
+                        {{ project.title.replace(' with RAG', '') }}<span class="rag-badge">RAG</span>
+                    {% else %}
+                        {{ project.title }}
+                    {% endif %}
+                </h2>
             </div>
             
             <p class="project-description">{{ project.description }}</p>
@@ -117,6 +123,24 @@
     line-height: 1.3;
     color: #fff;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.rag-badge {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    background: linear-gradient(135deg, #f2849e 0%, #ff96b0 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    font-size: 0.55em;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(242, 132, 158, 0.3);
 }
 
 .project-description {
