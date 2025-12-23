@@ -13,9 +13,9 @@ PROJECTS = [
     ),
     Project(
         slug="personal-project",
-        title="Asynchronous Web API",
-        description="Example of a robust Quart service with caching and metrics.",
-        technologies=["Quart", "Async", "Qdrant"],
+        title="Professional Portfolio & CV Generator",
+        description="Fully asynchronous Quart web application with auto-generated PDF CV from dynamic content. Features intelligent HTML-to-PDF conversion with structured data extraction, professional formatting, and clickable links. Built with modern async Python patterns.",
+        technologies=["Quart", "Uvicorn", "FPDF2", "Async Python", "Jinja2"],
         repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/personal-project")
     ),
     Project(
