@@ -118,15 +118,26 @@
 }
 
 .project-title {
-    font-size: 1.5em;
+    /* Responsive sizing so long titles like "Professional Portfolio & CV Generator" can wrap neatly */
+    font-size: clamp(1.1rem, 1.2vw + 0.6rem, 1.5rem);
     margin: 0;
-    line-height: 1.3;
+    line-height: 1.25;
     color: #fff;
     font-weight: 700;
     display: flex;
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
+    /* Prefer wrapping at word boundaries; only hyphenate for very long tokens */
+    white-space: normal;
+    overflow-wrap: anywhere; /* allow wrap if necessary */
+    word-break: normal;
+    hyphens: auto;
+    max-width: 100%;
+}
+
+@media (max-width: 420px) {
+    .project-title { font-size: 1.15rem; }
 }
 
 .rag-badge {
