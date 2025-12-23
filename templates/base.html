@@ -82,45 +82,57 @@
 @media screen and (max-width: 980px) {
     .py-nav {
         padding: 0 1em;
-        font-size: 0.8em;
+        font-size: 0.78em;
     }
 }
 
 @media screen and (max-width: 736px) {
     .nav-header-wrapper {
-        padding: 1.5em 0;
+        padding: 1.2em 0;
     }
     
     .py-nav {
-        font-size: 0.9em; /* increased for readability */
-        padding: 0 1em;
+        font-size: 0.88em; /* slightly smaller for less dominance */
+        padding: 0 0.9em;
     }
     
     .py-indent {
-        padding-left: 0.75em;
+        padding-left: 0.6em;
     }
 
-    /* Make links easier to tap and read on small screens */
-    .py-line { margin-bottom: 0.5em; line-height: 1.6; }
+    /* Subtle touch targets and spacing for mobile */
+    .py-line { margin-bottom: 0.45em; line-height: 1.5; }
     .py-link {
         display: inline-block;
-        padding: 0.35em 0.6em;
-        border-radius: 6px;
-        font-size: 1.02em;
-        background: rgba(255,255,255,0.02);
+        padding: 0.2em 0.35em; /* reduced padding */
+        border-radius: 4px;
+        font-size: 1.0em;
+        background: transparent; /* remove boxy background */
+        text-decoration: underline; /* keep clear affordance */
     }
-    .py-link:hover { background: rgba(255,255,255,0.06); }
+    .py-link:hover { background: rgba(255,255,255,0.03); }
+
+    /* Keep 'Download CV' inline and unboxed on small screens */
+    .py-line > a.py-link[href="/download_cv"] {
+        display: inline;
+        padding: 0;
+        background: transparent;
+        border-radius: 0;
+        font-weight: 500;
+        margin-right: 0.6rem;
+        text-decoration: underline;
+    }
 }
 
 /* Extra small screens (phones) */
 @media screen and (max-width: 480px) {
-    .nav-header-wrapper { padding: 1.2em 0; }
-    .py-nav { font-size: 1.0em; padding: 0 0.8em; }
-    .py-line { margin-bottom: 0.6em; }
-    .py-link { display: block; width: 100%; box-sizing: border-box; padding: 0.6em 0.75em; font-size: 1.05em; }
+    .nav-header-wrapper { padding: 1em 0; }
+    .py-nav { font-size: 0.95em; padding: 0 0.6em; }
+    .py-line { margin-bottom: 0.5em; }
+    .py-link { display: block; width: 100%; box-sizing: border-box; padding: 0.45em 0.5em; font-size: 1.0em; background: transparent; border-radius: 6px; }
     .py-indent { padding-left: 0.5em; }
-    /* Make Download CV stand out a bit on phones */
-    .py-line > a.py-link { text-align: center; font-weight: 600; }
+    /* Ensure Download CV stays inline and not full-width on tiny screens */
+    .py-line > a.py-link[href="/download_cv"] { display: inline; width: auto; padding: 0; text-align: left; }
 }
 
 /* Old menu hide */
