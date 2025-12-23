@@ -20,9 +20,9 @@ PROJECTS = [
     ),
     Project(
         slug="data-pipeline",
-        title="Dataverse to SQL Extract Pipeline",
-        description="Production-ready script for extracting data from Microsoft Dataverse to SQL Server with parallel processing, connection pooling, and circuit breakers.",
-        technologies=["Python", "Pandas", "SQLAlchemy", "Dataverse"],
+        title="ETL Data Pipeline - Dataverse to SQL Server",
+        description="Complete ETL pipeline for extracting data from Microsoft Dataverse, transforming with business logic, and loading to SQL Server. Includes fake data generation with Faker for testing before production deployment. Features parallel processing, connection pooling, and circuit breakers.",
+        technologies=["Python", "Pandas", "SQLAlchemy", "Dataverse", "Faker"],
         repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/data-pipeline")
     ),
 ]
