@@ -9,6 +9,8 @@
         <meta property="og:title" content="{{ title if title else 'Gustav Christensen — Python & AI Developer' }}" />
         <meta property="og:description" content="Portfolio — Python development, AI / LLM projects, and technical experience." />
         <meta property="og:type" content="website" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='assets/images/favicon.svg') }}" />
     <!-- Webfont (Inter) for improved typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,7 +82,7 @@
 @media screen and (max-width: 980px) {
     .py-nav {
         padding: 0 1em;
-        font-size: 0.7em;
+        font-size: 0.8em;
     }
 }
 
@@ -90,13 +92,35 @@
     }
     
     .py-nav {
-        font-size: 0.65em;
+        font-size: 0.9em; /* increased for readability */
         padding: 0 1em;
     }
     
     .py-indent {
-        padding-left: 1em;
+        padding-left: 0.75em;
     }
+
+    /* Make links easier to tap and read on small screens */
+    .py-line { margin-bottom: 0.5em; line-height: 1.6; }
+    .py-link {
+        display: inline-block;
+        padding: 0.35em 0.6em;
+        border-radius: 6px;
+        font-size: 1.02em;
+        background: rgba(255,255,255,0.02);
+    }
+    .py-link:hover { background: rgba(255,255,255,0.06); }
+}
+
+/* Extra small screens (phones) */
+@media screen and (max-width: 480px) {
+    .nav-header-wrapper { padding: 1.2em 0; }
+    .py-nav { font-size: 1.0em; padding: 0 0.8em; }
+    .py-line { margin-bottom: 0.6em; }
+    .py-link { display: block; width: 100%; box-sizing: border-box; padding: 0.6em 0.75em; font-size: 1.05em; }
+    .py-indent { padding-left: 0.5em; }
+    /* Make Download CV stand out a bit on phones */
+    .py-line > a.py-link { text-align: center; font-weight: 600; }
 }
 
 /* Old menu hide */
