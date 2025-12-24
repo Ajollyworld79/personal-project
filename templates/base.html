@@ -26,6 +26,9 @@
     padding: 2em 0;
 }
 
+/* Compact dropdown (hidden by default) */
+.py-nav-compact { display: none; }
+
 .py-nav {
     max-width: 1200px;
     margin: 0 auto;
@@ -133,7 +136,12 @@
     .py-indent { padding-left: 0.5em; }
     /* Ensure Download CV stays inline and not full-width on tiny screens */
     .py-line > a.py-link[href="/download_cv"] { display: inline; width: auto; padding: 0; text-align: left; }
-}
+
+    /* Compact dropdown nav for small screens */
+    .py-nav { display: none; } /* hide full dict */
+    .py-nav-compact { display: block; max-width: 720px; margin: 0 auto; padding: 0 0.6em; }
+    .py-nav-compact select { width: 100%; padding: 0.6em 0.8em; border-radius: 8px; background: rgba(255,255,255,0.03); color: #fff; border: 1px solid rgba(255,255,255,0.06); font-size: 1em; }
+} 
 
 /* Old menu hide */
 #menu { display: none !important; }
@@ -183,6 +191,13 @@
                     <a href="/download_cv" class="py-link" style="margin-right:1rem;">Download CV</a>
                 </div>
             </nav>
+        <!-- Compact select-based nav for small screens -->
+        <div class="py-nav-compact" aria-hidden="false">
+            <label for="py-nav-select" class="sr-only">Navigation</label>
+            <select id="py-nav-select" aria-label="Navigation">
+                <option value="" disabled selected>Navigate…</option>
+            </select>
+        </div>
         </div>
         
         <!-- Wrapper -->
@@ -224,7 +239,7 @@
     <script src="/static/assets/js/main.js"></script>
     <script src="/static/assets/js/portfolio.js"></script>
     <script>
-// Python Dict Navigation - Detect Active Page
+// Python Dict Navigation - Detect Active Page and build compact select for small screens
 document.addEventListener('DOMContentLoaded', function() {
     const pyLinks = document.querySelectorAll('.py-link');
     const currentPath = window.location.pathname;
@@ -234,6 +249,30 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.add('active');
         }
     });
+
+    // Build/populate compact select for small screens
+    const select = document.getElementById('py-nav-select');
+    if (select) {
+        // Reset and add default placeholder
+        select.innerHTML = '<option value="" disabled selected>Navigate…</option>';
+        pyLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            const text = link.textContent.trim();
+            if (!href || href.startsWith('#')) return;
+            const opt = document.createElement('option');
+            opt.value = href;
+            opt.textContent = text;
+            if (href === currentPath) opt.selected = true;
+            select.appendChild(opt);
+        });
+
+        select.addEventListener('change', function(e) {
+            const v = e.target.value;
+            if (v) {
+                window.location.href = v;
+            }
+        });
+    }
 });
     </script>
         {% block scripts_extra %}{% endblock %}
