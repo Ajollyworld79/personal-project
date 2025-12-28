@@ -321,10 +321,14 @@ async def get_apology():
         return None
 
     try:
-        async with sse_client("https://apology-as-a-service-production.up.railway.app/sse") as (reader, writer):
-            async with ClientSession(reader, writer) as session:
-
-                try:
+        # Try to connect to the live MCP server
+        # We wrap this in a broad try/except because sse_client can raise TaskGroup errors
+        # if the connection drops or timeouts
+        try:
+            async with sse_client("https://apology-as-a-service-production.up.railway.app/sse") as (reader, writer):
+                async with ClientSession(reader, writer) as session:
+                    await session.initialize()
+                    
                     # Allow a reasonable timeout when calling remote tool
                     result = await asyncio.wait_for(
                         session.call_tool(
@@ -336,33 +340,56 @@ async def get_apology():
                                 "recipient": "Visitor",
                             },
                         ),
-                        timeout=20.0,
+                        timeout=10.0,
                     )
-                except Exception as exc:
-                    app.logger.warning("apology: call_tool failed: %s", exc)
-                    result = None
+                    
+                    apology_text = await _extract_text_from_result(result)
+                    
+        except Exception as net_err:
+            app.logger.warning(f"MCP connection failed ({type(net_err).__name__}): {net_err}")
+            apology_text = None
 
-                apology_text = await _extract_text_from_result(result)
+        # Use fallback if live generation failed
+        if not apology_text:
+            app.logger.info("apology: using canned fallback")
+            canned = {
+                "TRIVIAL": [
+                    f"Oops, a tiny glitch with {context}. Fixed it!",
+                    f"My bad on {context}. All good now.",
+                ],
+                "MINOR": [
+                    f"Sorry about the issue with {context}. We're sorting it out.",
+                    f"A small hiccup with {context}. Apologies!",
+                ],
+                "MAJOR": [
+                    f"We deeply regret the trouble with {context}. Fixing it is our top priority.",
+                    f"I really dropped the ball on {context}. Working overtime to fix it.",
+                ],
+                "CRITICAL": [
+                    f"Critical failure regarding {context}. We are all hands on deck.",
+                    f"I am on my knees. {context} is broken and it is my fault.",
+                ],
+                "NUCLEAR": [
+                    f"We accept full responsibility for the total destruction of {context}. Goodbye.",
+                    f"Resume updated. {context} is gone. I am sorry.",
+                ]
+            }
+            # Pick a random template based on severity or default
+            templates = canned.get(severity, canned["TRIVIAL"])
+            apology_text = random.choice(templates)
+            
+            # Add a little note that this is a fallback
+            meta_suffix = " (Live connection failed - using cached response)"
+        else:
+            meta_suffix = ""
 
-                # If we still don't have an apology, use a safe canned fallback
-                if not apology_text:
-                    app.logger.info("apology: using canned fallback (severity=%s, style=%s)", severity, style)
-                    canned = {
-                        "TRIVIAL": "Sorry — a small hiccup. We'll fix it quickly.",
-                        "MINOR": "Sorry for the inconvenience. I take responsibility.",
-                        "MAJOR": "I'm truly sorry. I understand the impact and will make it right.",
-                        "CRITICAL": "I deeply apologize for this critical failure. We will prioritize a fix immediately.",
-                        "NUCLEAR": "I am profoundly sorry for this catastrophic failure and the distress it caused. We will take full responsibility.",
-                    }
-                    apology_text = canned.get(severity, "Sorry — something went wrong while generating an apology.")
-
-                return jsonify({
-                    "apology": apology_text,
-                    "meta": f"Generated via MCP (Severity: {severity}, Style: {style})"
-                })
+        return jsonify({
+            "apology": apology_text,
+            "meta": f"Generated via MCP (Severity: {severity}, Style: {style}){meta_suffix}"
+        })
 
     except Exception as e:
-        app.logger.exception("apology endpoint failed")
+        app.logger.exception("apology endpoint critical failure")
         return jsonify({"error": str(e)}), 500
 
 
