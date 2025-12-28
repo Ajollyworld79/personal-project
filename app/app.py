@@ -321,33 +321,23 @@ async def get_apology():
         return None
 
     try:
-        # Try to connect to the live MCP server
-        # We wrap this in a broad try/except because sse_client can raise TaskGroup errors
-        # if the connection drops or timeouts
-        try:
-            async with sse_client("https://apology-as-a-service-production.up.railway.app/sse") as (reader, writer):
-                async with ClientSession(reader, writer) as session:
-                    await session.initialize()
-                    
-                    # Allow a reasonable timeout when calling remote tool
-                    result = await asyncio.wait_for(
-                        session.call_tool(
-                            "generate_apology",
-                            arguments={
-                                "severity": severity,
-                                "style": style,
-                                "context": context,
-                                "recipient": "Visitor",
-                            },
-                        ),
-                        timeout=10.0,
-                    )
-                    
-                    apology_text = await _extract_text_from_result(result)
-                    
-        except Exception as net_err:
-            app.logger.warning(f"MCP connection failed ({type(net_err).__name__}): {net_err}")
-            apology_text = None
+        # Connect to the live MCP server using the simple demo endpoint (HTTP GET)
+        # This bypasses SSE validation complexities for the simple button click
+        import aiohttp
+        async with aiohttp.ClientSession() as http_session:
+            demo_url = "https://apology-as-a-service-production.up.railway.app/demo"
+            params = {
+                "severity": severity,
+                "style": style,
+                "context": context
+            }
+            async with http_session.get(demo_url, params=params, timeout=10.0) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    apology_text = data.get("text")
+                else:
+                    app.logger.warning(f"Demo endpoint returned {resp.status}")
+                    apology_text = None
 
         # Use fallback if live generation failed
         if not apology_text:
