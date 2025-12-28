@@ -27,7 +27,11 @@
                 </h2>
             </div>
             
+            {% if project.slug == 'apology-service' %}
+            <p class="project-description">{{ project.description | safe }}</p>
+            {% else %}
             <p class="project-description">{{ project.description }}</p>
+            {% endif %}
             
             <div class="project-tech">
                 {% for tech in project.technologies %}
