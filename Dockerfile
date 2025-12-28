@@ -13,8 +13,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ app/
 COPY templates/ templates/
 COPY static/ static/
-# Copy root level files if needed (like Procfile or config scripts, though Procfile not needed with CMD)
+# Copy root level files
 COPY run.py .
+COPY Procfile .
 
 # Expose the port
 ENV PORT=8000
