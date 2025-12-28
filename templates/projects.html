@@ -50,9 +50,7 @@
                     </svg>
                     Generate Live Apology
                 </button>
-                {% endif %}
-                
-                {% if project.live_url and project.slug != 'apology-service' %}
+                {% elif project.live_url %}
                 <a href="{{ project.live_url }}" class="button project-btn-alt" target="_blank" rel="noopener">Live Demo</a>
                 {% endif %}
             </div>

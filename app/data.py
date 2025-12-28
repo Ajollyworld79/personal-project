@@ -21,7 +21,7 @@ PROJECTS = [
     Project(
         slug="apology-service",
         title="Apology-as-a-Service (MCP Server)",
-        description="A live Model Context Protocol (MCP) server that provides context-aware crisis communication for AI agents. Features multiple severity levels and styles (including Haiku and Shakespearean) and a 'save_my_ass' prompt for emergency situations. Deployed via Docker/Railway with SSE (Server-Sent Events) support for remote agent integration.",
+        description="A live Model Context Protocol (MCP) server that provides context-aware crisis communication for AI agents. Test it live right here with the 'Generate Live Apology' button, or connect your own agent via the GitHub instructions. Features multiple severity levels, styles (including Haiku), and SSE support.",
         technologies=["Python", "MCP Protocol", "SSE", "Docker", "Async", "FastMCP"],
         repo_url=cast(HttpUrl, "https://github.com/Ajollyworld79/Apology-as-a-Service"),
         live_url=cast(HttpUrl, "https://apology-as-a-service-production.up.railway.app/sse")
