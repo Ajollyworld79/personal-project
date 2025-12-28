@@ -324,14 +324,15 @@ async def get_apology():
         # Connect to the live MCP server using the simple demo endpoint (HTTP GET)
         # This bypasses SSE validation complexities for the simple button click
         import aiohttp
-        async with aiohttp.ClientSession() as http_session:
+        timeout = aiohttp.ClientTimeout(total=10.0)
+        async with aiohttp.ClientSession(timeout=timeout) as http_session:
             demo_url = "https://apology-as-a-service-production.up.railway.app/demo"
             params = {
                 "severity": severity,
                 "style": style,
                 "context": context
             }
-            async with http_session.get(demo_url, params=params, timeout=10.0) as resp:
+            async with http_session.get(demo_url, params=params) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     apology_text = data.get("text")
