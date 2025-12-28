@@ -17,6 +17,8 @@ from app.models import Project, ProjectsResponse
 from app.data import PROJECTS
 import io
 from fpdf import FPDF, XPos, YPos
+from mcp.client.sse import sse_client
+from mcp import ClientSession
 
 settings = get_settings()
 
@@ -264,6 +266,43 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
     buffer.write(bytes(raw))
     buffer.seek(0)
     return buffer
+
+
+@app.route('/api/get-apology')
+async def get_apology():
+    """Fetch a live apology from the MCP server"""
+    try:
+        # Use a random context and style
+        import random
+        severity = random.choice(["TRIVIAL", "MINOR", "MAJOR", "CRITICAL", "NUCLEAR"])
+        style = random.choice(["PROFESSIONAL", "CASUAL", "POETIC", "GROVELING", "HAIKU"])
+        context = "the live demo button"
+        
+        # Connect to the MCP server
+        async with sse_client("https://apology-as-a-service-production.up.railway.app/sse") as streams:
+            async with ClientSession(streams.read, streams.write) as session:
+                await session.initialize()
+                
+                # Call the tool
+                result = await session.call_tool(
+                    "generate_apology", 
+                    arguments={
+                        "severity": severity,
+                        "style": style,
+                        "context": context,
+                        "recipient": "Visitor"
+                    }
+                )
+                
+                # Return the result text
+                apology_text = result.content[0].text
+                return jsonify({
+                    "apology": apology_text,
+                    "meta": f"Generated via MCP (Severity: {severity}, Style: {style})"
+                })
+                
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/')

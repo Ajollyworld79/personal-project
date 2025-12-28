@@ -19,6 +19,14 @@ PROJECTS = [
         repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/personal-project")
     ),
     Project(
+        slug="apology-service",
+        title="Apology-as-a-Service (MCP Server)",
+        description="A live Model Context Protocol (MCP) server that provides context-aware crisis communication for AI agents. Features multiple severity levels and styles (including Haiku and Shakespearean) and a 'save_my_ass' prompt for emergency situations. Deployed via Docker/Railway with SSE (Server-Sent Events) support for remote agent integration.",
+        technologies=["Python", "MCP Protocol", "SSE", "Docker", "Async", "FastMCP"],
+        repo_url=cast(HttpUrl, "https://github.com/Ajollyworld79/Apology-as-a-Service"),
+        live_url=cast(HttpUrl, "https://apology-as-a-service-production.up.railway.app/sse")
+    ),
+    Project(
         slug="data-pipeline",
         title="ETL Data Pipeline - Dataverse to SQL Server",
         description="Complete ETL pipeline for extracting data from Microsoft Dataverse, transforming with business logic, and loading to SQL Server. Includes fake data generation with Faker for testing before production deployment. Features parallel processing, connection pooling, and circuit breakers.",
