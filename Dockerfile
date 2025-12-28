@@ -20,7 +20,5 @@ COPY static/ static/
 ENV PORT=8000
 EXPOSE 8000
 
-# Run the application
-# Use shell form to allow variable expansion if needed, but array form is safer.
-# Railway provides PORT env var.
-CMD ["sh", "-c", "uvicorn app.app:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Run the application using shell form to allow variable expansion
+CMD uvicorn app.app:app --host 0.0.0.0 --port ${PORT:-8000}
