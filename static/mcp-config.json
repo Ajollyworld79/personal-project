@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "apology-service": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sse",
+        "--url",
+        "https://apology-as-a-service-production.up.railway.app/sse"
+      ]
+    }
+  }
+}
