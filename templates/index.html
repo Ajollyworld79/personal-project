@@ -141,7 +141,11 @@
     {% for p in projects %}
     <article class="{% if loop.first %}featured{% endif %}">
       <h3>{{ p.title }}</h3>
+      {% if p.slug == 'apology-service' %}
+      <p>{{ p.description | safe }}</p>
+      {% else %}
       <p>{{ p.description }}</p>
+      {% endif %}
       <p class="tech-tags">
         {% for t in p.technologies %}<span class="tech-badge">{{ t }}</span>{% if not loop.last %} {% endif %}{% endfor %}
       </p>
