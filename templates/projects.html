@@ -30,7 +30,11 @@
             {% if project.slug == 'apology-service' %}
             <p class="project-description">{{ project.description | safe }}</p>
             {% else %}
+            {% if project.slug == 'apology-service' %}
+            <p class="project-description">{{ project.description | safe }}</p>
+            {% else %}
             <p class="project-description">{{ project.description }}</p>
+            {% endif %}
             {% endif %}
             
             <div class="project-tech">
