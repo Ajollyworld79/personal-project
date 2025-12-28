@@ -270,38 +270,99 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
 
 @app.route('/api/get-apology')
 async def get_apology():
-    """Fetch a live apology from the MCP server"""
+    """Fetch a live apology from the MCP server with robust parsing and fallbacks."""
+    import random
+    import asyncio
+
+    severity = random.choice(["TRIVIAL", "MINOR", "MAJOR", "CRITICAL", "NUCLEAR"])
+    style = random.choice(["PROFESSIONAL", "CASUAL", "POETIC", "GROVELING", "HAIKU"])
+    context = "the live demo button"
+
+    async def _extract_text_from_result(result):
+        """Try multiple ways to extract a human-readable text from different result shapes."""
+        if result is None:
+            return None
+        # dict-like
+        if isinstance(result, dict):
+            for key in ("text", "value", "content", "output"):
+                v = result.get(key)
+                if isinstance(v, str) and v.strip():
+                    return v.strip()
+                if isinstance(v, (list, tuple)):
+                    for it in v:
+                        if isinstance(it, str) and it.strip():
+                            return it.strip()
+                        if isinstance(it, dict):
+                            t = it.get("text")
+                            if t:
+                                return t.strip()
+        # object-like
+        for attr in ("text", "value", "content", "output"):
+            v = getattr(result, attr, None)
+            if v:
+                if isinstance(v, str) and v.strip():
+                    return v.strip()
+                if isinstance(v, (list, tuple)):
+                    for it in v:
+                        t = None
+                        if isinstance(it, dict):
+                            t = it.get("text")
+                        else:
+                            t = getattr(it, "text", None)
+                        if t:
+                            return t.strip()
+        # fallback to stringification
+        try:
+            s = str(result)
+            if s and len(s.strip()) > 0:
+                return s.strip()
+        except Exception:
+            pass
+        return None
+
     try:
-        # Use a random context and style
-        import random
-        severity = random.choice(["TRIVIAL", "MINOR", "MAJOR", "CRITICAL", "NUCLEAR"])
-        style = random.choice(["PROFESSIONAL", "CASUAL", "POETIC", "GROVELING", "HAIKU"])
-        context = "the live demo button"
-        
-        # Connect to the MCP server
-        async with sse_client("https://apology-as-a-service-production.up.railway.app/sse") as streams:
-            async with ClientSession(streams.read, streams.write) as session:
-                await session.initialize()
-                
-                # Call the tool
-                result = await session.call_tool(
-                    "generate_apology", 
-                    arguments={
-                        "severity": severity,
-                        "style": style,
-                        "context": context,
-                        "recipient": "Visitor"
+        async with sse_client("https://apology-as-a-service-production.up.railway.app/sse") as (reader, writer):
+            async with ClientSession(reader, writer) as session:
+
+                try:
+                    # Allow a reasonable timeout when calling remote tool
+                    result = await asyncio.wait_for(
+                        session.call_tool(
+                            "generate_apology",
+                            arguments={
+                                "severity": severity,
+                                "style": style,
+                                "context": context,
+                                "recipient": "Visitor",
+                            },
+                        ),
+                        timeout=20.0,
+                    )
+                except Exception as exc:
+                    app.logger.warning("apology: call_tool failed: %s", exc)
+                    result = None
+
+                apology_text = await _extract_text_from_result(result)
+
+                # If we still don't have an apology, use a safe canned fallback
+                if not apology_text:
+                    app.logger.info("apology: using canned fallback (severity=%s, style=%s)", severity, style)
+                    canned = {
+                        "TRIVIAL": "Sorry — a small hiccup. We'll fix it quickly.",
+                        "MINOR": "Sorry for the inconvenience. I take responsibility.",
+                        "MAJOR": "I'm truly sorry. I understand the impact and will make it right.",
+                        "CRITICAL": "I deeply apologize for this critical failure. We will prioritize a fix immediately.",
+                        "NUCLEAR": "I am profoundly sorry for this catastrophic failure and the distress it caused. We will take full responsibility.",
                     }
-                )
-                
-                # Return the result text
-                apology_text = result.content[0].text
+                    apology_text = canned.get(severity, "Sorry — something went wrong while generating an apology.")
+
                 return jsonify({
                     "apology": apology_text,
                     "meta": f"Generated via MCP (Severity: {severity}, Style: {style})"
                 })
-                
+
     except Exception as e:
+        app.logger.exception("apology endpoint failed")
         return jsonify({"error": str(e)}), 500
 
 
