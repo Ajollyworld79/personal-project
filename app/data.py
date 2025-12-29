@@ -11,6 +11,21 @@ PROJECTS = [
         repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/llm-assistant"),
         live_url=cast(HttpUrl,"https://llm-assistant-production.up.railway.app")
     ),
+
+    Project(
+        slug="document-intelligence-pipeline",
+        title="Document Intelligence Pipeline",
+        description=(
+            "Local document processing pipeline for PDF, DOCX and scanned images: OCR (Tesseract), text extraction, "
+            "table detection & extraction, key-value parsing, entity recognition (spaCy), layout analysis and summarization. "
+            "Results are produced as structured JSON suitable for downstream ingestion (data lakes, BI, search indexes). "
+            "Repository is private — contact guch79@gmail.com for access and commercial options."
+        ),
+        technologies=["Python", "Quart", "OCR", "Tesseract", "spaCy", "PDF processing", "NLP"],
+        repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/document-intelligence-pipeline"),
+        live_url=cast(HttpUrl,"https://document-intelligence-pipeline-production.up.railway.app")
+    ),
+
     Project(
         slug="personal-project",
         title="Professional Portfolio & CV Generator",
@@ -33,4 +48,5 @@ PROJECTS = [
         technologies=["Python", "Pandas", "SQLAlchemy", "Dataverse", "Faker"],
         repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/data-pipeline")
     ),
+
 ]

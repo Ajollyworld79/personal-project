@@ -136,6 +136,9 @@
     <button class="filter-btn" data-tech="Quart">Quart</button>
     <button class="filter-btn" data-tech="Pandas">Pandas</button>
     <button class="filter-btn" data-tech="Azure AI">Azure AI</button>
+    <button class="filter-btn" data-tech="OCR">OCR</button>
+    <button class="filter-btn" data-tech="MCP Protocol">MCP Protocol</button>
+    <button id="clear-filters" class="filter-btn" style="margin-left:0.5rem; background:#fff; color:#333; border:1px solid #ddd;">Clear</button>
   </div>
   <div class="posts">
     {% for p in projects %}
@@ -221,7 +224,54 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
 });
 </script>
 
-<style>
+<script>
+// Project filtering logic
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = Array.from(document.querySelectorAll('.filter-btn'));
+    const clearBtn = document.getElementById('clear-filters');
+    const articles = Array.from(document.querySelectorAll('.posts article'));
+
+    function getActiveFilters() {
+        return buttons.filter(b => b.classList.contains('active')).map(b => b.getAttribute('data-tech').toLowerCase());
+    }
+
+    function matchesFilters(articleEl, filters) {
+        if (!filters.length) return true; // no filters => show all
+        const badges = Array.from(articleEl.querySelectorAll('.tech-badge')).map(s => s.textContent.trim().toLowerCase());
+        // Project must include ALL selected filters (AND semantics)
+        return filters.every(f => badges.includes(f));
+    }
+
+    function applyFilters() {
+        const active = getActiveFilters();
+        articles.forEach(a => {
+            if (matchesFilters(a, active)) {
+                a.style.display = '';
+            } else {
+                a.style.display = 'none';
+            }
+        });
+    }
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Clear button has own behavior
+            if (btn.id === 'clear-filters') return;
+            btn.classList.toggle('active');
+            applyFilters();
+        });
+    });
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            applyFilters();
+        });
+    }
+});
+</script>
+
+<style> 
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -386,6 +436,13 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
 </section>
 
 <style>
+/* Filter bar */
+.filter-bar { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:1rem; }
+.filter-bar span { font-weight:600; margin-right:0.5rem; }
+.filter-btn { background:transparent; border:1px solid rgba(255,255,255,0.06); color:inherit; padding:0.4rem 0.7rem; border-radius:6px; cursor:pointer; font-weight:600; text-transform:none; }
+.filter-btn:hover { transform:translateY(-2px); }
+.filter-btn.active { background:#f2849e; color:white; border-color:#f2849e; }
+
 /* Tech Stack Grid */
 .tech-grid {
   display: grid;
