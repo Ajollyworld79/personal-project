@@ -324,59 +324,44 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
         <span class="dot yellow"></span>
         <span class="dot green"></span>
       </span>
-      <span class="terminal-code-title">~/projects/api.py — Python</span>
+      <span class="terminal-code-title">~/projects/lifecycle.py — Python</span>
     </div>
     <div class="terminal-code-content">
 <table class="code-table">
-<tr><td class="line-number">1</td><td class="code-line"><span class="py-decorator">@app.route</span>(<span class="py-str">"/api/list-scripts"</span>, methods=[<span class="py-str">"GET"</span>])</td></tr>
-<tr><td class="line-number">2</td><td class="code-line"><span class="py-decorator">@cached</span>(ttl=<span class="py-num">300</span>)</td></tr>
-<tr><td class="line-number">3</td><td class="code-line"><span class="py-keyword">async def</span> <span class="py-function">list_scripts</span>():</td></tr>
-<tr><td class="line-number">4</td><td class="code-line">    <span class="py-comment">"""</span></td></tr>
-<tr><td class="line-number">5</td><td class="code-line">    <span class="py-comment">Retrieves a list of all available scripts in the system.</span></td></tr>
-<tr><td class="line-number">6</td><td class="code-line">    <span class="py-comment"></span></td></tr>
-<tr><td class="line-number">7</td><td class="code-line">    <span class="py-comment">Returns a list of all scripts in the script folder with metadata</span></td></tr>
-<tr><td class="line-number">8</td><td class="code-line">    <span class="py-comment">such as size and last modification time.</span></td></tr>
-<tr><td class="line-number">9</td><td class="code-line">    <span class="py-comment"></span></td></tr>
-<tr><td class="line-number">10</td><td class="code-line">    <span class="py-comment">Responses:</span></td></tr>
-<tr><td class="line-number">11</td><td class="code-line">    <span class="py-comment">- 200: List of scripts</span></td></tr>
-<tr><td class="line-number">12</td><td class="code-line">    <span class="py-comment">- 401: Unauthorized</span></td></tr>
-<tr><td class="line-number">13</td><td class="code-line">    <span class="py-comment">- 500: Server error while fetching script list</span></td></tr>
-<tr><td class="line-number">14</td><td class="code-line">    <span class="py-comment"></span></td></tr>
-<tr><td class="line-number">15</td><td class="code-line">    <span class="py-comment">Example Response:</span></td></tr>
-<tr><td class="line-number">16</td><td class="code-line">    <span class="py-comment">[</span></td></tr>
-<tr><td class="line-number">17</td><td class="code-line">    <span class="py-comment">  {</span></td></tr>
-<tr><td class="line-number">18</td><td class="code-line">    <span class="py-comment">    "name": "00_02_DimKunde.py",</span></td></tr>
-<tr><td class="line-number">19</td><td class="code-line">    <span class="py-comment">    "size": 4582,</span></td></tr>
-<tr><td class="line-number">20</td><td class="code-line">    <span class="py-comment">    "last_modified": "2025-04-20T14:32:10"</span></td></tr>
-<tr><td class="line-number">21</td><td class="code-line">    <span class="py-comment">  },</span></td></tr>
-<tr><td class="line-number">22</td><td class="code-line">    <span class="py-comment">  {</span></td></tr>
-<tr><td class="line-number">23</td><td class="code-line">    <span class="py-comment">    "name": "00_03_DimProdukt.py",</span></td></tr>
-<tr><td class="line-number">24</td><td class="code-line">    <span class="py-comment">    "size": 3214,</span></td></tr>
-<tr><td class="line-number">25</td><td class="code-line">    <span class="py-comment">    "last_modified": "2025-04-22T09:45:22"</span></td></tr>
-<tr><td class="line-number">26</td><td class="code-line">    <span class="py-comment">  }</span></td></tr>
-<tr><td class="line-number">27</td><td class="code-line">    <span class="py-comment">]</span></td></tr>
-<tr><td class="line-number">28</td><td class="code-line">    <span class="py-comment">"""</span></td></tr>
-<tr><td class="line-number">29</td><td class="code-line">    <span class="py-keyword">try</span>:</td></tr>
-<tr><td class="line-number">30</td><td class="code-line">        scripts = [f <span class="py-keyword">for</span> f <span class="py-keyword">in</span> os.<span class="py-function">listdir</span>(SCRIPTS_DIR) <span class="py-keyword">if</span> f.<span class="py-function">endswith</span>(<span class="py-str">".py"</span>)]</td></tr>
-<tr><td class="line-number">31</td><td class="code-line">        script_info = []</td></tr>
-<tr><td class="line-number">32</td><td class="code-line">        <span class="py-keyword">for</span> script <span class="py-keyword">in</span> scripts:</td></tr>
-<tr><td class="line-number">33</td><td class="code-line">            script_path = os.path.<span class="py-function">join</span>(SCRIPTS_DIR, script)</td></tr>
-<tr><td class="line-number">34</td><td class="code-line">            script_info.<span class="py-function">append</span>(</td></tr>
-<tr><td class="line-number">35</td><td class="code-line">                {</td></tr>
-<tr><td class="line-number">36</td><td class="code-line">                    <span class="py-str">"name"</span>: script,</td></tr>
-<tr><td class="line-number">37</td><td class="code-line">                    <span class="py-str">"size"</span>: os.path.<span class="py-function">getsize</span>(script_path),</td></tr>
-<tr><td class="line-number">38</td><td class="code-line">                    <span class="py-str">"last_modified"</span>: datetime.<span class="py-function">fromtimestamp</span>(</td></tr>
-<tr><td class="line-number">39</td><td class="code-line">                        os.path.<span class="py-function">getmtime</span>(script_path)</td></tr>
-<tr><td class="line-number">40</td><td class="code-line">                    ).<span class="py-function">isoformat</span>(),</td></tr>
-<tr><td class="line-number">41</td><td class="code-line">                }</td></tr>
-<tr><td class="line-number">42</td><td class="code-line">            )</td></tr>
-<tr><td class="line-number">43</td><td class="code-line">        <span class="py-keyword">return</span> <span class="py-function">jsonify</span>(script_info)</td></tr>
-<tr><td class="line-number">44</td><td class="code-line">    <span class="py-keyword">except</span> <span class="py-class">Exception</span> <span class="py-keyword">as</span> e:</td></tr>
-<tr><td class="line-number">45</td><td class="code-line">        logger.<span class="py-function">error</span>(<span class="py-str">f"Error in list_scripts: {<span class="py-function">str</span>(e)}"</span>)</td></tr>
-<tr><td class="line-number">46</td><td class="code-line">        <span class="py-keyword">return</span> (</td></tr>
-<tr><td class="line-number">47</td><td class="code-line">            <span class="py-function">jsonify</span>({<span class="py-str">"error"</span>: <span class="py-str">"An error occurred while fetching the script list"</span>}),</td></tr>
-<tr><td class="line-number">48</td><td class="code-line">            <span class="py-num">500</span>,</td></tr>
-<tr><td class="line-number">49</td><td class="code-line">        )</td></tr>
+<tr><td class="line-number">1</td><td class="code-line"><span class="py-keyword">from</span> <span class="py-function">typing</span> <span class="py-keyword">import</span> <span class="py-class">Optional</span></td></tr>
+<tr><td class="line-number">2</td><td class="code-line"><span class="py-keyword">from</span> <span class="py-function">qdrant_client</span> <span class="py-keyword">import</span> <span class="py-class">QdrantClient</span></td></tr>
+<tr><td class="line-number">3</td><td class="code-line"></td></tr>
+<tr><td class="line-number">4</td><td class="code-line"><span class="py-keyword">class</span> <span class="py-function">LifeCycleManager</span>:</td></tr>
+<tr><td class="line-number">5</td><td class="code-line">    <span class="py-comment"># Singleton to manage long-lived resources (Qdrant, background tasks)</span></td></tr>
+<tr><td class="line-number">6</td><td class="code-line">    _instance = <span class="py-keyword">None</span></td></tr>
+<tr><td class="line-number">7</td><td class="code-line">    _qdrant_client: <span class="py-class">Optional</span>[<span class="py-class">QdrantClient</span>] = <span class="py-keyword">None</span></td></tr>
+<tr><td class="line-number">8</td><td class="code-line"></td></tr>
+<tr><td class="line-number">9</td><td class="code-line">    <span class="py-keyword">def</span> <span class="py-function">__new__</span>(<span class="py-keyword">cls</span>):</td></tr>
+<tr><td class="line-number">10</td><td class="code-line">        <span class="py-keyword">if</span> <span class="py-keyword">cls</span>._instance <span class="py-keyword">is</span> <span class="py-keyword">None</span>:</td></tr>
+<tr><td class="line-number">11</td><td class="code-line">            <span class="py-keyword">cls</span>._instance = <span class="py-keyword">super</span>(<span class="py-keyword">LifeCycleManager</span>, <span class="py-keyword">cls</span>).__new__(<span class="py-keyword">cls</span>)</td></tr>
+<tr><td class="line-number">12</td><td class="code-line">        <span class="py-keyword">return</span> <span class="py-keyword">cls</span>._instance</td></tr>
+<tr><td class="line-number">13</td><td class="code-line"></td></tr>
+<tr><td class="line-number">14</td><td class="code-line">    <span class="py-decorator">@property</span></td></tr>
+<tr><td class="line-number">15</td><td class="code-line">    <span class="py-keyword">def</span> <span class="py-function">qdrant_client</span>(<span class="py-keyword">self</span>) -> <span class="py-class">Optional</span>[<span class="py-class">QdrantClient</span>]:</td></tr>
+<tr><td class="line-number">16</td><td class="code-line">        <span class="py-keyword">return</span> <span class="py-keyword">self</span>._qdrant_client</td></tr>
+<tr><td class="line-number">17</td><td class="code-line"></td></tr>
+<tr><td class="line-number">18</td><td class="code-line">    <span class="py-keyword">async</span> <span class="py-keyword">def</span> <span class="py-function">startup</span>(<span class="py-keyword">self</span>):</td></tr>
+<tr><td class="line-number">19</td><td class="code-line">        <span class="py-comment">"""Initialize resources on application startup and schedule background tasks."""</span></td></tr>
+<tr><td class="line-number">20</td><td class="code-line">        <span class="py-function">logger</span>.<span class="py-function">info</span>(<span class="py-str">"Starting up application resources..."</span>)</td></tr>
+<tr><td class="line-number">21</td><td class="code-line">        <span class="py-comment"># Run Qdrant connection in a separate thread to avoid blocking startup</span></td></tr>
+<tr><td class="line-number">22</td><td class="code-line">        <span class="py-keyword">await</span> <span class="py-function">asyncio</span>.<span class="py-function">to_thread</span>(<span class="py-keyword">self</span>._connect_qdrant)</td></tr>
+<tr><td class="line-number">23</td><td class="code-line">        <span class="py-keyword">await</span> <span class="py-keyword">embeddings</span>.<span class="py-function">preload_embedding_models</span>()</td></tr>
+<tr><td class="line-number">24</td><td class="code-line"></td></tr>
+<tr><td class="line-number">25</td><td class="code-line">    <span class="py-keyword">def</span> <span class="py-function">_connect_qdrant</span>(<span class="py-keyword">self</span>):</td></tr>
+<tr><td class="line-number">26</td><td class="code-line">        <span class="py-comment"># Synchronous helper executed in a thread; keep configuration external.</span></td></tr>
+<tr><td class="line-number">27</td><td class="code-line">        <span class="py-keyword">try</span>:</td></tr>
+<tr><td class="line-number">28</td><td class="code-line">            <span class="py-keyword">self</span>._qdrant_client = <span class="py-function">QdrantClient</span>(<span class="py-comment"># configuration passed from settings</span>)</td></tr>
+<tr><td class="line-number">29</td><td class="code-line">            <span class="py-function">logger</span>.<span class="py-function">info</span>(<span class="py-str">"Qdrant client connected"</span>)</td></tr>
+<tr><td class="line-number">30</td><td class="code-line">        <span class="py-keyword">except</span> <span class="py-class">Exception</span> <span class="py-keyword">as</span> <span class="py-keyword">e</span>:</td></tr>
+<tr><td class="line-number">31</td><td class="code-line">            <span class="py-function">logger</span>.<span class="py-function">exception</span>(<span class="py-str">"Failed to connect Qdrant: %s"</span>, <span class="py-keyword">e</span>)</td></tr>
+<tr><td class="line-number">32</td><td class="code-line"></td></tr>
+<tr><td class="line-number">33</td><td class="code-line">    <span class="py-comment"># Usage example: lifecycle = LifeCycleManager(); await lifecycle.startup()</span></td></tr>
+
 </table>
     </div>
   </div>
