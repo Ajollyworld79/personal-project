@@ -19,6 +19,14 @@
       // Ensure we target project articles on both homepage (.posts article) and the projects page (.projects-grid article)
       const articles = Array.from(document.querySelectorAll('.posts article, .projects-grid article'));
 
+      // Detect if we're on the Projects page — on /projects we want to show all projects and not use filters
+      const isProjectsPage = window.location && window.location.pathname && (window.location.pathname === '/projects' || window.location.pathname.startsWith('/projects'));
+      if (isProjectsPage) {
+        console.log('Projects page detected - showing all projects and hiding filter UI');
+        articles.forEach(a => { a.classList.add('project-visible'); a.style.display = ''; });
+        const fb = document.querySelector('.filter-bar'); if (fb) fb.style.display = 'none';
+      }
+
       // CSS handles hiding by default - no need to set display here
 
       filterButtons.forEach(b => {
@@ -45,6 +53,11 @@
       function applyFilters() {
         const activeFilters = getActiveFilters();
         console.log('applyFilters called, activeFilters:', activeFilters, 'articles found:', articles.length);
+        // If on the projects page, always show everything (no filters there)
+        if (typeof isProjectsPage !== 'undefined' && isProjectsPage) {
+          articles.forEach(a => { a.classList.add('project-visible'); a.style.display = ''; });
+          return;
+        }
         // If no filters selected, hide everything (per UX request)
         if (activeFilters.length === 0) {
           articles.forEach(a => { a.classList.remove('project-visible'); });
@@ -95,9 +108,15 @@
         });
       });
     } catch (err) {
-      // Fail gracefully — ensure we at least hide projects so user must select filters
+      // Fail gracefully — show or hide based on page semantics
       console.error('Error initializing portfolio filters:', err);
-      try { document.querySelectorAll('.posts article, .projects-grid article').forEach(a => { a.style.display = 'none'; }); } catch(e){}
+      try {
+        if (typeof isProjectsPage !== 'undefined' && isProjectsPage) {
+          document.querySelectorAll('.posts article, .projects-grid article').forEach(a => { a.style.display = ''; });
+        } else {
+          document.querySelectorAll('.posts article, .projects-grid article').forEach(a => { a.style.display = 'none'; });
+        }
+      } catch(e){}
     }
   }
 
