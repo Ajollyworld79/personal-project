@@ -14,12 +14,13 @@ document.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('.filter-btn').forEach(b => {
     b.setAttribute('aria-pressed', 'false');
     b.addEventListener('click', function(e){
-      // Ignore buttons that are not real filters (e.g. the Clear button has no data-tech)
-      const tech = e.target.dataset.tech;
+      // Use the button element (currentTarget) to handle clicks reliably
+      const btn = e.currentTarget;
+      const tech = btn.dataset.tech;
       if (!tech) return;
 
-      const active = e.target.classList.toggle('active');
-      e.target.setAttribute('aria-pressed', active ? 'true' : 'false');
+      const active = btn.classList.toggle('active');
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
       // compute active filters and ignore any buttons without a data-tech value
       const activeFilters = Array.from(document.querySelectorAll('.filter-btn.active')).map(n => n.dataset.tech).filter(Boolean);
       document.querySelectorAll('.posts article').forEach(a => {
