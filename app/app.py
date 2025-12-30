@@ -19,6 +19,8 @@ import io
 from fpdf import FPDF, XPos, YPos
 from mcp.client.sse import sse_client
 from mcp import ClientSession
+import random
+import asyncio
 
 settings = get_settings()
 
@@ -271,8 +273,7 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
 @app.route('/api/get-apology')
 async def get_apology():
     """Fetch a live apology from the MCP server with robust parsing and fallbacks."""
-    import random
-    import asyncio
+
 
     severity = random.choice(["TRIVIAL", "MINOR", "MAJOR", "CRITICAL", "NUCLEAR"])
     style = random.choice(["PROFESSIONAL", "CASUAL", "POETIC", "GROVELING", "HAIKU"])
