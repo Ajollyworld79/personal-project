@@ -13,7 +13,11 @@ document.addEventListener('DOMContentLoaded', function(){
   // Filter projects by technology (OR semantics). Clear button handling included.
   const filterButtons = Array.from(document.querySelectorAll('.filter-btn'));
   const clearButtons = Array.from(document.querySelectorAll('#clear-filters'));
-  const articles = Array.from(document.querySelectorAll('.posts article'));
+  // Ensure we target project articles on both homepage (.posts article) and the projects page (.projects-grid article)
+  const articles = Array.from(document.querySelectorAll('.posts article, .projects-grid article'));
+
+  // Hide all articles on first load (user will select filters to reveal them)
+  articles.forEach(a => { a.style.display = 'none'; });
 
   filterButtons.forEach(b => {
     b.setAttribute('aria-pressed', 'false');
@@ -36,15 +40,17 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function applyFilters() {
     const activeFilters = getActiveFilters();
+    // If no filters selected, hide everything (per UX request)
+    if (activeFilters.length === 0) {
+      articles.forEach(a => { a.style.display = 'none'; });
+      return;
+    }
+
     articles.forEach(a => {
       const badges = Array.from(a.querySelectorAll('.tech-badge')).map(t => t.textContent.trim().toLowerCase());
-      if (activeFilters.length === 0) {
-        a.style.display = '';
-      } else {
-        // OR semantics: show project if it matches ANY selected filter
-        const matches = activeFilters.some(f => badges.includes(f));
-        a.style.display = matches ? '' : 'none';
-      }
+      // OR semantics: show project if it matches ANY selected filter
+      const matches = activeFilters.some(f => badges.includes(f));
+      a.style.display = matches ? '' : 'none';
     });
   }
 
@@ -56,7 +62,8 @@ document.addEventListener('DOMContentLoaded', function(){
         b.classList.remove('active');
         b.setAttribute('aria-pressed', 'false');
       });
-      applyFilters();
+      // After clearing, hide all projects again
+      articles.forEach(a => { a.style.display = 'none'; });
     }));
   }
 
