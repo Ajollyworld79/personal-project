@@ -7,22 +7,8 @@
         <p style="max-width: 700px; margin: 0 auto; font-size: 1.1em; color: rgba(255, 255, 255, 0.7);">Technical solutions showcasing my expertise in AI/LLMs, Python development, and system architecture.</p>
     </header>
 
-    <div class="filter-bar" style="margin-bottom:1rem;">
-        <div class="filter-helper" style="margin-bottom:0.5rem; font-size:0.95em; color: rgba(0,0,0,0.85);"><strong>Select filters to show projects that match:</strong></div>
-        <div class="filter-controls">
-            <button class="filter-btn" data-tech="Python">Python</button>
-            <button class="filter-btn" data-tech="Qdrant">Qdrant</button>
-            <button class="filter-btn" data-tech="RAG">RAG</button>
-            <button class="filter-btn" data-tech="OCR">OCR</button>
-            <button class="filter-btn" data-tech="Quart">Quart</button>
-            <button class="filter-btn" data-tech="FastMCP">FastMCP</button>
-            <button class="filter-btn" data-tech="Pandas">Pandas</button>
-            <button class="filter-btn" data-tech="SQLAlchemy">SQLAlchemy</button>
-            <button id="clear-filters" class="filter-btn" style="margin-left:0.5rem; background:#fff; color:#333; border:1px solid #ddd;">Clear</button>
-        </div>
-    </div> 
     <div class="projects-grid">
-        {% for project in projects %} 
+        {% for project in projects %}
         <article class="project-card">
             <div class="project-header">
                 <div class="project-icon">
