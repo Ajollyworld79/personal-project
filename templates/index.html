@@ -225,51 +225,8 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
 </script>
 
 <script>
-// Project filtering logic
-document.addEventListener('DOMContentLoaded', function () {
-    const buttons = Array.from(document.querySelectorAll('.filter-btn'));
-    const clearBtn = document.getElementById('clear-filters');
-    const articles = Array.from(document.querySelectorAll('.posts article'));
-
-    function getActiveFilters() {
-        return buttons.filter(b => b.classList.contains('active')).map(b => b.getAttribute('data-tech').toLowerCase());
-    }
-
-    function matchesFilters(articleEl, filters) {
-        if (!filters.length) return true; // no filters => show all
-        const badges = Array.from(articleEl.querySelectorAll('.tech-badge')).map(s => s.textContent.trim().toLowerCase());
-        // Project must include ALL selected filters (AND semantics)
-        return filters.every(f => badges.includes(f));
-    }
-
-    function applyFilters() {
-        const active = getActiveFilters();
-        articles.forEach(a => {
-            if (matchesFilters(a, active)) {
-                a.style.display = '';
-            } else {
-                a.style.display = 'none';
-            }
-        });
-    }
-
-    buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Clear button has own behavior
-            if (btn.id === 'clear-filters') return;
-            btn.classList.toggle('active');
-            applyFilters();
-        });
-    });
-
-    if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-            buttons.forEach(b => b.classList.remove('active'));
-            applyFilters();
-        });
-    }
-});
-</script>
+/* Project filtering is now handled in /static/assets/js/portfolio.js to avoid duplicate handlers */
+</script> 
 
 <style> 
 .modal-overlay {

@@ -10,29 +10,51 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  // Filter projects by technology
-  document.querySelectorAll('.filter-btn').forEach(b => {
+  // Filter projects by technology (AND semantics). Clear button handling included.
+  const filterButtons = Array.from(document.querySelectorAll('.filter-btn'));
+  const clearBtn = document.getElementById('clear-filters');
+  const articles = Array.from(document.querySelectorAll('.posts article'));
+
+  filterButtons.forEach(b => {
     b.setAttribute('aria-pressed', 'false');
     b.addEventListener('click', function(e){
       // Use the button element (currentTarget) to handle clicks reliably
       const btn = e.currentTarget;
       const tech = btn.dataset.tech;
-      if (!tech) return;
+      if (!tech) return; // ignore non-filter buttons (e.g. Clear)
 
       const active = btn.classList.toggle('active');
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-      // compute active filters and ignore any buttons without a data-tech value
-      const activeFilters = Array.from(document.querySelectorAll('.filter-btn.active')).map(n => n.dataset.tech).filter(Boolean);
-      document.querySelectorAll('.posts article').forEach(a => {
-        const tags = Array.from(a.querySelectorAll('.tech-badge')).map(t => t.textContent.trim());
-        if (activeFilters.length === 0 || activeFilters.some(f => tags.includes(f))) {
-          a.style.display = '';
-        } else {
-          a.style.display = 'none';
-        }
-      });
+      applyFilters();
     });
   });
+
+  function getActiveFilters() {
+    return filterButtons.filter(b => b.classList.contains('active')).map(b => b.dataset.tech.toLowerCase()).filter(Boolean);
+  }
+
+  function applyFilters() {
+    const activeFilters = getActiveFilters();
+    articles.forEach(a => {
+      const badges = Array.from(a.querySelectorAll('.tech-badge')).map(t => t.textContent.trim().toLowerCase());
+      if (activeFilters.length === 0) {
+        a.style.display = '';
+      } else {
+        const matches = activeFilters.every(f => badges.includes(f));
+        a.style.display = matches ? '' : 'none';
+      }
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function(){
+      filterButtons.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      applyFilters();
+    });
+  }
 
   // Smooth scroll for internal links
   document.querySelectorAll('a[href^="#"]').forEach(a => {
