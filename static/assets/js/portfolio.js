@@ -1,6 +1,7 @@
 (function(){
   function initPortfolio(){
     try {
+      console.log('initPortfolio running on page:', window.location.pathname);
       // Project expand/collapse
       document.querySelectorAll('.posts article .toggle-details').forEach(btn => {
         // initialize aria-expanded
@@ -22,6 +23,7 @@
 
       filterButtons.forEach(b => {
         b.setAttribute('aria-pressed', 'false');
+        b.classList.remove('active'); // Ensure no filters are active on init
         b.addEventListener('click', function(e){
           // Use the button element (currentTarget) to handle clicks reliably
           const btn = e.currentTarget;
@@ -42,9 +44,11 @@
 
       function applyFilters() {
         const activeFilters = getActiveFilters();
+        console.log('applyFilters called, activeFilters:', activeFilters, 'articles found:', articles.length);
         // If no filters selected, hide everything (per UX request)
         if (activeFilters.length === 0) {
           articles.forEach(a => { a.classList.remove('project-visible'); });
+          console.log('No filters - hiding all articles');
           return;
         }
 
@@ -58,6 +62,7 @@
             a.classList.remove('project-visible');
           }
         });
+        console.log('Filters applied');
       }
 
       if (clearButtons.length) {
