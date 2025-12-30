@@ -11,16 +11,15 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from quart import Quart, render_template, jsonify, Response, request
-import json
 from app.config import get_settings
-from app.models import Project, ProjectsResponse
+from app.models import Project
 from app.data import PROJECTS
 import io
 from fpdf import FPDF, XPos, YPos
 from mcp.client.sse import sse_client
-from mcp import ClientSession
 import random
-import asyncio
+import aiohttp
+
 
 settings = get_settings()
 
@@ -29,34 +28,6 @@ app = Quart(__name__, template_folder=os.path.join(PROJECT_ROOT, 'templates'), s
 # Serve static files via Quart's builtin static folder (static/ already exists)
 app.static_folder = os.path.join(PROJECT_ROOT, 'static')
 
-
-def _html_to_plaintext(html: str) -> str:
-    if not html:
-        return ''
-    # Replace common block-level tags with newlines
-    html = re.sub(r"(?i)<br\s*/?>", "\n", html)
-    html = re.sub(r"(?i)</?(p|div|h[1-6]|section|article|li|ul|ol|header|footer|tr|td)[^>]*>", "\n", html)
-    # Remove remaining tags
-    text = re.sub(r"<[^>]+>", "", html)
-    # Unescape HTML entities
-    text = html_lib.unescape(text)
-    # Normalize common unicode punctuation to ASCII equivalents
-    text = text.replace('\u2014', '-').replace('\u2013', '-').replace('\u2015', '-')
-    text = text.replace('\u2018', "'").replace('\u2019', "'")
-    text = text.replace('\u201c', '"').replace('\u201d', '"')
-    text = text.replace('\xa0', ' ')
-    # Collapse multiple newlines and trim
-    text = re.sub(r"\n{2,}", "\n\n", text)
-    return text.strip()
-
-
-def _break_long_words(text: str, maxlen: int = 60) -> str:
-    # Insert spaces into very long tokens so PDF can wrap them
-    def repl(match):
-        s = match.group(0)
-        parts = [s[i:i+maxlen] for i in range(0, len(s), maxlen)]
-        return ' '.join(parts)
-    return re.sub(r"\S{%(n)d,}" % {'n': maxlen}, repl, text)
 
 
 def _clean_text_for_pdf(text: str) -> str:
@@ -169,6 +140,13 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
             pdf.set_text_color(0, 0, 255)  # Blue for link
             pdf.cell(0, 4, linkedin_username, new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=linkedin_url)
             pdf.set_text_color(60, 60, 60)  # Reset color
+
+        if contact_info.get('portfolio'):
+            portfolio_url = contact_info['portfolio']
+            pdf.cell(label_width, 4, "Portfolio:", new_x=XPos.RIGHT, new_y=YPos.TOP)
+            pdf.set_text_color(0, 0, 255)  # Blue for link
+            pdf.cell(0, 4, portfolio_url, new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=portfolio_url)
+            pdf.set_text_color(60, 60, 60)  # Reset color
         
         pdf.ln(3)
 
@@ -273,8 +251,6 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
 @app.route('/api/get-apology')
 async def get_apology():
     """Fetch a live apology from the MCP server with robust parsing and fallbacks."""
-
-
     severity = random.choice(["TRIVIAL", "MINOR", "MAJOR", "CRITICAL", "NUCLEAR"])
     style = random.choice(["PROFESSIONAL", "CASUAL", "POETIC", "GROVELING", "HAIKU"])
     context = "the live demo button"
@@ -324,7 +300,7 @@ async def get_apology():
     try:
         # Connect to the live MCP server using the simple demo endpoint (HTTP GET)
         # This bypasses SSE validation complexities for the simple button click
-        import aiohttp
+        
         timeout = aiohttp.ClientTimeout(total=10.0)
         async with aiohttp.ClientSession(timeout=timeout) as http_session:
             demo_url = "https://apology-as-a-service-production.up.railway.app/demo"
@@ -469,6 +445,14 @@ async def download_cv():
             contact_info['linkedin'] = linkedin_url.split('linkedin.com/in/')[-1].rstrip('/')
         else:
             contact_info['linkedin'] = linkedin_url
+
+    # Detect a portfolio URL in the page contents (or fall back to a configured or provided URL)
+    portfolio_m = re.search(r"https?://\S*web-production\S*", cleaned)
+    if portfolio_m:
+        contact_info['portfolio'] = portfolio_m.group(0).strip()
+    else:
+        # Fallback to settings.portfolio_url if available, otherwise use provided demo URL
+        contact_info['portfolio'] = getattr(settings, 'portfolio_url', '') or 'https://web-production-e612.up.railway.app/'
 
     # Generate PDF with structured data
     packet = generate_cv_pdf(
