@@ -160,7 +160,7 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 .filter-btn.active { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: black; }
 
 /* Hide projects by default - only show when filters match */
-.posts article:not(.project-visible), .projects-grid article:not(.project-visible) { display: none; }
+.posts article:not(.project-visible), .projects-grid article:not(.project-visible) { display: none !important; }
 
 /* Featured project */
 .posts article.featured { grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 420px; gap:1rem; align-items:center; background: linear-gradient(90deg, var(--accent-06), var(--accent-2-03)); border: 1px solid var(--accent-weak); }
