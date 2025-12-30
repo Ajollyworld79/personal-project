@@ -159,6 +159,9 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 .filter-btn { padding: 0.45rem 0.7rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); border-radius: 8px; cursor: pointer; font-weight:700 }
 .filter-btn.active { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: black; }
 
+/* Hide projects by default - only show when filters match */
+.posts article:not(.project-visible), .projects-grid article:not(.project-visible) { display: none; }
+
 /* Featured project */
 .posts article.featured { grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 420px; gap:1rem; align-items:center; background: linear-gradient(90deg, var(--accent-06), var(--accent-2-03)); border: 1px solid var(--accent-weak); }
 .posts article.featured .project-body { max-height: none }

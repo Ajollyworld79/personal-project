@@ -18,8 +18,7 @@
       // Ensure we target project articles on both homepage (.posts article) and the projects page (.projects-grid article)
       const articles = Array.from(document.querySelectorAll('.posts article, .projects-grid article'));
 
-      // Hide all articles on first load (user will select filters to reveal them)
-      articles.forEach(a => { a.style.display = 'none'; });
+      // CSS handles hiding by default - no need to set display here
 
       filterButtons.forEach(b => {
         b.setAttribute('aria-pressed', 'false');
@@ -31,6 +30,7 @@
 
           const active = btn.classList.toggle('active');
           btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+          console.debug('Filter clicked:', tech, 'active=', active);
           applyFilters();
         });
       });
@@ -44,7 +44,7 @@
         const activeFilters = getActiveFilters();
         // If no filters selected, hide everything (per UX request)
         if (activeFilters.length === 0) {
-          articles.forEach(a => { a.style.display = 'none'; });
+          articles.forEach(a => { a.classList.remove('project-visible'); });
           return;
         }
 
@@ -52,7 +52,11 @@
           const badges = Array.from(a.querySelectorAll('.tech-badge')).map(t => t.textContent.trim().toLowerCase());
           // OR semantics: show project if it matches ANY selected filter
           const matches = activeFilters.some(f => badges.includes(f));
-          a.style.display = matches ? '' : 'none';
+          if (matches) {
+            a.classList.add('project-visible');
+          } else {
+            a.classList.remove('project-visible');
+          }
         });
       }
 
@@ -64,10 +68,19 @@
             b.classList.remove('active');
             b.setAttribute('aria-pressed', 'false');
           });
-          // After clearing, hide all projects again
-          articles.forEach(a => { a.style.display = 'none'; });
+          console.debug('Clear clicked — cleared filters, applying filters to hide all.');
+          // Use applyFilters so the 'no filters => hide all' behavior is preserved
+          applyFilters();
         }));
       }
+
+      // Ensure hide-on-load truly applies (some scripts may run after init)
+      try {
+        applyFilters();
+        // Run again after a short delay and on full window load as a safety net
+        setTimeout(() => { console.debug('Re-applying filters after timeout'); applyFilters(); }, 100);
+        window.addEventListener('load', function(){ console.debug('window.load — applying filters'); applyFilters(); });
+      } catch (e) { console.error('applyFilters error during init safety calls', e); }
 
       // Smooth scroll for internal links
       document.querySelectorAll('a[href^="#"]').forEach(a => {

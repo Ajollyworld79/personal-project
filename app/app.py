@@ -473,9 +473,17 @@ async def download_cv():
     return Response(data, mimetype='application/pdf', headers=headers)
 
 
-@app.route('/static/<path:filename>')
-async def static_files(filename):
-    return await app.send_static_file(filename)
+@app.route('/favicon.ico')
+async def favicon():
+    return Response(b'', mimetype='image/x-icon', status=204)
+
+@app.route('/apple-touch-icon.png')
+async def apple_touch_icon():
+    return Response(b'', mimetype='image/png', status=204)
+
+@app.route('/apple-touch-icon-precomposed.png')
+async def apple_touch_icon_precomposed():
+    return Response(b'', mimetype='image/png', status=204)
 
 
 if __name__ == '__main__':
