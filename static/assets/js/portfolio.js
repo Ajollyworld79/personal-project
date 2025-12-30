@@ -10,9 +10,9 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  // Filter projects by technology (AND semantics). Clear button handling included.
+  // Filter projects by technology (OR semantics). Clear button handling included.
   const filterButtons = Array.from(document.querySelectorAll('.filter-btn'));
-  const clearBtn = document.getElementById('clear-filters');
+  const clearButtons = Array.from(document.querySelectorAll('#clear-filters'));
   const articles = Array.from(document.querySelectorAll('.posts article'));
 
   filterButtons.forEach(b => {
@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 
   function getActiveFilters() {
-    return filterButtons.filter(b => b.classList.contains('active')).map(b => b.dataset.tech.toLowerCase()).filter(Boolean);
+    // Query the DOM for current active filters so we don't rely on a cached list
+    return Array.from(document.querySelectorAll('.filter-btn.active')).map(b => b.dataset.tech && b.dataset.tech.toLowerCase()).filter(Boolean);
   }
 
   function applyFilters() {
@@ -40,20 +41,23 @@ document.addEventListener('DOMContentLoaded', function(){
       if (activeFilters.length === 0) {
         a.style.display = '';
       } else {
-        const matches = activeFilters.every(f => badges.includes(f));
+        // OR semantics: show project if it matches ANY selected filter
+        const matches = activeFilters.some(f => badges.includes(f));
         a.style.display = matches ? '' : 'none';
       }
     });
   }
 
-  if (clearBtn) {
-    clearBtn.addEventListener('click', function(){
-      filterButtons.forEach(b => {
+  if (clearButtons.length) {
+    clearButtons.forEach(cb => cb.addEventListener('click', function(){
+      // Remove active state from any button that is currently active (excluding clear itself)
+      document.querySelectorAll('.filter-btn.active').forEach(b => {
+        if (b.id === 'clear-filters') return;
         b.classList.remove('active');
         b.setAttribute('aria-pressed', 'false');
       });
       applyFilters();
-    });
+    }));
   }
 
   // Smooth scroll for internal links

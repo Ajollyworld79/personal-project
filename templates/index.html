@@ -129,16 +129,18 @@
     <p>Examples of technical solutions I have developed, with special emphasis on AI/LLMs, Python, and system architecture.</p>
   </header>
   <div class="filter-bar">
-    <span>Filter:</span>
-    <button class="filter-btn" data-tech="Python">Python</button>
-    <button class="filter-btn" data-tech="LLM">LLM</button>
-    <button class="filter-btn" data-tech="FastAPI">FastAPI</button>
-    <button class="filter-btn" data-tech="Quart">Quart</button>
-    <button class="filter-btn" data-tech="Pandas">Pandas</button>
-    <button class="filter-btn" data-tech="Azure AI">Azure AI</button>
-    <button class="filter-btn" data-tech="OCR">OCR</button>
-    <button class="filter-btn" data-tech="MCP Protocol">MCP Protocol</button>
-    <button id="clear-filters" class="filter-btn" style="margin-left:0.5rem; background:#fff; color:#333; border:1px solid #ddd;">Clear</button>
+    <div class="filter-helper" style="margin-bottom:0.5rem; font-size:0.95em; color: rgba(255,255,255,0.9);"><strong>Select filters to show projects that match:</strong></div>
+    <div class="filter-controls">
+      <button class="filter-btn" data-tech="Python">Python</button>
+      <button class="filter-btn" data-tech="Qdrant">Qdrant</button>
+      <button class="filter-btn" data-tech="RAG">RAG</button>
+      <button class="filter-btn" data-tech="OCR">OCR</button>
+      <button class="filter-btn" data-tech="Quart">Quart</button>
+      <button class="filter-btn" data-tech="FastMCP">FastMCP</button>
+      <button class="filter-btn" data-tech="Pandas">Pandas</button>
+      <button class="filter-btn" data-tech="SQLAlchemy">SQLAlchemy</button>
+      <button id="clear-filters" class="filter-btn" style="margin-left:0.5rem; background:#fff; color:#333; border:1px solid #ddd;">Clear</button>
+    </div>
   </div>
   <div class="posts">
     {% for p in projects %}
