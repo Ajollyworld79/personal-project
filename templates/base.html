@@ -9,6 +9,10 @@
         <meta property="og:title" content="{{ title if title else 'Gustav Christensen — Python & AI Developer' }}" />
         <meta property="og:description" content="Portfolio — Python development, AI / LLM projects, and technical experience." />
         <meta property="og:type" content="website" />
+        <meta property="og:image" content="{{ url_for('static', filename='assets/images/me.jpg', _external=True) }}" />
+        <meta property="og:image:alt" content="Gustav Christensen — Python & AI Developer" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="{{ url_for('static', filename='assets/images/me.jpg', _external=True) }}" />
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='assets/images/favicon.svg') }}" />
     <!-- Webfont (Inter) for improved typography -->
@@ -245,9 +249,9 @@
             <div class="inner">
                 <h2>Menu</h2>
                 <ul>
-                    <li><a href="/">Forside</a></li>
-                    <li><a href="/om">Om</a></li>
-                    <li><a href="/api/projects" target="_blank">API</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/projects">Projects</a></li>
                     <li><a href="https://github.com/Ajollyworld79" target="_blank" rel="noopener">GitHub</a></li>
                 <li><a href="https://document-intelligence-pipeline-production.up.railway.app" target="_blank" rel="noopener">OCR Demo</a></li>
                 </ul>
@@ -255,10 +259,8 @@
             </div>
         </nav>
         <!-- Scripts -->
-    <script src="/static/assets/js/jquery.min.js"></script>
     <script src="/static/assets/js/browser.min.js"></script>
     <script src="/static/assets/js/breakpoints.min.js"></script>
-    <script src="/static/assets/js/util.js"></script>
     <script src="/static/assets/js/main.js"></script>
     <script src="/static/assets/js/portfolio.js"></script>
     <script>

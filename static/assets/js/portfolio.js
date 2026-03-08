@@ -58,10 +58,10 @@
           articles.forEach(a => { a.classList.add('project-visible'); a.style.display = ''; });
           return;
         }
-        // If no filters selected, hide everything (per UX request)
+        // If no filters selected, show all projects
         if (activeFilters.length === 0) {
-          articles.forEach(a => { a.classList.remove('project-visible'); });
-          console.log('No filters - hiding all articles');
+          articles.forEach(a => { a.classList.add('project-visible'); });
+          console.log('No filters - showing all articles');
           return;
         }
 

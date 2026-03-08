@@ -1,213 +1,79 @@
 /*
-	Phantom by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+	Phantom by HTML5 UP — Vanilla JS rewrite
+	Original: html5up.net | @ajlkn (CC BY 3.0)
+	jQuery removed — saves ~100KB page weight.
 */
 
-(function($) {
+(function() {
+	'use strict';
 
-	var	$window = $(window),
-		$body = $('body');
-
-	// Breakpoints.
-		breakpoints({
-			xlarge:   [ '1281px',  '1680px' ],
-			large:    [ '981px',   '1280px' ],
-			medium:   [ '737px',   '980px'  ],
-			small:    [ '481px',   '736px'  ],
-			xsmall:   [ '361px',   '480px'  ],
-			xxsmall:  [ null,      '360px'  ]
-		});
-
-	// Play initial animations on page load.
-		$window.on('load', function() {
-			window.setTimeout(function() {
-				$body.removeClass('is-preload');
-			}, 100);
-		});
-
-	// Touch?
-		if (browser.mobile)
-			$body.addClass('is-touch');
-
-	// Forms.
-		var $form = $('form');
-
-		// Auto-resizing textareas.
-			$form.find('textarea').each(function() {
-
-				var $this = $(this),
-					$wrapper = $('<div class="textarea-wrapper"></div>'),
-					$submits = $this.find('input[type="submit"]');
-
-				$this
-					.wrap($wrapper)
-					.attr('rows', 1)
-					.css('overflow', 'hidden')
-					.css('resize', 'none')
-					.on('keydown', function(event) {
-
-						if (event.keyCode == 13
-						&&	event.ctrlKey) {
-
-							event.preventDefault();
-							event.stopPropagation();
-
-							$(this).blur();
-
-						}
-
-					})
-					.on('blur focus', function() {
-						$this.val($.trim($this.val()));
-					})
-					.on('input blur focus --init', function() {
-
-						$wrapper
-							.css('height', $this.height());
-
-						$this
-							.css('height', 'auto')
-							.css('height', $this.prop('scrollHeight') + 'px');
-
-					})
-					.on('keyup', function(event) {
-
-						if (event.keyCode == 9)
-							$this
-								.select();
-
-					})
-					.triggerHandler('--init');
-
-				// Fix.
-					if (browser.name == 'ie'
-					||	browser.mobile)
-						$this
-							.css('max-height', '10em')
-							.css('overflow-y', 'auto');
-
-			});
-
-	// Menu.
-		var $menu = $('#menu');
-
-		// Only wrap if not already statically present
-		if ($menu.children('.inner').length === 0) {
-			$menu.wrapInner('<div class="inner"></div>');
-		}
-
-		// Close link forventes nu allerede i template; hvis ikke, opret kort.
-		if ($menu.find('> .inner > a.close').length === 0) {
-			$menu.children('.inner').append('<a class="close" href="#menu">Close</a>');
-		}
-
-		$menu._locked = false;
-
-		$menu._lock = function() {
-
-			if ($menu._locked)
-				return false;
-
-			$menu._locked = true;
-
-			window.setTimeout(function() {
-				$menu._locked = false;
-			}, 350);
-
-			return true;
-
-		};
-
-		$menu._show = function() {
-
-			if ($menu._lock())
-				$body.addClass('is-menu-visible');
-
-		};
-
-		$menu._hide = function() {
-
-			if ($menu._lock())
-				$body.removeClass('is-menu-visible');
-
-		};
-
-		$menu._toggle = function() {
-
-			if ($menu._lock())
-				$body.toggleClass('is-menu-visible');
-
-		};
-
-		$menu
-			.appendTo($body)
-			.on('click', function(event) {
-				event.stopPropagation();
-			})
-			.on('click', 'a', function(event) {
-
-				var href = $(this).attr('href');
-
-				event.preventDefault();
-				event.stopPropagation();
-
-				// Hide.
-					$menu._hide();
-
-				// Redirect.
-					if (href == '#menu')
-						return;
-
-					window.setTimeout(function() {
-						window.location.href = href;
-					}, 350);
-
-			});
-
-		$body
-			.on('click', 'a[href="#menu"]', function(event) {
-
-				event.stopPropagation();
-				event.preventDefault();
-
-				// Toggle.
-					$menu._toggle();
-
-			})
-			.on('click', function(event) {
-
-				// Hide.
-					$menu._hide();
-
-			})
-			.on('keydown', function(event) {
-				if (event.keyCode == 27)
-					$menu._hide();
-			});
-
-})(jQuery);
-
-// Fallback: hvis jQuery/breakpoints init fejler, sørg for at menu kan toggles
-(()=>{
-	try {
-		if (window.jQuery) return; // original script kørte fint
-	} catch(_) {}
-	const body=document.body;
-	const menu=document.getElementById('menu');
-	if(!menu) return;
-	// close link allerede i template (eller tilføjet ovenfor)
-	const toggle=(e)=>{e&&e.preventDefault();body.classList.toggle('is-menu-visible');};
-	document.querySelectorAll('a[href="#menu"]').forEach(a=>a.addEventListener('click',toggle));
-	menu.addEventListener('click',e=>{
-		if(e.target.matches('a.close')){e.preventDefault();toggle();}
-		else if(e.target.tagName==='A'&& e.target.getAttribute('href')!=='#menu'){
-			body.classList.remove('is-menu-visible');
-			setTimeout(()=>{window.location.href=e.target.href;},200);
-		}
+	// Breakpoints (standalone, no jQuery needed).
+	breakpoints({
+		xlarge:   [ '1281px',  '1680px' ],
+		large:    [ '981px',   '1280px' ],
+		medium:   [ '737px',   '980px'  ],
+		small:    [ '481px',   '736px'  ],
+		xsmall:   [ '361px',   '480px'  ],
+		xxsmall:  [ null,      '360px'  ]
 	});
-	document.addEventListener('keydown',e=>{ if(e.key==='Escape') body.classList.remove('is-menu-visible'); });
-})();
 
-	// Always ensure preload class removed (defensive)
-	window.addEventListener('load',()=>{document.body.classList.remove('is-preload');});
+	// Remove preload class after page load (enables CSS transitions).
+	window.addEventListener('load', function() {
+		setTimeout(function() {
+			document.body.classList.remove('is-preload');
+		}, 100);
+	});
+
+	// Touch detection.
+	if (browser.mobile)
+		document.body.classList.add('is-touch');
+
+	// Menu (kept for completeness — #menu is hidden via CSS).
+	var menu = document.getElementById('menu');
+	if (menu) {
+		var inner = menu.querySelector('.inner');
+		if (inner && !inner.querySelector('a.close')) {
+			var closeLink = document.createElement('a');
+			closeLink.className = 'close';
+			closeLink.href = '#menu';
+			closeLink.textContent = 'Close';
+			inner.appendChild(closeLink);
+		}
+
+		var locked = false;
+		function menuLock() {
+			if (locked) return false;
+			locked = true;
+			setTimeout(function() { locked = false; }, 350);
+			return true;
+		}
+
+		function menuShow()   { if (menuLock()) document.body.classList.add('is-menu-visible'); }
+		function menuHide()   { if (menuLock()) document.body.classList.remove('is-menu-visible'); }
+		function menuToggle() { if (menuLock()) document.body.classList.toggle('is-menu-visible'); }
+
+		menu.addEventListener('click', function(e) { e.stopPropagation(); });
+		menu.addEventListener('click', function(e) {
+			var link = e.target.closest('a');
+			if (!link) return;
+			e.preventDefault();
+			e.stopPropagation();
+			menuHide();
+			var href = link.getAttribute('href');
+			if (href === '#menu') return;
+			setTimeout(function() { window.location.href = href; }, 350);
+		});
+
+		document.querySelectorAll('a[href="#menu"]').forEach(function(a) {
+			a.addEventListener('click', function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				menuToggle();
+			});
+		});
+
+		document.body.addEventListener('click', function() { menuHide(); });
+		document.addEventListener('keydown', function(e) { if (e.key === 'Escape') menuHide(); });
+	}
+
+})();

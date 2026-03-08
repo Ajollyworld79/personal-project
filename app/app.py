@@ -16,7 +16,6 @@ from app.models import Project
 from app.data import PROJECTS
 import io
 from fpdf import FPDF, XPos, YPos
-from mcp.client.sse import sse_client
 import random
 import aiohttp
 
@@ -92,7 +91,6 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
     pdf.cell(0, 6, "AI, LLM & Python Developer", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
     
     # Add generation date in bottom right of header
-    from datetime import datetime
     gen_date = datetime.now().strftime("%B %Y")
     pdf.set_font('Helvetica', '', 8)
     pdf.set_text_color(200, 200, 200)  # Light gray
@@ -255,48 +253,6 @@ async def get_apology():
     style = random.choice(["PROFESSIONAL", "CASUAL", "POETIC", "GROVELING", "HAIKU"])
     context = "the live demo button"
 
-    async def _extract_text_from_result(result):
-        """Try multiple ways to extract a human-readable text from different result shapes."""
-        if result is None:
-            return None
-        # dict-like
-        if isinstance(result, dict):
-            for key in ("text", "value", "content", "output"):
-                v = result.get(key)
-                if isinstance(v, str) and v.strip():
-                    return v.strip()
-                if isinstance(v, (list, tuple)):
-                    for it in v:
-                        if isinstance(it, str) and it.strip():
-                            return it.strip()
-                        if isinstance(it, dict):
-                            t = it.get("text")
-                            if t:
-                                return t.strip()
-        # object-like
-        for attr in ("text", "value", "content", "output"):
-            v = getattr(result, attr, None)
-            if v:
-                if isinstance(v, str) and v.strip():
-                    return v.strip()
-                if isinstance(v, (list, tuple)):
-                    for it in v:
-                        t = None
-                        if isinstance(it, dict):
-                            t = it.get("text")
-                        else:
-                            t = getattr(it, "text", None)
-                        if t:
-                            return t.strip()
-        # fallback to stringification
-        try:
-            s = str(result)
-            if s and len(s.strip()) > 0:
-                return s.strip()
-        except Exception:
-            pass
-        return None
-
     try:
         # Connect to the live MCP server using the simple demo endpoint (HTTP GET)
         # This bypasses SSE validation complexities for the simple button click
@@ -368,7 +324,7 @@ async def index():
 
 @app.route('/about')
 async def about():
-    return await render_template('about.html', author=settings.author_name, current_year=datetime.utcnow().year)
+    return await render_template('about.html', author=settings.author_name, current_year=datetime.now(timezone.utc).year)
 
 
 @app.route('/projects')
