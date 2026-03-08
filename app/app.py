@@ -374,12 +374,20 @@ async def download_cv():
     summary = summary_block.group(1).strip() if summary_block else ''
     summary = re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", summary).strip()
     summary = html_lib.unescape(summary)
-    # Experience
-    exp_block = re.search(r"<h2>Experience</h2>(.*?)<div class=\"separator\"></div>", cleaned, flags=re.S)
-    exp = exp_block.group(1).strip() if exp_block else ''
-    exp = re.sub(r"<[^>]+>", "", exp).strip()
-    exp = re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", exp).strip()
-    exp = html_lib.unescape(exp)
+    # Experience — capture main timeline + previous roles (up to Education heading)
+    exp_block = re.search(r"<h2>Experience</h2>(.*?)<h2>Education</h2>", cleaned, flags=re.S)
+    exp = ''
+    if exp_block:
+        raw = exp_block.group(1)
+        # Add spaces between adjacent span elements (prevents tech badge concatenation)
+        raw = re.sub(r"</span>\s*<span", "</span> <span", raw)
+        raw = re.sub(r"<[^>]+>", "", raw)
+        raw = re.sub(r"&nbsp;", " ", raw)
+        raw = html_lib.unescape(raw)
+        # Clean up excessive whitespace while preserving paragraph breaks
+        raw = re.sub(r'[ \t]+', ' ', raw)
+        raw = re.sub(r'\n\s*\n\s*\n', '\n\n', raw)
+        exp = raw.strip()
     # Education
     edu_block = re.search(r"<h2>Education</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S)
     edus = []

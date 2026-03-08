@@ -19,8 +19,28 @@
   </div>
 </header>
 
+<!-- Impact Stats -->
+<section class="stats-strip reveal">
+  <div class="stat-item">
+    <span class="stat-number" data-target="15">0</span><span class="stat-suffix">+</span>
+    <span class="stat-label">Years in IT</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-number" data-target="5">0</span>
+    <span class="stat-label">Live Projects</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-number" data-target="18">0</span><span class="stat-suffix">+</span>
+    <span class="stat-label">Technologies</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-number" data-target="5">0</span>
+    <span class="stat-label">Certifications</span>
+  </div>
+</section>
+
 <!-- Kompetencer Section -->
-<section>
+<section class="reveal">
   <header class="major">
     <h2>Skills & Technologies</h2>
   </header>
@@ -123,7 +143,7 @@
 </section>
 
 <!-- Projects Section -->
-<section>
+<section class="reveal">
   <header class="major">
     <h2>Featured Projects</h2>
     <p>Examples of technical solutions I have developed, with special emphasis on AI/LLMs, Python, and system architecture.</p>
@@ -313,7 +333,7 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
 </style>
 
 <!-- Code Example Section -->
-<section>
+<section class="reveal">
   <header class="major">
     <h2>Code Sample</h2>
   </header>
@@ -367,16 +387,17 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
   </div>
 </section>
 
-<!-- CTA Section -->
-<section>
-  <header class="major">
-    <h2>Explore My Work</h2>
-  </header>
-  <p>Check out my portfolio of technical solutions spanning AI/LLM integration, data engineering, and Python development.</p>
-  <ul class="actions">
-    <li><a href="/about" class="button big">Read more about me</a></li>
-    <li><a href="https://github.com/Ajollyworld79" class="button big alt" target="_blank" rel="noopener">GitHub Profile</a></li>
-  </ul>
+<!-- Portfolio CTA Section -->
+<section class="reveal cta-section">
+  <div class="cta-banner">
+    <h2 style="margin: 0 0 0.75rem; font-size: 2em; color: #fff;">Want to know more?</h2>
+    <p style="max-width: 600px; margin: 0 auto 1.5rem; color: rgba(255,255,255,0.7); font-size: 1.1em;">Take a look at my background, download my CV, or explore my projects on GitHub.</p>
+    <div class="cta-actions">
+      <a href="/about" class="button big">About Me</a>
+      <a href="/download_cv" class="button big alt">Download CV</a>
+      <a href="https://github.com/Ajollyworld79" class="button big alt" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
 </section>
 
 <style>
@@ -394,6 +415,172 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
   margin-top: 2em;
 }
 
+/* === Impact Stats Strip === */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  padding: 2.5rem 0;
+  margin: 0 0 1rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  text-align: center;
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.stat-number {
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f2849e, #7ecff4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.stat-suffix {
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f2849e, #7ecff4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+}
+@media (max-width: 736px) {
+  .stats-strip { grid-template-columns: repeat(2, 1fr); gap: 1.5rem 1rem; }
+  .stat-number, .stat-suffix { font-size: 2rem; }
+}
+
+/* === Scroll Reveal === */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === Cursor Spotlight === */
+.hero {
+  position: relative;
+}
+.hero-spotlight {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242,132,158,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  z-index: 0;
+}
+.hero:hover .hero-spotlight {
+  opacity: 1;
+}
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* === Portfolio CTA === */
+.cta-banner {
+  text-align: center;
+  padding: 3rem 2rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(242,132,158,0.08) 0%, rgba(126,207,244,0.08) 100%);
+  border: 1px solid rgba(242,132,158,0.2);
+}
+.cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .cta-banner { padding: 2rem 1rem; }
+  .cta-actions .button { width: 100%; text-align: center; }
+}
+
 </style>
 
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+// === Scroll Reveal (IntersectionObserver) ===
+(function() {
+  var revealEls = document.querySelectorAll('.reveal');
+  if (!revealEls.length) return;
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(function(el) { observer.observe(el); });
+})();
+
+// === Animated Stat Counters ===
+(function() {
+  var counted = false;
+  var statEls = document.querySelectorAll('.stat-number[data-target]');
+  if (!statEls.length) return;
+  function animateCounters() {
+    if (counted) return;
+    counted = true;
+    statEls.forEach(function(el) {
+      var target = parseInt(el.getAttribute('data-target'), 10);
+      var duration = 1200;
+      var start = performance.now();
+      function step(now) {
+        var elapsed = now - start;
+        var progress = Math.min(elapsed / duration, 1);
+        // ease-out cubic
+        var eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) animateCounters();
+    });
+  }, { threshold: 0.3 });
+  var strip = document.querySelector('.stats-strip');
+  if (strip) observer.observe(strip);
+})();
+
+// === Cursor Spotlight on Hero ===
+(function() {
+  var hero = document.querySelector('.hero');
+  if (!hero) return;
+  var spot = document.createElement('div');
+  spot.className = 'hero-spotlight';
+  hero.appendChild(spot);
+  hero.addEventListener('mousemove', function(e) {
+    var rect = hero.getBoundingClientRect();
+    spot.style.left = (e.clientX - rect.left) + 'px';
+    spot.style.top = (e.clientY - rect.top) + 'px';
+  });
+})();
+</script>
 {% endblock %}

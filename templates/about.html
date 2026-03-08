@@ -49,28 +49,75 @@
     <div class="separator"></div>
 
     <h2>Experience</h2>
-    <div>
-        <h3>3F – Fagligt Fælles Forbund</h3>
-        <p><em>Data Engineer</em> – October 2020 - Present (5 years), Copenhagen<br>
-        Data engineering, pipeline automation, ETL processes, and Python development. Building scalable data solutions and integrating AI/LLM capabilities.</p>
-
-        <p><em>IT Operations Specialist</em> – February 2014 - October 2020 (6 years 8 months)<br>
-        Server operations, SCOM development, SLA reporting, and Orchestrator batch automation.</p>
-
-        <p><em>IT Support Specialist</em> – September 2008 - February 2014 (5 years 6 months)<br>
-        End-user support, troubleshooting, and technical assistance.</p>
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-date">2020 — Present</div>
+            <div class="timeline-content">
+                <h3 class="timeline-role"><em>Data Engineer</em></h3>
+                <div class="timeline-company">3F – Fagligt Fælles Forbund · Copenhagen</div>
+                <p>Data engineering, pipeline automation, ETL processes, and Python development. Building scalable data solutions and integrating AI/LLM capabilities.</p>
+                <div class="timeline-tech">
+                    <span class="tech-badge">Python</span>
+                    <span class="tech-badge">SQL</span>
+                    <span class="tech-badge">ETL</span>
+                    <span class="tech-badge">AI/LLM</span>
+                    <span class="tech-badge">Azure</span>
+                </div>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-date">2014 — 2020</div>
+            <div class="timeline-content">
+                <h3 class="timeline-role"><em>IT Operations Specialist</em></h3>
+                <div class="timeline-company">3F – Fagligt Fælles Forbund</div>
+                <p>Server operations, SCOM development, SLA reporting, and Orchestrator batch automation.</p>
+                <div class="timeline-tech">
+                    <span class="tech-badge">SCOM</span>
+                    <span class="tech-badge">Orchestrator</span>
+                    <span class="tech-badge">Windows Server</span>
+                    <span class="tech-badge">SLA</span>
+                </div>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-date">2008 — 2014</div>
+            <div class="timeline-content">
+                <h3 class="timeline-role"><em>IT Support Specialist</em></h3>
+                <div class="timeline-company">3F – Fagligt Fælles Forbund</div>
+                <p>End-user support, troubleshooting, and technical assistance.</p>
+                <div class="timeline-tech">
+                    <span class="tech-badge">Support</span>
+                    <span class="tech-badge">Troubleshooting</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="separator"></div>
 
     <h3>Previous Roles</h3>
-    <ul>
-        <li>EDC – IT Support (2008)</li>
-        <li>Bolignet – Technical Consultant (2007-2008)</li>
-        <li>Debitel – IP Support (2006-2007)</li>
-        <li>DLG TELE – IT Support & DSL Support (2004-2006)</li>
-        <li>TELE2 – Technical Support (2002-2004)</li>
-    </ul>
+    <div class="timeline timeline-compact">
+        <div class="timeline-item">
+            <div class="timeline-date">2008</div>
+            <div class="timeline-content"><strong>EDC</strong> — IT Support</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-date">2007 — 08</div>
+            <div class="timeline-content"><strong>Bolignet</strong> — Technical Consultant</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-date">2006 — 07</div>
+            <div class="timeline-content"><strong>Debitel</strong> — IP Support</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-date">2004 — 06</div>
+            <div class="timeline-content"><strong>DLG TELE</strong> — IT Support & DSL Support</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-date">2002 — 04</div>
+            <div class="timeline-content"><strong>TELE2</strong> — Technical Support</div>
+        </div>
+    </div>
 
     <div class="separator"></div>
 
@@ -285,6 +332,98 @@
     .section h2 {
         font-size: 1.5em;
     }
+}
+
+/* === Experience Timeline === */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin: 1.5rem 0;
+}
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #f2849e, rgba(126,207,244,0.3), transparent);
+}
+.timeline-item {
+    position: relative;
+    padding-bottom: 2rem;
+    padding-left: 1.5rem;
+}
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #0b0f13;
+    border: 2px solid #f2849e;
+    z-index: 1;
+}
+.timeline-item:first-child::before {
+    background: #f2849e;
+    box-shadow: 0 0 0 4px rgba(242,132,158,0.2);
+}
+.timeline-date {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+}
+.timeline-role {
+    font-size: 1.15em !important;
+    margin: 0 0 0.25rem !important;
+}
+.timeline-company {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.5rem;
+}
+.timeline-content p {
+    margin-bottom: 0.75rem;
+}
+.timeline-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+.timeline-tech .tech-badge {
+    font-size: 0.7em;
+    padding: 0.25em 0.6em;
+}
+
+/* Compact timeline for previous roles */
+.timeline-compact .timeline-item {
+    padding-bottom: 0.75rem;
+}
+.timeline-compact .timeline-item::before {
+    width: 8px;
+    height: 8px;
+    top: 5px;
+    left: -1.85rem;
+    border-width: 1.5px;
+}
+.timeline-compact .timeline-content {
+    font-size: 0.95em;
+    color: rgba(255,255,255,0.75);
+}
+.timeline-compact .timeline-content strong {
+    color: #fff;
+}
+
+@media (max-width: 480px) {
+    .timeline { padding-left: 1.25rem; }
+    .timeline-item { padding-left: 1rem; }
+    .timeline-item::before { left: -1.3rem; width: 10px; height: 10px; }
+    .timeline-compact .timeline-item::before { left: -1.15rem; }
 }
 </style>
 {% endblock %}
