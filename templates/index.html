@@ -2,7 +2,7 @@
 {% block content %}
 
 <!-- Hero Section -->
-<header class="major" role="banner">
+<header class="major" role="banner" style="margin-top: -2rem; margin-bottom: 0; padding-bottom: 0;">
   <div class="container hero">
     <div class="hero-left">
       <h1>Gustav Christensen — AI, LLM & Python Developer</h1>
@@ -420,7 +420,7 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
-  padding: 2.5rem 0;
+  padding: 1.5rem 0;
   margin: 0 0 1rem;
   border-top: 1px solid rgba(255,255,255,0.06);
   border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -471,30 +471,6 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
 .reveal.revealed {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* === Cursor Spotlight === */
-.hero {
-  position: relative;
-}
-.hero-spotlight {
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(242,132,158,0.08) 0%, transparent 70%);
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  transition: opacity 0.3s ease;
-  opacity: 0;
-  z-index: 0;
-}
-.hero:hover .hero-spotlight {
-  opacity: 1;
-}
-.hero > * {
-  position: relative;
-  z-index: 1;
 }
 
 /* === Portfolio CTA === */
@@ -569,18 +545,5 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
   if (strip) observer.observe(strip);
 })();
 
-// === Cursor Spotlight on Hero ===
-(function() {
-  var hero = document.querySelector('.hero');
-  if (!hero) return;
-  var spot = document.createElement('div');
-  spot.className = 'hero-spotlight';
-  hero.appendChild(spot);
-  hero.addEventListener('mousemove', function(e) {
-    var rect = hero.getBoundingClientRect();
-    spot.style.left = (e.clientX - rect.left) + 'px';
-    spot.style.top = (e.clientY - rect.top) + 'px';
-  });
-})();
 </script>
 {% endblock %}
