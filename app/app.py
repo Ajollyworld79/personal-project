@@ -56,188 +56,321 @@ def _clean_text_for_pdf(text: str) -> str:
         text = text.encode('latin-1', errors='ignore').decode('latin-1')
     return text
 
+
+def _strip_html(text: str) -> str:
+    """Strip HTML tags, comments, and entities for PDF rendering."""
+    if not text:
+        return ""
+    text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
+    # Convert block-level boundaries to spaces so adjacent words don't merge.
+    text = re.sub(r"<\s*(br|/p|/div|/li|/h\d)\b[^>]*>", " ", text, flags=re.I)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = html_lib.unescape(text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+# Color palette — matches website accent colors
+_C_PINK = (242, 132, 158)        # #F2849E
+_C_BLUE = (126, 207, 244)        # #7ECFF4
+_C_DARK = (45, 55, 72)            # #2D3748
+_C_TEXT = (74, 85, 104)           # #4A5568
+_C_MUTED = (113, 128, 150)        # #718096
+_C_SIDEBAR_BG = (247, 250, 252)   # #F7FAFC
+_C_BADGE_BG = (253, 235, 240)     # very light pink
+_C_DIVIDER = (224, 224, 230)
+_C_WHITE = (255, 255, 255)
+
+
 def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | None = None, skills: list | None = None, 
                       languages: str | None = None, summary: str | None = None, certifications: list | None = None, 
                       experience: str | None = None, education: list | None = None):
-    """Generate a professional CV PDF with clean formatting"""
+    """Generate a professional CV PDF with two-column layout + dedicated projects page."""
+
+    # Clean inputs
+    author_clean = _clean_text_for_pdf(author)
+    if summary:        summary = _clean_text_for_pdf(summary)
+    if languages:      languages = _clean_text_for_pdf(languages)
+    if experience:     experience = _clean_text_for_pdf(experience)
+    if certifications: certifications = [_clean_text_for_pdf(c) for c in certifications]
+    if education:      education = [_clean_text_for_pdf(e) for e in education]
+    if skills:         skills = [_clean_text_for_pdf(s) for s in skills]
+
     pdf = FPDF(orientation='P', unit='mm', format='A4')
-    pdf.set_auto_page_break(auto=True, margin=20)
+    pdf.set_auto_page_break(auto=True, margin=18)
     pdf.add_page()
-    pdf.set_left_margin(20)
-    pdf.set_right_margin(20)
-    
-    # Clean all text inputs
-    if summary:
-        summary = _clean_text_for_pdf(summary)
-    if languages:
-        languages = _clean_text_for_pdf(languages)
-    if experience:
-        experience = _clean_text_for_pdf(experience)
-    if certifications:
-        certifications = [_clean_text_for_pdf(c) for c in certifications]
-    if education:
-        education = [_clean_text_for_pdf(e) for e in education]
-    if skills:
-        skills = [_clean_text_for_pdf(s) for s in skills]
 
-    # Header
-    pdf.set_fill_color(45, 55, 72)
-    pdf.rect(0, 0, pdf.w, 35, 'F')
-    pdf.set_text_color(255, 255, 255)
-    pdf.set_font('Helvetica', 'B', 22)
-    pdf.set_y(10)
-    pdf.cell(0, 8, author, align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    PAGE_W, PAGE_H = pdf.w, pdf.h  # 210 x 297
+    HERO_H = 42
+
+    # --- Hero header ---
+    pdf.set_fill_color(*_C_DARK)
+    pdf.rect(0, 0, PAGE_W, HERO_H, 'F')
+    # Pink accent stripe
+    pdf.set_fill_color(*_C_PINK)
+    pdf.rect(0, HERO_H, PAGE_W, 2.5, 'F')
+
+    pdf.set_text_color(*_C_WHITE)
+    pdf.set_font('Helvetica', 'B', 24)
+    pdf.set_xy(0, 12)
+    pdf.cell(PAGE_W, 10, author_clean, align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
     pdf.set_font('Helvetica', '', 11)
-    pdf.cell(0, 6, "AI, LLM & Python Developer", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-    
-    # Add generation date in bottom right of header
-    gen_date = datetime.now().strftime("%B %Y")
-    pdf.set_font('Helvetica', '', 8)
-    pdf.set_text_color(200, 200, 200)  # Light gray
-    pdf.set_xy(pdf.w - 50, 28)  # Position in bottom right
-    pdf.cell(40, 4, f"Generated: {gen_date}", align='R')
-    
-    pdf.set_text_color(50, 50, 50)
-    pdf.ln(12)
+    pdf.set_xy(0, 24)
+    pdf.cell(PAGE_W, 6, "AI, LLM and Python Developer", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
-    def add_section_header(title):
+    # Generation date
+    pdf.set_font('Helvetica', '', 7)
+    pdf.set_text_color(200, 200, 200)
+    pdf.set_xy(PAGE_W - 50, 34)
+    pdf.cell(40, 4, f"Generated {datetime.now().strftime('%B %Y')}", align='R')
+
+    # --- Two-column geometry ---
+    SIDEBAR_W = 64
+    SIDEBAR_PAD = 6
+    SIDEBAR_CONTENT_W = SIDEBAR_W - 2 * SIDEBAR_PAD
+    SIDEBAR_TOP = HERO_H + 2.5
+    MAIN_X = SIDEBAR_W + 8
+    MAIN_W = PAGE_W - MAIN_X - 10  # 10mm right margin
+    MAIN_TOP = SIDEBAR_TOP + 5
+
+    # Sidebar background (full page height below hero)
+    pdf.set_fill_color(*_C_SIDEBAR_BG)
+    pdf.rect(0, SIDEBAR_TOP, SIDEBAR_W, PAGE_H - SIDEBAR_TOP, 'F')
+
+    def sidebar_header(title: str):
+        pdf.set_x(SIDEBAR_PAD)
+        pdf.set_font('Helvetica', 'B', 9)
+        pdf.set_text_color(*_C_PINK)
+        pdf.cell(SIDEBAR_CONTENT_W, 5, title.upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        # Tiny pink underline
+        y = pdf.get_y() + 0.4
+        pdf.set_fill_color(*_C_PINK)
+        pdf.rect(SIDEBAR_PAD, y, 10, 0.7, 'F')
+        pdf.set_y(y + 2.5)
+
+    def main_header(title: str):
+        pdf.set_x(MAIN_X)
         pdf.set_font('Helvetica', 'B', 11)
-        pdf.set_text_color(45, 55, 72)
-        pdf.cell(0, 6, title.upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        pdf.set_draw_color(180, 180, 180)
-        pdf.set_line_width(0.3)
-        pdf.line(pdf.l_margin, pdf.get_y(), pdf.w - pdf.r_margin, pdf.get_y())
-        pdf.ln(3)
+        pdf.set_text_color(*_C_DARK)
+        pdf.cell(MAIN_W, 6, title.upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        y = pdf.get_y() + 0.3
+        pdf.set_fill_color(*_C_PINK)
+        pdf.rect(MAIN_X, y, 22, 0.9, 'F')
+        pdf.set_y(y + 3)
 
-    # Get max width for multi_cell - use effective page width
-    max_w = pdf.epw  # effective page width (excludes margins)
+    # ================
+    # SIDEBAR CONTENT
+    # ================
+    pdf.set_y(SIDEBAR_TOP + 6)
 
-    # Contact
     if contact_info:
-        add_section_header("Contact")
-        pdf.set_font('Helvetica', '', 9)
-        pdf.set_text_color(60, 60, 60)
-        
-        label_width = 25  # Fixed width for all labels
-        
+        sidebar_header("Contact")
+        pdf.set_font('Helvetica', '', 8)
+        pdf.set_text_color(*_C_TEXT)
         if contact_info.get('phone'):
-            pdf.cell(label_width, 4, "Phone:", new_x=XPos.RIGHT, new_y=YPos.TOP)
-            pdf.cell(0, 4, contact_info['phone'], new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        
+            pdf.set_x(SIDEBAR_PAD)
+            pdf.multi_cell(SIDEBAR_CONTENT_W, 4, contact_info['phone'])
         if contact_info.get('email'):
             email = contact_info['email']
-            pdf.cell(label_width, 4, "Email:", new_x=XPos.RIGHT, new_y=YPos.TOP)
-            pdf.set_text_color(0, 0, 255)  # Blue for link
-            pdf.cell(0, 4, email, new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=f"mailto:{email}")
-            pdf.set_text_color(60, 60, 60)  # Reset color
-        
+            pdf.set_x(SIDEBAR_PAD)
+            pdf.set_text_color(*_C_BLUE)
+            pdf.multi_cell(SIDEBAR_CONTENT_W, 4, email, link=f"mailto:{email}")
+            pdf.set_text_color(*_C_TEXT)
         if contact_info.get('linkedin'):
-            linkedin_username = contact_info['linkedin']
-            linkedin_url = f"https://www.linkedin.com/in/{linkedin_username}" if not linkedin_username.startswith('http') else linkedin_username
-            pdf.cell(label_width, 4, "LinkedIn:", new_x=XPos.RIGHT, new_y=YPos.TOP)
-            pdf.set_text_color(0, 0, 255)  # Blue for link
-            pdf.cell(0, 4, linkedin_username, new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=linkedin_url)
-            pdf.set_text_color(60, 60, 60)  # Reset color
-
+            ln = contact_info['linkedin']
+            url = ln if ln.startswith('http') else f"https://linkedin.com/in/{ln}"
+            pdf.set_x(SIDEBAR_PAD)
+            pdf.set_text_color(*_C_BLUE)
+            pdf.multi_cell(SIDEBAR_CONTENT_W, 4, ln, link=url)
+            pdf.set_text_color(*_C_TEXT)
         if contact_info.get('portfolio'):
-            portfolio_url = contact_info['portfolio']
-            pdf.cell(label_width, 4, "Portfolio:", new_x=XPos.RIGHT, new_y=YPos.TOP)
-            pdf.set_text_color(0, 0, 255)  # Blue for link
-            pdf.cell(0, 4, portfolio_url, new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=portfolio_url)
-            pdf.set_text_color(60, 60, 60)  # Reset color
-        
+            url = contact_info['portfolio']
+            short = url.replace('https://', '').replace('http://', '').rstrip('/')
+            pdf.set_x(SIDEBAR_PAD)
+            pdf.set_text_color(*_C_BLUE)
+            pdf.multi_cell(SIDEBAR_CONTENT_W, 4, short, link=url)
+            pdf.set_text_color(*_C_TEXT)
         pdf.ln(3)
 
-    # Summary
-    if summary:
-        add_section_header("Professional Summary")
-        pdf.set_font('Helvetica', '', 9)
-        pdf.set_text_color(50, 50, 50)
-        pdf.multi_cell(max_w, 5, summary)
-        pdf.ln(3)
-
-    # Skills
     if skills:
-        add_section_header("Core Skills")
-        pdf.set_font('Helvetica', '', 9)
-        pdf.set_text_color(60, 60, 60)
-        pdf.cell(0, 5, ", ".join(skills), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        sidebar_header("Core Skills")
+        pdf.set_font('Helvetica', '', 8)
+        pdf.set_text_color(*_C_TEXT)
+        for skill in skills:
+            pdf.set_x(SIDEBAR_PAD)
+            # Small pink bullet
+            pdf.set_fill_color(*_C_PINK)
+            bullet_y = pdf.get_y() + 1.7
+            pdf.rect(SIDEBAR_PAD, bullet_y, 1.4, 1.4, 'F')
+            pdf.set_x(SIDEBAR_PAD + 3)
+            pdf.multi_cell(SIDEBAR_CONTENT_W - 3, 4, skill)
         pdf.ln(3)
 
-    # Experience
-    if experience:
-        add_section_header("Professional Experience")
+    if languages:
+        sidebar_header("Languages")
+        pdf.set_font('Helvetica', '', 8)
+        pdf.set_text_color(*_C_TEXT)
+        pdf.set_x(SIDEBAR_PAD)
+        pdf.multi_cell(SIDEBAR_CONTENT_W, 4, languages)
+        pdf.ln(3)
+
+    if education:
+        sidebar_header("Education")
+        pdf.set_font('Helvetica', '', 7)
+        pdf.set_text_color(*_C_TEXT)
+        for edu in education:
+            pdf.set_x(SIDEBAR_PAD)
+            pdf.multi_cell(SIDEBAR_CONTENT_W, 3.8, edu)
+            pdf.ln(0.5)
+
+    # ================
+    # MAIN CONTENT
+    # ================
+    pdf.set_xy(MAIN_X, MAIN_TOP)
+
+    if summary:
+        main_header("Profile")
+        pdf.set_x(MAIN_X)
         pdf.set_font('Helvetica', '', 9)
-        pdf.set_text_color(50, 50, 50)
-        
-        # Parse experience into structured format
-        exp_lines = experience.split('\n')
-        for line in exp_lines:
+        pdf.set_text_color(*_C_TEXT)
+        pdf.multi_cell(MAIN_W, 4.5, summary)
+        pdf.ln(2)
+
+    if experience:
+        main_header("Experience")
+        date_re = re.compile(r'^\s*\d{4}\b')
+        prev_was_date = False
+        for line in experience.split('\n'):
             line = line.strip()
             if not line:
+                prev_was_date = False
                 continue
-            # Check if it's a company/role line (contains dates or em dashes)
-            if any(x in line for x in ['–', '-', '20', '(']):
-                # Split into parts
-                parts = line.split('–')
-                if len(parts) >= 2:
-                    pdf.set_font('Helvetica', 'B', 9)
-                    pdf.set_text_color(45, 55, 72)
-                    pdf.cell(0, 5, parts[0].strip(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-                    pdf.set_font('Helvetica', '', 8)
-                    pdf.set_text_color(80, 80, 80)
-                    pdf.multi_cell(max_w, 4, ' – '.join(parts[1:]).strip())
-                else:
-                    pdf.set_font('Helvetica', '', 9)
-                    pdf.set_text_color(60, 60, 60)
-                    pdf.multi_cell(max_w, 5, line)
+            if date_re.match(line):
+                # Date pill — small pink uppercase label
+                pdf.set_x(MAIN_X)
+                pdf.set_font('Helvetica', 'B', 7)
+                pdf.set_text_color(*_C_PINK)
+                pdf.cell(0, 4, line.upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+                prev_was_date = True
+            elif prev_was_date and len(line) < 60:
+                # Role title — bold, right after a date line
+                pdf.set_x(MAIN_X)
+                pdf.set_font('Helvetica', 'B', 10)
+                pdf.set_text_color(*_C_DARK)
+                pdf.multi_cell(MAIN_W, 4.6, line)
+                prev_was_date = False
             else:
+                # Body / company / description
+                pdf.set_x(MAIN_X)
                 pdf.set_font('Helvetica', '', 8)
-                pdf.set_text_color(70, 70, 70)
-                pdf.multi_cell(max_w, 4, line)
-            pdf.ln(1)
-        pdf.ln(2)
+                pdf.set_text_color(*_C_TEXT)
+                pdf.multi_cell(MAIN_W, 4, line)
+                prev_was_date = False
+            pdf.ln(0.2)
+        pdf.ln(1.5)
 
-    # Certifications
     if certifications:
-        add_section_header("Certifications")
+        main_header("Certifications")
         pdf.set_font('Helvetica', '', 8)
-        pdf.set_text_color(60, 60, 60)
-        bullet_width = 5
-        text_width = max_w - bullet_width
+        pdf.set_text_color(*_C_TEXT)
         for cert in certifications:
-            x_start = pdf.get_x()
-            # Simple dash bullet
-            pdf.cell(bullet_width, 5, "-", new_x=XPos.RIGHT, new_y=YPos.TOP)
-            # Text next to bullet
-            pdf.multi_cell(text_width, 5, cert)
-            # Reset x for next item
-            pdf.set_x(x_start)
-        pdf.ln(2)
+            pdf.set_x(MAIN_X)
+            pdf.set_fill_color(*_C_PINK)
+            bullet_y = pdf.get_y() + 1.6
+            pdf.rect(MAIN_X, bullet_y, 1.4, 1.4, 'F')
+            pdf.set_x(MAIN_X + 3)
+            pdf.multi_cell(MAIN_W - 3, 4.4, cert)
+        pdf.ln(1.5)
 
-    # Education
-    if education:
-        add_section_header("Education")
+    # Education renders in the sidebar — no main-column section.
+
+    # ================
+    # PAGE 2+ — PROJECTS
+    # ================
+    if projects:
+        pdf.add_page()
+
+        # Mini hero strip
+        pdf.set_fill_color(*_C_DARK)
+        pdf.rect(0, 0, PAGE_W, 18, 'F')
+        pdf.set_fill_color(*_C_PINK)
+        pdf.rect(0, 18, PAGE_W, 1.5, 'F')
+        pdf.set_text_color(*_C_WHITE)
+        pdf.set_font('Helvetica', 'B', 15)
+        pdf.set_xy(15, 5)
+        pdf.cell(0, 8, "Featured Projects", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         pdf.set_font('Helvetica', '', 8)
-        pdf.set_text_color(60, 60, 60)
-        bullet_width = 5
-        text_width = max_w - bullet_width
-        for edu in education:
-            x_start = pdf.get_x()
-            pdf.cell(bullet_width, 5, "-", new_x=XPos.RIGHT, new_y=YPos.TOP)
-            pdf.multi_cell(text_width, 5, edu)
-            pdf.set_x(x_start)
-        pdf.ln(2)
+        pdf.set_text_color(200, 200, 200)
+        pdf.set_xy(PAGE_W - 80, 8.5)
+        pdf.cell(70, 5, "See live demos at the portfolio URL on page 1", align='R')
 
-    # Languages
-    if languages:
-        add_section_header("Languages")
-        pdf.set_font('Helvetica', '', 9)
-        pdf.set_text_color(60, 60, 60)
-        pdf.multi_cell(max_w, 5, languages)
-        pdf.ln(3)
+        pdf.set_y(26)
+        margin_x = 15
+        card_w = PAGE_W - 2 * margin_x
 
-    # Projects section removed from PDF - available on website instead
+        for project in projects:
+            # Project title
+            pdf.set_x(margin_x)
+            pdf.set_font('Helvetica', 'B', 11)
+            pdf.set_text_color(*_C_DARK)
+            pdf.multi_cell(card_w, 5.5, _clean_text_for_pdf(project.title))
+
+            # Description (intro only — text before <!--more-->)
+            pdf.set_x(margin_x)
+            pdf.set_font('Helvetica', '', 9)
+            pdf.set_text_color(*_C_TEXT)
+            raw_desc = project.description.split('<!--more-->', 1)[0]
+            desc = _clean_text_for_pdf(_strip_html(raw_desc))
+            if len(desc) > 360:
+                desc = desc[:357].rstrip() + "..."
+            pdf.multi_cell(card_w, 4.2, desc)
+
+            # Tech badges (wrap to multiple rows)
+            if project.technologies:
+                pdf.ln(0.5)
+                pdf.set_font('Helvetica', '', 7)
+                pdf.set_draw_color(*_C_PINK)
+                pdf.set_line_width(0.2)
+                badge_h = 4.2
+                pad_x = 1.6
+                badge_y = pdf.get_y()
+                badge_x = margin_x
+                for tech in project.technologies:
+                    label = _clean_text_for_pdf(str(tech))
+                    w = pdf.get_string_width(label) + 2 * pad_x
+                    if badge_x + w > margin_x + card_w:
+                        badge_y += badge_h + 1.4
+                        badge_x = margin_x
+                    pdf.set_fill_color(*_C_BADGE_BG)
+                    pdf.rect(badge_x, badge_y, w, badge_h, 'FD')
+                    pdf.set_text_color(*_C_PINK)
+                    pdf.set_xy(badge_x, badge_y + 0.4)
+                    pdf.cell(w, badge_h - 0.4, label, align='C')
+                    badge_x += w + 1.6
+                pdf.set_y(badge_y + badge_h + 2)
+
+            # URLs
+            url_parts = []
+            if project.repo_url:
+                url_parts.append(("Code", str(project.repo_url)))
+            if project.live_url:
+                url_parts.append(("Live", str(project.live_url)))
+            if url_parts:
+                pdf.set_x(margin_x)
+                pdf.set_font('Helvetica', '', 8)
+                for label, url in url_parts:
+                    short = url.replace('https://', '').replace('http://', '')
+                    pdf.set_text_color(*_C_BLUE)
+                    pdf.cell(0, 3.8, f"{label}: {short}",
+                             new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=url)
+
+            # Light divider between projects
+            pdf.ln(2)
+            pdf.set_draw_color(*_C_DIVIDER)
+            pdf.set_line_width(0.15)
+            y = pdf.get_y()
+            pdf.line(margin_x, y, margin_x + card_w, y)
+            pdf.ln(3)
 
     buffer = io.BytesIO()
     raw = pdf.output()
@@ -410,13 +543,8 @@ async def download_cv():
         else:
             contact_info['linkedin'] = linkedin_url
 
-    # Detect a portfolio URL in the page contents (or fall back to a configured or provided URL)
-    portfolio_m = re.search(r"https?://\S*web-production\S*", cleaned)
-    if portfolio_m:
-        contact_info['portfolio'] = portfolio_m.group(0).strip()
-    else:
-        # Fallback to settings.portfolio_url if available, otherwise use provided demo URL
-        contact_info['portfolio'] = getattr(settings, 'portfolio_url', '') or 'https://web-production-e612.up.railway.app/'
+    # Portfolio URL — prefer settings, else use the canonical custom domain
+    contact_info['portfolio'] = getattr(settings, 'portfolio_url', '') or 'https://gustavchristensen.dev'
 
     # Generate PDF with structured data
     packet = generate_cv_pdf(
