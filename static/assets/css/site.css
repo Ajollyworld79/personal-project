@@ -1,0 +1,459 @@
+/* ============================================================
+   site.css — base styles for gustavchristensen.dev
+   Authored from scratch to replace the previous third-party
+   theme stylesheet. Provides the reset, base typography, and
+   utility classes that portfolio.css then customizes on top of.
+
+   Loaded BEFORE portfolio.css so component overrides win.
+   ============================================================ */
+
+/* --- Reset & box model --- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    margin: 0;
+    -ms-overflow-style: scrollbar;
+}
+
+@media screen and (max-width: 480px) {
+    html, body { min-width: 320px; }
+}
+
+img, svg, video, canvas, iframe { max-width: 100%; height: auto; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+input::-moz-focus-inner { border: 0; padding: 0; }
+
+input, select, textarea { -moz-appearance: none; -webkit-appearance: none; appearance: none; }
+
+/* Suppress every animation/transition until the page has finished loading.
+   A tiny inline script in base.html removes this class on window.load. */
+body.is-preload *,
+body.is-preload *::before,
+body.is-preload *::after {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* --- Body / page background ---
+   portfolio.css supplies the actual gradient; this just defines color and
+   the fluid font-size scale. */
+body, input, select, textarea {
+    color: #585858;
+    font-family: 'Inter', 'Source Sans Pro', Helvetica, sans-serif;
+    font-size: 16pt;
+    font-weight: 300;
+    line-height: 1.75;
+}
+
+@media screen and (max-width: 1680px) {
+    body, input, select, textarea { font-size: 14pt; }
+}
+
+@media screen and (max-width: 1280px) {
+    body, input, select, textarea { font-size: 12pt; }
+}
+
+/* Inherited dark background — portfolio.css's gradient is the canonical
+   source; this is the solid fallback if anything ever clears the gradient. */
+body { background-color: #202b38; }
+
+/* --- Inline text --- */
+
+strong, b { font-weight: 900; }
+em, i     { font-style: italic; }
+
+p { margin: 0 0 2em 0; }
+
+a {
+    color: #585858;
+    text-decoration: none;
+    border-bottom: dotted 1px rgba(88, 88, 88, 0.5);
+    transition: border-bottom-color 0.2s ease, color 0.2s ease;
+}
+
+a:hover {
+    border-bottom-color: transparent;
+    color: #f2849e !important;
+}
+
+code {
+    background: rgba(144, 144, 144, 0.075);
+    border: solid 1px #c9c9c9;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    margin: 0 0.25em;
+    padding: 0.25em 0.65em;
+}
+
+pre {
+    -webkit-overflow-scrolling: touch;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    margin: 0 0 2em 0;
+}
+
+pre code {
+    display: block;
+    line-height: 1.75;
+    padding: 1em 1.5em;
+    overflow-x: auto;
+}
+
+blockquote {
+    border-left: solid 4px #c9c9c9;
+    font-style: italic;
+    margin: 0 0 2em 0;
+    padding: 0.5em 0 0.5em 2em;
+}
+
+sub { font-size: 0.8em; position: relative; top:  0.5em; }
+sup { font-size: 0.8em; position: relative; top: -0.5em; }
+
+/* --- Headings --- */
+
+h1 {
+    font-size: 2.75em;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.035em;
+    margin: 0 0 1em 0;
+}
+h1 a { color: inherit; }
+
+@media screen and (max-width: 736px) { h1 { font-size: 2em; } }
+@media screen and (max-width: 360px) { h1 { font-size: 1.75em; } }
+
+h2, h3, h4, h5, h6 {
+    font-weight: 900;
+    line-height: 1.5;
+    margin: 0 0 2em 0;
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+}
+h2 a, h3 a, h4 a, h5 a, h6 a { color: inherit; }
+
+h2 { font-size: 1.1em; }
+h3 { font-size: 1em; }
+h4, h5, h6 { font-size: 0.8em; }
+
+@media screen and (max-width: 980px) {
+    h1 br, h2 br, h3 br, h4 br, h5 br, h6 br { display: none; }
+}
+
+@media screen and (max-width: 736px) {
+    h2 { font-size: 1em; }
+    h3 { font-size: 0.8em; }
+}
+
+/* --- Rules & alignment helpers --- */
+
+hr {
+    border: 0;
+    border-bottom: solid 1px #c9c9c9;
+    margin: 2em 0;
+}
+
+hr.major { margin: 3em 0; }
+
+.align-left   { text-align: left; }
+.align-center { text-align: center; }
+.align-right  { text-align: right; }
+
+/* --- Lists --- */
+
+ul, ol { padding-left: 1em; margin: 0 0 2em 0; }
+ul     { list-style: disc; }
+ul li  { padding-left: 0.5em; }
+
+ul.alt { list-style: none; padding-left: 0; }
+ul.alt li {
+    border-top: solid 1px #c9c9c9;
+    padding: 0.5em 0;
+}
+ul.alt li:first-child { border-top: 0; padding-top: 0; }
+
+dl { margin: 0 0 2em 0; }
+dl dt { display: block; font-weight: 900; margin: 0 0 1em 0; }
+dl dd { margin-left: 2em; }
+
+/* --- Action lists (horizontal button row + variants) --- */
+
+ul.actions {
+    display: flex;
+    cursor: default;
+    list-style: none;
+    margin-left: -1em;
+    padding-left: 0;
+}
+
+ul.actions li { padding: 0 0 0 1em; vertical-align: middle; }
+
+ul.actions.special {
+    justify-content: center;
+    width: 100%;
+    margin-left: 0;
+}
+ul.actions.special li:first-child { padding-left: 0; }
+
+ul.actions.stacked {
+    flex-direction: column;
+    margin-left: 0;
+}
+ul.actions.stacked li { padding: 1.3em 0 0 0; }
+ul.actions.stacked li:first-child { padding-top: 0; }
+
+ul.actions.fit { width: calc(100% + 1em); }
+ul.actions.fit li { flex: 1 1 100%; width: 100%; }
+ul.actions.fit li > * { width: 100%; }
+ul.actions.fit.stacked { width: 100%; }
+
+@media screen and (max-width: 480px) {
+    ul.actions:not(.fixed) {
+        flex-direction: column;
+        margin-left: 0;
+        width: 100% !important;
+    }
+    ul.actions:not(.fixed) li {
+        flex: 1 1 100%;
+        padding: 1em 0 0 0;
+        text-align: center;
+        width: 100%;
+    }
+    ul.actions:not(.fixed) li > * { width: 100%; }
+    ul.actions:not(.fixed) li:first-child { padding-top: 0; }
+    ul.actions:not(.fixed) li input[type="submit"],
+    ul.actions:not(.fixed) li input[type="reset"],
+    ul.actions:not(.fixed) li input[type="button"],
+    ul.actions:not(.fixed) li button,
+    ul.actions:not(.fixed) li .button { width: 100%; }
+}
+
+/* --- Buttons ---
+   The pill-style button used across the site. portfolio.css layers
+   a gradient + shadow variant on top of this base. */
+
+.button,
+button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+    appearance: none;
+    background-color: transparent;
+    border: 0;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 2px #585858;
+    color: #585858 !important;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 0.8em;
+    font-weight: 900;
+    height: 3.5em;
+    letter-spacing: 0.35em;
+    line-height: 3.45em;
+    overflow: hidden;
+    padding: 0 1.25em 0 1.6em;
+    text-align: center;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.button:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover {
+    color: #f2849e !important;
+    box-shadow: inset 0 0 0 2px #f2849e;
+}
+
+.button:active,
+button:active,
+input[type="submit"]:active,
+input[type="reset"]:active,
+input[type="button"]:active {
+    background-color: rgba(242, 132, 158, 0.1);
+}
+
+.button.fit,
+button.fit,
+input[type="submit"].fit,
+input[type="reset"].fit,
+input[type="button"].fit { width: 100%; }
+
+.button.small,
+button.small,
+input[type="submit"].small,
+input[type="reset"].small,
+input[type="button"].small { font-size: 0.6em; }
+
+.button.large,
+button.large,
+input[type="submit"].large,
+input[type="reset"].large,
+input[type="button"].large { font-size: 1em; }
+
+.button.primary,
+button.primary,
+input[type="submit"].primary,
+input[type="reset"].primary,
+input[type="button"].primary {
+    box-shadow: none;
+    background-color: #585858;
+    color: #ffffff !important;
+}
+.button.primary:hover,
+button.primary:hover,
+input[type="submit"].primary:hover,
+input[type="reset"].primary:hover,
+input[type="button"].primary:hover { background-color: #f2849e; }
+
+.button.primary:active,
+button.primary:active,
+input[type="submit"].primary:active,
+input[type="reset"].primary:active,
+input[type="button"].primary:active { background-color: #ee5f81; }
+
+.button.disabled, .button:disabled,
+button.disabled, button:disabled,
+input[type="submit"].disabled, input[type="submit"]:disabled,
+input[type="reset"].disabled, input[type="reset"]:disabled,
+input[type="button"].disabled, input[type="button"]:disabled {
+    pointer-events: none;
+    opacity: 0.25;
+}
+
+/* Icon buttons (font-awesome was used here historically; keep the spacing rule). */
+.button.icon::before,
+button.icon::before,
+input[type="submit"].icon::before,
+input[type="reset"].icon::before,
+input[type="button"].icon::before { margin-right: 0.5em; }
+
+/* --- Page structure (#wrapper, #main, #footer) --- */
+
+#wrapper {
+    transition: opacity 0.45s ease;
+    opacity: 1;
+}
+
+#wrapper > * > .inner {
+    width: 100%;
+    max-width: 68em;
+    margin: 0 auto;
+    padding: 0 2.5em;
+}
+
+@media screen and (max-width: 736px) {
+    #wrapper > * > .inner { padding: 0 1.25em; }
+}
+
+#main { padding: 0 0 6em 0; }
+
+@media screen and (max-width: 736px) {
+    #main { padding: 0 0 4em 0; }
+}
+
+/* Footer — portfolio.css already supplies the dark themed colors;
+   this provides the layout/spacing. */
+#footer {
+    padding: 5em 0 6em 0;
+    background-color: #f6f6f6;
+}
+
+#footer > .inner {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+#footer > .inner > * > :last-child { margin-bottom: 0; }
+
+#footer > .inner section:nth-child(1) {
+    width: calc(66% - 2.5em);
+    margin-right: 2.5em;
+}
+#footer > .inner section:nth-child(2) {
+    width: calc(33% - 2.5em);
+    margin-left: 2.5em;
+}
+
+#footer > .inner .copyright {
+    width: 100%;
+    padding: 0;
+    margin-top: 5em;
+    list-style: none;
+    font-size: 0.8em;
+    color: rgba(88, 88, 88, 0.5);
+}
+#footer > .inner .copyright a { color: inherit; }
+#footer > .inner .copyright li {
+    display: inline-block;
+    border-left: solid 1px rgba(88, 88, 88, 0.15);
+    line-height: 1;
+    padding: 0 0 0 1em;
+    margin: 0 0 0 1em;
+}
+#footer > .inner .copyright li:first-child {
+    border-left: 0;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+@media screen and (max-width: 1280px) {
+    #footer { padding: 5em 0 3em 0; }
+    #footer > .inner section:nth-child(1) {
+        width: calc(66% - 1.25em);
+        margin-right: 1.25em;
+    }
+    #footer > .inner section:nth-child(2) {
+        width: calc(33% - 1.25em);
+        margin-left: 1.25em;
+    }
+}
+
+@media screen and (max-width: 980px) {
+    #footer > .inner section:nth-child(1) {
+        width: 66%;
+        margin-right: 0;
+    }
+    #footer > .inner section:nth-child(2) {
+        width: calc(33% - 2.5em);
+        margin-left: 2.5em;
+    }
+}
+
+@media screen and (max-width: 736px) {
+    #footer { padding: 3em 0 1em 0; }
+    #footer > .inner { flex-direction: column; }
+    #footer > .inner section:nth-child(1) {
+        width: 100%;
+        margin: 3em 0 0 0;
+    }
+    #footer > .inner section:nth-child(2) {
+        order: -1;
+        width: 100%;
+        margin-left: 0;
+    }
+    #footer > .inner .copyright { margin-top: 3em; }
+}
+
+@media screen and (max-width: 480px) {
+    #footer > .inner .copyright { margin-top: 3em; }
+    #footer > .inner .copyright li {
+        border-left: 0;
+        padding-left: 0;
+        margin: 0.75em 0 0 0;
+        display: block;
+        line-height: inherit;
+    }
+    #footer > .inner .copyright li:first-child { margin-top: 0; }
+}

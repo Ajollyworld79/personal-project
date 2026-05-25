@@ -21,11 +21,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Phantom theme CSS: prøv fuld version hvis udfyldt, ellers trimmed -->
-    <link rel="stylesheet" href="/static/assets/css/main.css" />
+    <!-- Site base styles (loaded before portfolio.css so per-component overrides win) -->
+    <link rel="stylesheet" href="/static/assets/css/site.css" />
     <link rel="stylesheet" href="/static/assets/css/portfolio.css" />
-    <link rel="stylesheet" href="/static/assets/css/fontawesome-all.min.css" />
-    <noscript><link rel="stylesheet" href="/static/assets/css/noscript.css" /></noscript>
     <style>
 /* Python Dict Navigation Styling */
 .nav-header-wrapper {
@@ -208,7 +206,6 @@ select:focus-visible,
     }
 }
     </style>
-    <!-- Font og ikoner forventes embedded via main.css (@import fontawesome + Google Fonts) -->
         {% block head_extra %}{% endblock %}
     </head>
     <body class="is-preload">
@@ -274,12 +271,12 @@ select:focus-visible,
             <footer id="footer">
                 <div class="inner">
                     <section>
-                        <p>&copy; {{ current_year }} {{ author }} • Built with Quart running on Uvicorn • Design: <a href="https://html5up.net">HTML5 UP (Phantom)</a> (CC BY 3.0).<br/><code>async def build_portfolio():</code></p>
+                        <p>&copy; {{ current_year }} {{ author }} • Built with Quart running on Uvicorn.<br/><code>async def build_portfolio():</code></p>
                     </section>
                 </div>
             </footer>
         </div>
-        <!-- Menu skal være UDEN FOR wrapper så Phantom JS kan appendTo body -->
+        <!-- Hidden placeholder nav (kept for potential future slide-out menu) -->
         <nav id="menu" aria-hidden="true" aria-label="Side menu">
             <div class="inner">
                 <h2>Menu</h2>
@@ -294,9 +291,12 @@ select:focus-visible,
             </div>
         </nav>
         <!-- Scripts -->
-    <script src="/static/assets/js/browser.min.js"></script>
-    <script src="/static/assets/js/breakpoints.min.js"></script>
-    <script src="/static/assets/js/main.js"></script>
+    <script>
+// Remove the no-transitions preload class once the page is fully loaded.
+window.addEventListener('load', () => {
+    setTimeout(() => document.body.classList.remove('is-preload'), 100);
+});
+    </script>
     <script src="/static/assets/js/portfolio.js"></script>
     <script>
 // Python Dict Navigation — mark active link and build compact select for small screens
