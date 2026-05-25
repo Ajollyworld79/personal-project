@@ -3,7 +3,9 @@
     <head>
         <title>{{ title if title else 'Python Developer Portfolio' }}</title>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="dark light" />
+        <meta name="theme-color" content="#0b0f13" />
         <meta name="description" content="Professional Python developer portfolio with focus on AI, LLMs and Python development" />
         <meta name="keywords" content="Gustav Christensen, Python, AI, LLM, Machine Learning, Data Engineer, Portfolio, CV" />
         <meta property="og:title" content="{{ title if title else 'Gustav Christensen — Python & AI Developer' }}" />
@@ -172,6 +174,39 @@
 
 /* Old menu hide */
 #menu { display: none !important; }
+
+/* Visually hidden (a11y) — same pattern Tailwind uses for sr-only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Visible focus ring for keyboard users */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid #f2849e;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Honor reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
     </style>
     <!-- Font og ikoner forventes embedded via main.css (@import fontawesome + Google Fonts) -->
         {% block head_extra %}{% endblock %}
@@ -203,13 +238,13 @@
                     <div class="py-line">
                         <span class="py-string">"github"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
                         <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"https://github.com/Ajollyworld79"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://github.com/Ajollyworld79" class="py-link" target="_blank">GitHub</a>"</span>
+                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://github.com/Ajollyworld79" class="py-link" target="_blank" rel="noopener noreferrer">GitHub</a>"</span>
                         <span class="py-bracket">},</span>
                     </div>
                     <div class="py-line">
-                        <span class="py-string">"ocr_demo"</span><span class="py-operator">:</span> <span class="py-bracket">{</span> 
+                        <span class="py-string">"ocr_demo"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
                         <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"https://document-intelligence-pipeline-production.up.railway.app"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://document-intelligence-pipeline-production.up.railway.app" class="py-link" target="_blank">OCR Demo</a>"</span>
+                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://document-intelligence-pipeline-production.up.railway.app" class="py-link" target="_blank" rel="noopener noreferrer">OCR Demo</a>"</span>
                         <span class="py-bracket">}</span>
                     </div>
                 </div>
@@ -219,7 +254,7 @@
                 </div>
             </nav>
         <!-- Compact select-based nav for small screens -->
-        <div class="py-nav-compact" aria-hidden="false">
+        <div class="py-nav-compact">
             <label for="py-nav-select" class="sr-only">Navigation</label>
             <select id="py-nav-select" aria-label="Navigation">
                 <option value="" disabled selected>Navigate…</option>
@@ -252,8 +287,8 @@
                     <li><a href="/">Home</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/projects">Projects</a></li>
-                    <li><a href="https://github.com/Ajollyworld79" target="_blank" rel="noopener">GitHub</a></li>
-                <li><a href="https://document-intelligence-pipeline-production.up.railway.app" target="_blank" rel="noopener">OCR Demo</a></li>
+                    <li><a href="https://github.com/Ajollyworld79" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                <li><a href="https://document-intelligence-pipeline-production.up.railway.app" target="_blank" rel="noopener noreferrer">OCR Demo</a></li>
                 </ul>
                 <a href="#menu" class="close">Close</a>
             </div>
@@ -264,40 +299,40 @@
     <script src="/static/assets/js/main.js"></script>
     <script src="/static/assets/js/portfolio.js"></script>
     <script>
-// Python Dict Navigation - Detect Active Page and build compact select for small screens
-document.addEventListener('DOMContentLoaded', function() {
+// Python Dict Navigation — mark active link and build compact select for small screens
+document.addEventListener('DOMContentLoaded', () => {
     const pyLinks = document.querySelectorAll('.py-link');
     const currentPath = window.location.pathname;
-    
-    pyLinks.forEach(link => {
+
+    for (const link of pyLinks) {
         if (link.getAttribute('href') === currentPath) {
             link.classList.add('active');
+            link.setAttribute('aria-current', 'page');
         }
-    });
-
-    // Build/populate compact select for small screens
-    const select = document.getElementById('py-nav-select');
-    if (select) {
-        // Reset and add default placeholder
-        select.innerHTML = '<option value="" disabled selected>Navigate…</option>';
-        pyLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            const text = link.textContent.trim();
-            if (!href || href.startsWith('#')) return;
-            const opt = document.createElement('option');
-            opt.value = href;
-            opt.textContent = text;
-            if (href === currentPath) opt.selected = true;
-            select.appendChild(opt);
-        });
-
-        select.addEventListener('change', function(e) {
-            const v = e.target.value;
-            if (v) {
-                window.location.href = v;
-            }
-        });
     }
+
+    const select = document.getElementById('py-nav-select');
+    if (!select) return;
+
+    const fragment = document.createDocumentFragment();
+    const placeholder = new Option('Navigate…', '', true, true);
+    placeholder.disabled = true;
+    fragment.appendChild(placeholder);
+
+    for (const link of pyLinks) {
+        const href = link.getAttribute('href');
+        const text = link.textContent.trim();
+        if (!href || href.startsWith('#')) continue;
+        const opt = new Option(text, href);
+        if (href === currentPath) opt.selected = true;
+        fragment.appendChild(opt);
+    }
+
+    select.replaceChildren(fragment);
+
+    select.addEventListener('change', ({ target }) => {
+        if (target.value) window.location.href = target.value;
+    });
 });
     </script>
         {% block scripts_extra %}{% endblock %}

@@ -1,287 +1,343 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="section" aria-labelledby="about-heading" style="max-width: 1200px; margin: 0 auto;">
-    <header class="major" style="text-align: center; margin-bottom: 3rem;">
-        <div class="section-title" style="color: #f2849e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; font-size: 0.9em; margin-bottom: 0.5rem;">About Me</div>
-        <h1 id="about-heading" style="font-size: 2.5em; margin: 1rem 0;">Gustav Wind Christensen</h1>
-        <p class="muted" style="max-width: 800px; margin: 0 auto; font-size: 1.1em; line-height: 1.7;">Python and SQL developer with extensive experience in data engineering, automation, and AI/LLM integration. Specialized in building robust, scalable solutions with a strong foundation in support and operations.</p>
+<section class="cv section" aria-labelledby="about-heading">
+    <header class="cv__header">
+        <p class="cv__eyebrow">About Me</p>
+        <h1 id="about-heading" class="cv__title">Gustav Wind Christensen</h1>
+        <p class="cv__lede">Python and SQL developer with extensive experience in data engineering, automation, and AI/LLM integration. Specialized in building robust, scalable solutions with a strong foundation in support and operations.</p>
     </header>
 
     <div class="cards mt-2">
-        <div class="card">
+        <article class="card">
             <h3>Contact</h3>
-            <p>Telefon: <a href="tel:+4560253418">+45 60 25 34 18</a><br>
-            Email: <a href="mailto:guch79@gmail.com">guch79@gmail.com</a><br>
-            LinkedIn: <a href="https://www.linkedin.com/in/gustav-wind-christensen-b61a0330" target="_blank" rel="noopener">gustav-wind-christensen</a></p>
-        </div>
-        <div class="card">
+            <address class="card__contact">
+                <span>Telefon: <a href="tel:+4560253418">+45 60 25 34 18</a></span>
+                <span>Email: <a href="mailto:guch79@gmail.com">guch79@gmail.com</a></span>
+                <span>LinkedIn: <a href="https://www.linkedin.com/in/gustav-wind-christensen-b61a0330" target="_blank" rel="noopener noreferrer">gustav-wind-christensen</a></span>
+            </address>
+        </article>
+        <article class="card">
             <h3>Top Skills</h3>
             <ul>
                 <li>Python (FastAPI, Quart, Flask)</li>
                 <li>AI / LLM Integration (RAG, Prompt Engineering)</li>
-                <li>Data Engineering & ETL</li>
-                <li>SQL & Database Design</li>
+                <li>Data Engineering &amp; ETL</li>
+                <li>SQL &amp; Database Design</li>
                 <li>Azure Cloud Services</li>
             </ul>
-        </div>
-        <div class="card">
+        </article>
+        <article class="card">
             <h3>Languages</h3>
             <p>Danish — Native or Bilingual<br>English — Professional working proficiency</p>
-        </div>
+        </article>
     </div>
 
-    <div class="separator"></div>
+    <hr class="separator" aria-hidden="true">
 
     <h2>Summary</h2>
     <p>Experienced developer with 15+ years in IT, spanning support, operations, and software development. Specialized in Python automation, data engineering, and AI/LLM integration. Strong track record in building scalable solutions, troubleshooting complex systems, and seamless database integration. Excellent at cross-functional collaboration from planning to delivery.</p>
 
-    <div class="separator"></div>
+    <hr class="separator" aria-hidden="true">
 
     <h2>Certifications</h2>
     <ul>
-        <li><a href="https://www.credly.com/badges/5e99ca10-b73c-40e9-b1d8-c68d780d8ed3/linked_in_profile" target="_blank" rel="noopener">PCEP™ – Certified Entry-Level Python Programmer [PCEP-30-02]</a></li>
-        <li><a href="https://udemy-certificate.s3.amazonaws.com/image/UC-6105e32b-5fb2-4f5e-819b-bef728365e45.jpg" target="_blank" rel="noopener">Complete Python Developer – Zero to Mastery (2023)</a></li>
+        <li><a href="https://www.credly.com/badges/5e99ca10-b73c-40e9-b1d8-c68d780d8ed3/linked_in_profile" target="_blank" rel="noopener noreferrer">PCEP™ – Certified Entry-Level Python Programmer [PCEP-30-02]</a></li>
+        <li><a href="https://udemy-certificate.s3.amazonaws.com/image/UC-6105e32b-5fb2-4f5e-819b-bef728365e45.jpg" target="_blank" rel="noopener noreferrer">Complete Python Developer – Zero to Mastery (2023)</a></li>
         <li>Python Special Methods – Advanced Classes</li>
         <li>Microsoft Certified Professional (MCPS)</li>
         <li>Windows 7 Enterprise Desktop Support Technician (MS)</li>
     </ul>
 
-    <div class="separator"></div>
+    <hr class="separator" aria-hidden="true">
 
     <h2>Experience</h2>
-    <div class="timeline">
-        <div class="timeline-item">
-            <div class="timeline-date">2020 — Present</div>
+    <ol class="timeline" role="list">
+        <li class="timeline-item">
+            <p class="timeline-date"><time datetime="2020">2020</time> — Present</p>
             <div class="timeline-content">
                 <h3 class="timeline-role"><em>Data Engineer</em></h3>
-                <div class="timeline-company">3F – Fagligt Fælles Forbund · Copenhagen</div>
+                <p class="timeline-company">3F – Fagligt Fælles Forbund · Copenhagen</p>
                 <p>Data engineering, pipeline automation, ETL processes, and Python development. Building scalable data solutions and integrating AI/LLM capabilities.</p>
-                <div class="timeline-tech">
-                    <span class="tech-badge">Python</span>
-                    <span class="tech-badge">SQL</span>
-                    <span class="tech-badge">ETL</span>
-                    <span class="tech-badge">AI/LLM</span>
-                    <span class="tech-badge">Azure</span>
-                </div>
+                <ul class="timeline-tech" role="list" aria-label="Technologies">
+                    <li><span class="tech-badge">Python</span></li>
+                    <li><span class="tech-badge">SQL</span></li>
+                    <li><span class="tech-badge">ETL</span></li>
+                    <li><span class="tech-badge">AI/LLM</span></li>
+                    <li><span class="tech-badge">Azure</span></li>
+                </ul>
             </div>
-        </div>
-        <div class="timeline-item">
-            <div class="timeline-date">2014 — 2020</div>
+        </li>
+        <li class="timeline-item">
+            <p class="timeline-date"><time datetime="2014">2014</time> — <time datetime="2020">2020</time></p>
             <div class="timeline-content">
                 <h3 class="timeline-role"><em>IT Operations Specialist</em></h3>
-                <div class="timeline-company">3F – Fagligt Fælles Forbund</div>
+                <p class="timeline-company">3F – Fagligt Fælles Forbund</p>
                 <p>Server operations, SCOM development, SLA reporting, and Orchestrator batch automation.</p>
-                <div class="timeline-tech">
-                    <span class="tech-badge">SCOM</span>
-                    <span class="tech-badge">Orchestrator</span>
-                    <span class="tech-badge">Windows Server</span>
-                    <span class="tech-badge">SLA</span>
-                </div>
+                <ul class="timeline-tech" role="list" aria-label="Technologies">
+                    <li><span class="tech-badge">SCOM</span></li>
+                    <li><span class="tech-badge">Orchestrator</span></li>
+                    <li><span class="tech-badge">Windows Server</span></li>
+                    <li><span class="tech-badge">SLA</span></li>
+                </ul>
             </div>
-        </div>
-        <div class="timeline-item">
-            <div class="timeline-date">2008 — 2014</div>
+        </li>
+        <li class="timeline-item">
+            <p class="timeline-date"><time datetime="2008">2008</time> — <time datetime="2014">2014</time></p>
             <div class="timeline-content">
                 <h3 class="timeline-role"><em>IT Support Specialist</em></h3>
-                <div class="timeline-company">3F – Fagligt Fælles Forbund</div>
+                <p class="timeline-company">3F – Fagligt Fælles Forbund</p>
                 <p>End-user support, troubleshooting, and technical assistance.</p>
-                <div class="timeline-tech">
-                    <span class="tech-badge">Support</span>
-                    <span class="tech-badge">Troubleshooting</span>
-                </div>
+                <ul class="timeline-tech" role="list" aria-label="Technologies">
+                    <li><span class="tech-badge">Support</span></li>
+                    <li><span class="tech-badge">Troubleshooting</span></li>
+                </ul>
             </div>
-        </div>
-    </div>
+        </li>
+    </ol>
 
-    <div class="separator"></div>
+    <hr class="separator" aria-hidden="true">
 
     <h3>Previous Roles</h3>
-    <div class="timeline timeline-compact">
-        <div class="timeline-item">
-            <div class="timeline-date">2008</div>
+    <ol class="timeline timeline-compact" role="list">
+        <li class="timeline-item">
+            <p class="timeline-date"><time datetime="2008">2008</time></p>
             <div class="timeline-content"><strong>EDC</strong> — IT Support</div>
-        </div>
-        <div class="timeline-item">
-            <div class="timeline-date">2007 — 08</div>
+        </li>
+        <li class="timeline-item">
+            <p class="timeline-date"><time datetime="2007">2007</time> — 08</p>
             <div class="timeline-content"><strong>Bolignet</strong> — Technical Consultant</div>
-        </div>
-        <div class="timeline-item">
-            <div class="timeline-date">2006 — 07</div>
+        </li>
+        <li class="timeline-item">
+            <p class="timeline-date"><time datetime="2006">2006</time> — 07</p>
             <div class="timeline-content"><strong>Debitel</strong> — IP Support</div>
-        </div>
-        <div class="timeline-item">
-            <div class="timeline-date">2004 — 06</div>
-            <div class="timeline-content"><strong>DLG TELE</strong> — IT Support & DSL Support</div>
-        </div>
-        <div class="timeline-item">
-            <div class="timeline-date">2002 — 04</div>
+        </li>
+        <li class="timeline-item">
+            <p class="timeline-date"><time datetime="2004">2004</time> — 06</p>
+            <div class="timeline-content"><strong>DLG TELE</strong> — IT Support &amp; DSL Support</div>
+        </li>
+        <li class="timeline-item">
+            <p class="timeline-date"><time datetime="2002">2002</time> — 04</p>
             <div class="timeline-content"><strong>TELE2</strong> — Technical Support</div>
-        </div>
-    </div>
+        </li>
+    </ol>
 
-    <div class="separator"></div>
+    <hr class="separator" aria-hidden="true">
 
     <h2>Education</h2>
     <ul>
-        <li>Zero To Mastery Academy – Python Developer Bootcamp (2023)</li>
-        <li>Business College Syd – Sales & Commerce (2001)</li>
-        <li>Køge Handelsskole – Business School (1996-1997)</li>
-        <li>Bernstorffsminde Efterskole – 10th Grade (1995-1996)</li>
+        <li>Zero To Mastery Academy – Python Developer Bootcamp (<time datetime="2023">2023</time>)</li>
+        <li>Business College Syd – Sales &amp; Commerce (<time datetime="2001">2001</time>)</li>
+        <li>Køge Handelsskole – Business School (<time datetime="1996">1996</time>-<time datetime="1997">1997</time>)</li>
+        <li>Bernstorffsminde Efterskole – 10th Grade (<time datetime="1995">1995</time>-<time datetime="1996">1996</time>)</li>
     </ul>
 
-    <div class="separator"></div>
+    <hr class="separator" aria-hidden="true">
 
-    <div class="cta-box">
-        <div class="cta-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <aside class="cta-box">
+        <div class="cta-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
         </div>
         <div class="cta-content">
-        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.3em;">Technical Portfolio</h3>
-            <p style="margin: 0 0 1rem 0; color: rgba(255, 255, 255, 0.8);">Explore my work in AI/LLM integration, data engineering, and Python development. View live demos and code examples showcasing production-ready solutions.</p>
-            <a href="/projects" class="button" style="display: inline-block;">View Projects</a>
+            <h3 class="cta-title">Technical Portfolio</h3>
+            <p class="cta-text">Explore my work in AI/LLM integration, data engineering, and Python development. View live demos and code examples showcasing production-ready solutions.</p>
+            <a href="/projects" class="button cta-button">View Projects</a>
         </div>
-    </div>
+    </aside>
 </section>
 
 <style>
+.cv {
+    --accent: #f2849e;
+    --accent-2: #7ecff4;
+    --surface: rgba(255, 255, 255, 0.04);
+    --surface-hover: rgba(255, 255, 255, 0.06);
+    --border: rgba(255, 255, 255, 0.12);
+    --border-strong: rgba(242, 132, 158, 0.4);
+    --text: rgba(255, 255, 255, 0.9);
+    --text-muted: rgba(255, 255, 255, 0.8);
+    --text-dim: rgba(255, 255, 255, 0.5);
+
+    max-width: 1200px;
+    margin-inline: auto;
+}
+
+.cv__header {
+    text-align: center;
+    margin-block-end: 3rem;
+}
+
+.cv__eyebrow {
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.9em;
+    margin-block-end: 0.5rem;
+}
+
+.cv__title {
+    font-size: clamp(2rem, 1.5rem + 2vw, 2.75rem);
+    margin-block: 1rem;
+}
+
+.cv__lede {
+    max-width: 800px;
+    margin-inline: auto;
+    font-size: 1.1em;
+    line-height: 1.7;
+    color: var(--text-muted);
+}
+
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
-    margin: 2rem 0;
+    margin-block: 2rem;
 }
 
 .card {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 12px;
     padding: 1.75rem;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
     transform: translateY(-4px);
-    border-color: rgba(242, 132, 158, 0.4);
-    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--border-strong);
+    background: var(--surface-hover);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
 }
 
 .card h3 {
-    color: #f2849e;
+    color: var(--accent);
     font-size: 1.2em;
     margin: 0 0 1rem 0;
     font-weight: 700;
 }
 
-.card p {
+.card p,
+.card__contact {
     margin: 0;
     line-height: 1.8;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-muted);
+}
+
+.card__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-style: normal;
 }
 
 .card a {
-    color: #7ecff4;
+    color: var(--accent-2);
     text-decoration: none;
     border-bottom: 1px solid rgba(126, 207, 244, 0.3);
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, border-bottom-color 0.2s ease;
 }
 
 .card a:hover {
     color: #fff;
-    border-bottom-color: #7ecff4;
+    border-bottom-color: var(--accent-2);
 }
 
 .card ul {
     margin: 0;
-    padding-left: 1.5rem;
+    padding-inline-start: 1.5rem;
     list-style: none;
 }
 
 .card ul li {
     position: relative;
-    padding-left: 0.5rem;
-    margin-bottom: 0.5rem;
-    color: rgba(255, 255, 255, 0.8);
+    padding-inline-start: 0.5rem;
+    margin-block-end: 0.5rem;
+    color: var(--text-muted);
 }
 
 .card ul li::before {
-    content: '▹';
+    content: '';
     position: absolute;
-    left: -1rem;
-    color: #f2849e;
-    font-weight: bold;
+    inset-inline-start: -1rem;
+    inset-block-start: 0.6em;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
 }
 
 .separator {
     height: 1px;
+    border: 0;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    margin: 3rem 0;
+    margin-block: 3rem;
 }
 
-.section h2 {
+.cv h2 {
     color: #fff;
-    font-size: 1.8em;
+    font-size: clamp(1.5rem, 1.2rem + 1vw, 1.8rem);
     margin: 0 0 1.5rem 0;
     font-weight: 700;
     position: relative;
-    padding-bottom: 0.5rem;
+    padding-block-end: 0.5rem;
 }
 
-.section h2::after {
+.cv h2::after {
     content: '';
     position: absolute;
-    bottom: 0;
-    left: 0;
+    inset-block-end: 0;
+    inset-inline-start: 0;
     width: 60px;
     height: 3px;
-    background: linear-gradient(90deg, #f2849e, #7ecff4);
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
     border-radius: 2px;
 }
 
-.section h3 {
+.cv h3 {
     color: #fff;
     font-size: 1.3em;
     margin: 1.5rem 0 1rem 0;
     font-weight: 600;
 }
 
-.section p {
+.cv p {
     line-height: 1.8;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 1rem;
+    color: var(--text-muted);
+    margin-block-end: 1rem;
 }
 
-.section ul {
+.cv ul {
     line-height: 1.9;
 }
 
-.section ul li {
-    margin-bottom: 0.75rem;
-    color: rgba(255, 255, 255, 0.8);
+.cv > ul > li {
+    margin-block-end: 0.75rem;
+    color: var(--text-muted);
 }
 
-.section ul li a {
-    color: rgba(255, 255, 255, 0.8);
+.cv > ul > li > a {
+    color: var(--text-muted);
     text-decoration: underline;
     text-decoration-color: rgba(255, 255, 255, 0.3);
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 
-.section ul li a:hover {
+.cv > ul > li > a:hover {
     color: #fff;
-    text-decoration-color: rgba(255, 255, 255, 0.8);
+    text-decoration-color: var(--text);
 }
 
-.section em {
-    color: #f2849e;
+.cv em {
+    color: var(--accent);
     font-style: normal;
     font-weight: 600;
 }
 
 .cta-box {
-    margin-top: 2rem;
+    margin-block-start: 2rem;
     padding: 2rem;
     background: linear-gradient(135deg, rgba(242, 132, 158, 0.15), rgba(126, 207, 244, 0.15));
     border: 1px solid rgba(242, 132, 158, 0.3);
@@ -289,7 +345,7 @@
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .cta-box:hover {
@@ -300,101 +356,129 @@
 
 .cta-icon {
     flex-shrink: 0;
-    width: 60px;
-    height: 60px;
+    inline-size: 60px;
+    block-size: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(242, 132, 158, 0.2);
     border-radius: 12px;
-    color: #f2849e;
+    color: var(--accent);
 }
 
 .cta-icon svg {
-    width: 32px;
-    height: 32px;
+    inline-size: 32px;
+    block-size: 32px;
 }
 
 .cta-content {
     flex: 1;
 }
 
-@media screen and (max-width: 736px) {
+.cta-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3em;
+}
+
+.cta-text {
+    margin: 0 0 1rem 0;
+    color: var(--text-muted);
+}
+
+.cta-button {
+    display: inline-block;
+}
+
+@media (max-width: 736px) {
     .cards {
         grid-template-columns: 1fr;
     }
-    
+
     .cta-box {
         flex-direction: column;
         text-align: center;
-    }
-    
-    .section h2 {
-        font-size: 1.5em;
     }
 }
 
 /* === Experience Timeline === */
 .timeline {
     position: relative;
-    padding-left: 2rem;
-    margin: 1.5rem 0;
+    padding-inline-start: 2rem;
+    margin-block: 1.5rem;
+    list-style: none;
 }
+
 .timeline::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(180deg, #f2849e, rgba(126,207,244,0.3), transparent);
+    inset-inline-start: 0;
+    inset-block: 0;
+    inline-size: 2px;
+    background: linear-gradient(180deg, var(--accent), rgba(126, 207, 244, 0.3), transparent);
 }
+
 .timeline-item {
     position: relative;
-    padding-bottom: 2rem;
-    padding-left: 1.5rem;
+    padding-block-end: 2rem;
+    padding-inline-start: 1.5rem;
 }
+
 .timeline-item::before {
     content: '';
     position: absolute;
-    left: -2rem;
-    top: 6px;
-    width: 12px;
-    height: 12px;
+    inset-inline-start: -2rem;
+    inset-block-start: 6px;
+    inline-size: 12px;
+    block-size: 12px;
     border-radius: 50%;
     background: #0b0f13;
-    border: 2px solid #f2849e;
+    border: 2px solid var(--accent);
     z-index: 1;
 }
+
 .timeline-item:first-child::before {
-    background: #f2849e;
-    box-shadow: 0 0 0 4px rgba(242,132,158,0.2);
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(242, 132, 158, 0.2);
 }
+
 .timeline-date {
     font-size: 0.8rem;
     font-weight: 700;
-    color: rgba(255,255,255,0.4);
+    color: rgba(255, 255, 255, 0.4);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 0.4rem;
+    margin-block-end: 0.4rem;
 }
+
 .timeline-role {
     font-size: 1.15em !important;
     margin: 0 0 0.25rem !important;
 }
+
 .timeline-company {
     font-size: 0.9rem;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 0.5rem;
+    color: var(--text-dim);
+    margin-block-end: 0.5rem;
 }
+
 .timeline-content p {
-    margin-bottom: 0.75rem;
+    margin-block-end: 0.75rem;
 }
+
 .timeline-tech {
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
+
+.timeline-tech > li {
+    margin: 0;
+    padding: 0;
+}
+
 .timeline-tech .tech-badge {
     font-size: 0.7em;
     padding: 0.25em 0.6em;
@@ -402,28 +486,31 @@
 
 /* Compact timeline for previous roles */
 .timeline-compact .timeline-item {
-    padding-bottom: 0.75rem;
+    padding-block-end: 0.75rem;
 }
+
 .timeline-compact .timeline-item::before {
-    width: 8px;
-    height: 8px;
-    top: 5px;
-    left: -1.85rem;
+    inline-size: 8px;
+    block-size: 8px;
+    inset-block-start: 5px;
+    inset-inline-start: -1.85rem;
     border-width: 1.5px;
 }
+
 .timeline-compact .timeline-content {
     font-size: 0.95em;
-    color: rgba(255,255,255,0.75);
+    color: rgba(255, 255, 255, 0.75);
 }
+
 .timeline-compact .timeline-content strong {
     color: #fff;
 }
 
 @media (max-width: 480px) {
-    .timeline { padding-left: 1.25rem; }
-    .timeline-item { padding-left: 1rem; }
-    .timeline-item::before { left: -1.3rem; width: 10px; height: 10px; }
-    .timeline-compact .timeline-item::before { left: -1.15rem; }
+    .timeline { padding-inline-start: 1.25rem; }
+    .timeline-item { padding-inline-start: 1rem; }
+    .timeline-item::before { inset-inline-start: -1.3rem; inline-size: 10px; block-size: 10px; }
+    .timeline-compact .timeline-item::before { inset-inline-start: -1.15rem; }
 }
 </style>
 {% endblock %}
