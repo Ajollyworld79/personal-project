@@ -6,7 +6,7 @@ import re
 import html as html_lib
 
 # Ensure project root in path
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
@@ -20,14 +20,16 @@ from fpdf import FPDF, XPos, YPos
 import random
 import aiohttp
 
-
 settings = get_settings()
 
-app = Quart(__name__, template_folder=os.path.join(PROJECT_ROOT, 'templates'), static_folder=os.path.join(PROJECT_ROOT, 'static'))
+app = Quart(
+    __name__,
+    template_folder=os.path.join(PROJECT_ROOT, "templates"),
+    static_folder=os.path.join(PROJECT_ROOT, "static"),
+)
 
 # Serve static files via Quart's builtin static folder (static/ already exists)
-app.static_folder = os.path.join(PROJECT_ROOT, 'static')
-
+app.static_folder = os.path.join(PROJECT_ROOT, "static")
 
 
 def _clean_text_for_pdf(text: str) -> str:
@@ -36,25 +38,25 @@ def _clean_text_for_pdf(text: str) -> str:
         return text
     # Replace special characters
     replacements = {
-        '\u2122': '',  # ™ trademark
-        '\u00ae': '',  # ® registered
-        '\u00a9': '',  # © copyright
-        '\u2014': '-',  # em dash
-        '\u2013': '-',  # en dash
-        '\u2018': "'",  # left single quote
-        '\u2019': "'",  # right single quote
-        '\u201c': '"',  # left double quote
-        '\u201d': '"',  # right double quote
-        '\xa0': ' ',    # non-breaking space
-        '&': 'and',     # ampersand
+        "\u2122": "",  # ™ trademark
+        "\u00ae": "",  # ® registered
+        "\u00a9": "",  # © copyright
+        "\u2014": "-",  # em dash
+        "\u2013": "-",  # en dash
+        "\u2018": "'",  # left single quote
+        "\u2019": "'",  # right single quote
+        "\u201c": '"',  # left double quote
+        "\u201d": '"',  # right double quote
+        "\xa0": " ",  # non-breaking space
+        "&": "and",  # ampersand
     }
     for old, new in replacements.items():
         text = text.replace(old, new)
     # Remove any remaining non-latin-1 characters
     try:
-        text.encode('latin-1')
+        text.encode("latin-1")
     except UnicodeEncodeError:
-        text = text.encode('latin-1', errors='ignore').decode('latin-1')
+        text = text.encode("latin-1", errors="ignore").decode("latin-1")
     return text
 
 
@@ -72,32 +74,46 @@ def _strip_html(text: str) -> str:
 
 
 # Color palette — matches website accent colors
-_C_PINK = (242, 132, 158)        # #F2849E
-_C_BLUE = (126, 207, 244)        # #7ECFF4
-_C_DARK = (45, 55, 72)            # #2D3748
-_C_TEXT = (74, 85, 104)           # #4A5568
-_C_MUTED = (113, 128, 150)        # #718096
-_C_SIDEBAR_BG = (247, 250, 252)   # #F7FAFC
-_C_BADGE_BG = (253, 235, 240)     # very light pink
+_C_PINK = (242, 132, 158)  # #F2849E
+_C_BLUE = (126, 207, 244)  # #7ECFF4
+_C_DARK = (45, 55, 72)  # #2D3748
+_C_TEXT = (74, 85, 104)  # #4A5568
+_C_MUTED = (113, 128, 150)  # #718096
+_C_SIDEBAR_BG = (247, 250, 252)  # #F7FAFC
+_C_BADGE_BG = (253, 235, 240)  # very light pink
 _C_DIVIDER = (224, 224, 230)
 _C_WHITE = (255, 255, 255)
 
 
-def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | None = None, skills: list | None = None, 
-                      languages: str | None = None, summary: str | None = None, certifications: list | None = None, 
-                      experience: str | None = None, education: list | None = None):
+def generate_cv_pdf(
+    author: str,
+    projects: List[Project],
+    contact_info: dict | None = None,
+    skills: list | None = None,
+    languages: str | None = None,
+    summary: str | None = None,
+    certifications: list | None = None,
+    experience: str | None = None,
+    education: list | None = None,
+):
     """Generate a professional CV PDF with two-column layout + dedicated projects page."""
 
     # Clean inputs
     author_clean = _clean_text_for_pdf(author)
-    if summary:        summary = _clean_text_for_pdf(summary)
-    if languages:      languages = _clean_text_for_pdf(languages)
-    if experience:     experience = _clean_text_for_pdf(experience)
-    if certifications: certifications = [_clean_text_for_pdf(c) for c in certifications]
-    if education:      education = [_clean_text_for_pdf(e) for e in education]
-    if skills:         skills = [_clean_text_for_pdf(s) for s in skills]
+    if summary:
+        summary = _clean_text_for_pdf(summary)
+    if languages:
+        languages = _clean_text_for_pdf(languages)
+    if experience:
+        experience = _clean_text_for_pdf(experience)
+    if certifications:
+        certifications = [_clean_text_for_pdf(c) for c in certifications]
+    if education:
+        education = [_clean_text_for_pdf(e) for e in education]
+    if skills:
+        skills = [_clean_text_for_pdf(s) for s in skills]
 
-    pdf = FPDF(orientation='P', unit='mm', format='A4')
+    pdf = FPDF(orientation="P", unit="mm", format="A4")
     pdf.set_auto_page_break(auto=True, margin=18)
     pdf.add_page()
 
@@ -106,24 +122,31 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
 
     # --- Hero header ---
     pdf.set_fill_color(*_C_DARK)
-    pdf.rect(0, 0, PAGE_W, HERO_H, 'F')
+    pdf.rect(0, 0, PAGE_W, HERO_H, "F")
     # Pink accent stripe
     pdf.set_fill_color(*_C_PINK)
-    pdf.rect(0, HERO_H, PAGE_W, 2.5, 'F')
+    pdf.rect(0, HERO_H, PAGE_W, 2.5, "F")
 
     pdf.set_text_color(*_C_WHITE)
-    pdf.set_font('Helvetica', 'B', 24)
+    pdf.set_font("Helvetica", "B", 24)
     pdf.set_xy(0, 12)
-    pdf.cell(PAGE_W, 10, author_clean, align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-    pdf.set_font('Helvetica', '', 11)
+    pdf.cell(PAGE_W, 10, author_clean, align="C", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.set_font("Helvetica", "", 11)
     pdf.set_xy(0, 24)
-    pdf.cell(PAGE_W, 6, "AI, LLM and Python Developer", align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.cell(
+        PAGE_W,
+        6,
+        "AI, LLM and Python Developer",
+        align="C",
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
 
     # Generation date
-    pdf.set_font('Helvetica', '', 7)
+    pdf.set_font("Helvetica", "", 7)
     pdf.set_text_color(200, 200, 200)
     pdf.set_xy(PAGE_W - 50, 34)
-    pdf.cell(40, 4, f"Generated {datetime.now().strftime('%B %Y')}", align='R')
+    pdf.cell(40, 4, f"Generated {datetime.now().strftime('%B %Y')}", align="R")
 
     # --- Two-column geometry ---
     SIDEBAR_W = 64
@@ -136,27 +159,29 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
 
     # Sidebar background (full page height below hero)
     pdf.set_fill_color(*_C_SIDEBAR_BG)
-    pdf.rect(0, SIDEBAR_TOP, SIDEBAR_W, PAGE_H - SIDEBAR_TOP, 'F')
+    pdf.rect(0, SIDEBAR_TOP, SIDEBAR_W, PAGE_H - SIDEBAR_TOP, "F")
 
     def sidebar_header(title: str):
         pdf.set_x(SIDEBAR_PAD)
-        pdf.set_font('Helvetica', 'B', 9)
+        pdf.set_font("Helvetica", "B", 9)
         pdf.set_text_color(*_C_PINK)
-        pdf.cell(SIDEBAR_CONTENT_W, 5, title.upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        pdf.cell(
+            SIDEBAR_CONTENT_W, 5, title.upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT
+        )
         # Tiny pink underline
         y = pdf.get_y() + 0.4
         pdf.set_fill_color(*_C_PINK)
-        pdf.rect(SIDEBAR_PAD, y, 10, 0.7, 'F')
+        pdf.rect(SIDEBAR_PAD, y, 10, 0.7, "F")
         pdf.set_y(y + 2.5)
 
     def main_header(title: str):
         pdf.set_x(MAIN_X)
-        pdf.set_font('Helvetica', 'B', 11)
+        pdf.set_font("Helvetica", "B", 11)
         pdf.set_text_color(*_C_DARK)
         pdf.cell(MAIN_W, 6, title.upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         y = pdf.get_y() + 0.3
         pdf.set_fill_color(*_C_PINK)
-        pdf.rect(MAIN_X, y, 22, 0.9, 'F')
+        pdf.rect(MAIN_X, y, 22, 0.9, "F")
         pdf.set_y(y + 3)
 
     # ================
@@ -166,27 +191,27 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
 
     if contact_info:
         sidebar_header("Contact")
-        pdf.set_font('Helvetica', '', 8)
+        pdf.set_font("Helvetica", "", 8)
         pdf.set_text_color(*_C_TEXT)
-        if contact_info.get('phone'):
+        if contact_info.get("phone"):
             pdf.set_x(SIDEBAR_PAD)
-            pdf.multi_cell(SIDEBAR_CONTENT_W, 4, contact_info['phone'])
-        if contact_info.get('email'):
-            email = contact_info['email']
+            pdf.multi_cell(SIDEBAR_CONTENT_W, 4, contact_info["phone"])
+        if contact_info.get("email"):
+            email = contact_info["email"]
             pdf.set_x(SIDEBAR_PAD)
             pdf.set_text_color(*_C_BLUE)
             pdf.multi_cell(SIDEBAR_CONTENT_W, 4, email, link=f"mailto:{email}")
             pdf.set_text_color(*_C_TEXT)
-        if contact_info.get('linkedin'):
-            ln = contact_info['linkedin']
-            url = ln if ln.startswith('http') else f"https://linkedin.com/in/{ln}"
+        if contact_info.get("linkedin"):
+            ln = contact_info["linkedin"]
+            url = ln if ln.startswith("http") else f"https://linkedin.com/in/{ln}"
             pdf.set_x(SIDEBAR_PAD)
             pdf.set_text_color(*_C_BLUE)
             pdf.multi_cell(SIDEBAR_CONTENT_W, 4, ln, link=url)
             pdf.set_text_color(*_C_TEXT)
-        if contact_info.get('portfolio'):
-            url = contact_info['portfolio']
-            short = url.replace('https://', '').replace('http://', '').rstrip('/')
+        if contact_info.get("portfolio"):
+            url = contact_info["portfolio"]
+            short = url.replace("https://", "").replace("http://", "").rstrip("/")
             pdf.set_x(SIDEBAR_PAD)
             pdf.set_text_color(*_C_BLUE)
             pdf.multi_cell(SIDEBAR_CONTENT_W, 4, short, link=url)
@@ -195,21 +220,21 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
 
     if skills:
         sidebar_header("Core Skills")
-        pdf.set_font('Helvetica', '', 8)
+        pdf.set_font("Helvetica", "", 8)
         pdf.set_text_color(*_C_TEXT)
         for skill in skills:
             pdf.set_x(SIDEBAR_PAD)
             # Small pink bullet
             pdf.set_fill_color(*_C_PINK)
             bullet_y = pdf.get_y() + 1.7
-            pdf.rect(SIDEBAR_PAD, bullet_y, 1.4, 1.4, 'F')
+            pdf.rect(SIDEBAR_PAD, bullet_y, 1.4, 1.4, "F")
             pdf.set_x(SIDEBAR_PAD + 3)
             pdf.multi_cell(SIDEBAR_CONTENT_W - 3, 4, skill)
         pdf.ln(3)
 
     if languages:
         sidebar_header("Languages")
-        pdf.set_font('Helvetica', '', 8)
+        pdf.set_font("Helvetica", "", 8)
         pdf.set_text_color(*_C_TEXT)
         pdf.set_x(SIDEBAR_PAD)
         pdf.multi_cell(SIDEBAR_CONTENT_W, 4, languages)
@@ -217,7 +242,7 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
 
     if education:
         sidebar_header("Education")
-        pdf.set_font('Helvetica', '', 7)
+        pdf.set_font("Helvetica", "", 7)
         pdf.set_text_color(*_C_TEXT)
         for edu in education:
             pdf.set_x(SIDEBAR_PAD)
@@ -232,16 +257,16 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
     if summary:
         main_header("Profile")
         pdf.set_x(MAIN_X)
-        pdf.set_font('Helvetica', '', 9)
+        pdf.set_font("Helvetica", "", 9)
         pdf.set_text_color(*_C_TEXT)
         pdf.multi_cell(MAIN_W, 4.5, summary)
         pdf.ln(2)
 
     if experience:
         main_header("Experience")
-        date_re = re.compile(r'^\s*\d{4}\b')
+        date_re = re.compile(r"^\s*\d{4}\b")
         prev_was_date = False
-        for line in experience.split('\n'):
+        for line in experience.split("\n"):
             line = line.strip()
             if not line:
                 prev_was_date = False
@@ -249,21 +274,21 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
             if date_re.match(line):
                 # Date pill — small pink uppercase label
                 pdf.set_x(MAIN_X)
-                pdf.set_font('Helvetica', 'B', 7)
+                pdf.set_font("Helvetica", "B", 7)
                 pdf.set_text_color(*_C_PINK)
                 pdf.cell(0, 4, line.upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
                 prev_was_date = True
             elif prev_was_date and len(line) < 60:
                 # Role title — bold, right after a date line
                 pdf.set_x(MAIN_X)
-                pdf.set_font('Helvetica', 'B', 10)
+                pdf.set_font("Helvetica", "B", 10)
                 pdf.set_text_color(*_C_DARK)
                 pdf.multi_cell(MAIN_W, 4.6, line)
                 prev_was_date = False
             else:
                 # Body / company / description
                 pdf.set_x(MAIN_X)
-                pdf.set_font('Helvetica', '', 8)
+                pdf.set_font("Helvetica", "", 8)
                 pdf.set_text_color(*_C_TEXT)
                 pdf.multi_cell(MAIN_W, 4, line)
                 prev_was_date = False
@@ -272,13 +297,13 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
 
     if certifications:
         main_header("Certifications")
-        pdf.set_font('Helvetica', '', 8)
+        pdf.set_font("Helvetica", "", 8)
         pdf.set_text_color(*_C_TEXT)
         for cert in certifications:
             pdf.set_x(MAIN_X)
             pdf.set_fill_color(*_C_PINK)
             bullet_y = pdf.get_y() + 1.6
-            pdf.rect(MAIN_X, bullet_y, 1.4, 1.4, 'F')
+            pdf.rect(MAIN_X, bullet_y, 1.4, 1.4, "F")
             pdf.set_x(MAIN_X + 3)
             pdf.multi_cell(MAIN_W - 3, 4.4, cert)
         pdf.ln(1.5)
@@ -293,17 +318,17 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
 
         # Mini hero strip
         pdf.set_fill_color(*_C_DARK)
-        pdf.rect(0, 0, PAGE_W, 18, 'F')
+        pdf.rect(0, 0, PAGE_W, 18, "F")
         pdf.set_fill_color(*_C_PINK)
-        pdf.rect(0, 18, PAGE_W, 1.5, 'F')
+        pdf.rect(0, 18, PAGE_W, 1.5, "F")
         pdf.set_text_color(*_C_WHITE)
-        pdf.set_font('Helvetica', 'B', 15)
+        pdf.set_font("Helvetica", "B", 15)
         pdf.set_xy(15, 5)
         pdf.cell(0, 8, "Featured Projects", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        pdf.set_font('Helvetica', '', 8)
+        pdf.set_font("Helvetica", "", 8)
         pdf.set_text_color(200, 200, 200)
         pdf.set_xy(PAGE_W - 80, 8.5)
-        pdf.cell(70, 5, "See live demos at the portfolio URL on page 1", align='R')
+        pdf.cell(70, 5, "See live demos at the portfolio URL on page 1", align="R")
 
         pdf.set_y(26)
         margin_x = 15
@@ -312,15 +337,15 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
         for project in projects:
             # Project title
             pdf.set_x(margin_x)
-            pdf.set_font('Helvetica', 'B', 11)
+            pdf.set_font("Helvetica", "B", 11)
             pdf.set_text_color(*_C_DARK)
             pdf.multi_cell(card_w, 5.5, _clean_text_for_pdf(project.title))
 
             # Description (intro only — text before <!--more-->)
             pdf.set_x(margin_x)
-            pdf.set_font('Helvetica', '', 9)
+            pdf.set_font("Helvetica", "", 9)
             pdf.set_text_color(*_C_TEXT)
-            raw_desc = project.description.split('<!--more-->', 1)[0]
+            raw_desc = project.description.split("<!--more-->", 1)[0]
             desc = _clean_text_for_pdf(_strip_html(raw_desc))
             if len(desc) > 360:
                 desc = desc[:357].rstrip() + "..."
@@ -329,7 +354,7 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
             # Tech badges (wrap to multiple rows)
             if project.technologies:
                 pdf.ln(0.5)
-                pdf.set_font('Helvetica', '', 7)
+                pdf.set_font("Helvetica", "", 7)
                 pdf.set_draw_color(*_C_PINK)
                 pdf.set_line_width(0.2)
                 badge_h = 4.2
@@ -343,10 +368,10 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
                         badge_y += badge_h + 1.4
                         badge_x = margin_x
                     pdf.set_fill_color(*_C_BADGE_BG)
-                    pdf.rect(badge_x, badge_y, w, badge_h, 'FD')
+                    pdf.rect(badge_x, badge_y, w, badge_h, "FD")
                     pdf.set_text_color(*_C_PINK)
                     pdf.set_xy(badge_x, badge_y + 0.4)
-                    pdf.cell(w, badge_h - 0.4, label, align='C')
+                    pdf.cell(w, badge_h - 0.4, label, align="C")
                     badge_x += w + 1.6
                 pdf.set_y(badge_y + badge_h + 2)
 
@@ -358,12 +383,18 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
                 url_parts.append(("Live", str(project.live_url)))
             if url_parts:
                 pdf.set_x(margin_x)
-                pdf.set_font('Helvetica', '', 8)
+                pdf.set_font("Helvetica", "", 8)
                 for label, url in url_parts:
-                    short = url.replace('https://', '').replace('http://', '')
+                    short = url.replace("https://", "").replace("http://", "")
                     pdf.set_text_color(*_C_BLUE)
-                    pdf.cell(0, 3.8, f"{label}: {short}",
-                             new_x=XPos.LMARGIN, new_y=YPos.NEXT, link=url)
+                    pdf.cell(
+                        0,
+                        3.8,
+                        f"{label}: {short}",
+                        new_x=XPos.LMARGIN,
+                        new_y=YPos.NEXT,
+                        link=url,
+                    )
 
             # Light divider between projects
             pdf.ln(2)
@@ -380,7 +411,7 @@ def generate_cv_pdf(author: str, projects: List[Project], contact_info: dict | N
     return buffer
 
 
-@app.route('/api/get-apology')
+@app.route("/api/get-apology")
 async def get_apology():
     """Fetch a live apology from the MCP server with robust parsing and fallbacks."""
     severity = random.choice(["TRIVIAL", "MINOR", "MAJOR", "CRITICAL", "NUCLEAR"])
@@ -390,15 +421,11 @@ async def get_apology():
     try:
         # Connect to the live MCP server using the simple demo endpoint (HTTP GET)
         # This bypasses SSE validation complexities for the simple button click
-        
+
         timeout = aiohttp.ClientTimeout(total=10.0)
         async with aiohttp.ClientSession(timeout=timeout) as http_session:
             demo_url = "https://apology-as-a-service-production.up.railway.app/demo"
-            params = {
-                "severity": severity,
-                "style": style,
-                "context": context
-            }
+            params = {"severity": severity, "style": style, "context": context}
             async with http_session.get(demo_url, params=params) as resp:
                 if resp.status == 200:
                     data = await resp.json()
@@ -430,21 +457,23 @@ async def get_apology():
                 "NUCLEAR": [
                     f"We accept full responsibility for the total destruction of {context}. Goodbye.",
                     f"Resume updated. {context} is gone. I am sorry.",
-                ]
+                ],
             }
             # Pick a random template based on severity or default
             templates = canned.get(severity, canned["TRIVIAL"])
             apology_text = random.choice(templates)
-            
+
             # Add a little note that this is a fallback
             meta_suffix = " (Live connection failed - using cached response)"
         else:
             meta_suffix = ""
 
-        return jsonify({
-            "apology": apology_text,
-            "meta": f"Generated via MCP (Severity: {severity}, Style: {style}){meta_suffix}"
-        })
+        return jsonify(
+            {
+                "apology": apology_text,
+                "meta": f"Generated via MCP (Severity: {severity}, Style: {style}){meta_suffix}",
+            }
+        )
 
     except Exception as e:
         app.logger.exception("apology endpoint critical failure")
@@ -473,7 +502,7 @@ query($username: String!) {
 """
 
 
-@app.route('/api/github-activity')
+@app.route("/api/github-activity")
 async def github_activity():
     """Return GitHub contribution-calendar data for the configured user.
 
@@ -502,8 +531,9 @@ async def github_activity():
     try:
         timeout = aiohttp.ClientTimeout(total=10.0)
         async with aiohttp.ClientSession(timeout=timeout) as http:
-            async with http.post("https://api.github.com/graphql",
-                                 headers=headers, json=payload) as resp:
+            async with http.post(
+                "https://api.github.com/graphql", headers=headers, json=payload
+            ) as resp:
                 if resp.status != 200:
                     body = await resp.text()
                     app.logger.warning("github graphql %s: %s", resp.status, body[:200])
@@ -537,30 +567,44 @@ async def github_activity():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/')
+@app.route("/")
 async def index():
-    return await render_template('index.html', projects=PROJECTS, author=settings.author_name, current_year=datetime.now(timezone.utc).year)
+    return await render_template(
+        "index.html",
+        projects=PROJECTS,
+        author=settings.author_name,
+        current_year=datetime.now(timezone.utc).year,
+    )
 
 
-@app.route('/about')
+@app.route("/about")
 async def about():
-    return await render_template('about.html', author=settings.author_name, current_year=datetime.now(timezone.utc).year)
+    return await render_template(
+        "about.html",
+        author=settings.author_name,
+        current_year=datetime.now(timezone.utc).year,
+    )
 
 
-@app.route('/projects')
+@app.route("/projects")
 async def projects():
-    return await render_template('projects.html', projects=PROJECTS, author=settings.author_name, current_year=datetime.now(timezone.utc).year)
+    return await render_template(
+        "projects.html",
+        projects=PROJECTS,
+        author=settings.author_name,
+        current_year=datetime.now(timezone.utc).year,
+    )
 
 
-@app.route('/download_cv')
+@app.route("/download_cv")
 async def download_cv():
     # Read the about template source and strip Jinja tags to avoid pulling full page CSS/JS
-    tpl_path = os.path.join(PROJECT_ROOT, 'templates', 'about.html')
+    tpl_path = os.path.join(PROJECT_ROOT, "templates", "about.html")
     try:
-        with open(tpl_path, 'r', encoding='utf-8') as fh:
+        with open(tpl_path, "r", encoding="utf-8") as fh:
             raw_tpl = fh.read()
     except Exception:
-        raw_tpl = ''
+        raw_tpl = ""
     # Remove Jinja control structures and variable tags
     cleaned = re.sub(r"\{[%#].*?[%#]\}", "", raw_tpl, flags=re.S)
     cleaned = re.sub(r"\{\{.*?\}\}", "", cleaned, flags=re.S)
@@ -569,7 +613,9 @@ async def download_cv():
     phone_m = re.search(r"\+?\d[\d\s\-()]{6,}\d", cleaned)
     linkedin_m = re.search(r"https?://[^\s'\"]*linkedin[^\s'\"]*", cleaned)
     # Top Skills
-    skills_block = re.search(r"<h3>Top Skills</h3>.*?<ul>(.*?)</ul>", cleaned, flags=re.S)
+    skills_block = re.search(
+        r"<h3>Top Skills</h3>.*?<ul>(.*?)</ul>", cleaned, flags=re.S
+    )
     skills = []
     if skills_block:
         skills = re.findall(r"<li>(.*?)</li>", skills_block.group(1), flags=re.S)
@@ -577,11 +623,13 @@ async def download_cv():
         skills = [html_lib.unescape(s) for s in skills]
     # Languages
     lang_block = re.search(r"<h3>Languages</h3>.*?<p>(.*?)</p>", cleaned, flags=re.S)
-    langs = lang_block.group(1).strip() if lang_block else ''
+    langs = lang_block.group(1).strip() if lang_block else ""
     langs = re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", langs).strip()
     langs = html_lib.unescape(langs)
     # Certifications
-    cert_block = re.search(r"<h2>Certifications</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S)
+    cert_block = re.search(
+        r"<h2>Certifications</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S
+    )
     certs = []
     if cert_block:
         certs = re.findall(r"<li>(.*?)</li>", cert_block.group(1), flags=re.S)
@@ -591,12 +639,14 @@ async def download_cv():
         certs = [html_lib.unescape(c) for c in certs]
     # Summary (changed from Resume)
     summary_block = re.search(r"<h2>Summary</h2>.*?<p>(.*?)</p>", cleaned, flags=re.S)
-    summary = summary_block.group(1).strip() if summary_block else ''
+    summary = summary_block.group(1).strip() if summary_block else ""
     summary = re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", summary).strip()
     summary = html_lib.unescape(summary)
     # Experience — capture main timeline + previous roles (up to Education heading)
-    exp_block = re.search(r"<h2>Experience</h2>(.*?)<h2>Education</h2>", cleaned, flags=re.S)
-    exp = ''
+    exp_block = re.search(
+        r"<h2>Experience</h2>(.*?)<h2>Education</h2>", cleaned, flags=re.S
+    )
+    exp = ""
     if exp_block:
         raw = exp_block.group(1)
         # Add spaces between adjacent span elements (prevents tech badge concatenation)
@@ -605,8 +655,8 @@ async def download_cv():
         raw = re.sub(r"&nbsp;", " ", raw)
         raw = html_lib.unescape(raw)
         # Clean up excessive whitespace while preserving paragraph breaks
-        raw = re.sub(r'[ \t]+', ' ', raw)
-        raw = re.sub(r'\n\s*\n\s*\n', '\n\n', raw)
+        raw = re.sub(r"[ \t]+", " ", raw)
+        raw = re.sub(r"\n\s*\n\s*\n", "\n\n", raw)
         exp = raw.strip()
     # Education
     edu_block = re.search(r"<h2>Education</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S)
@@ -620,18 +670,22 @@ async def download_cv():
     # Prepare contact info
     contact_info = {}
     if phone_m:
-        contact_info['phone'] = phone_m.group(0).strip()
+        contact_info["phone"] = phone_m.group(0).strip()
     if email_m:
-        contact_info['email'] = email_m.group(0).strip()
+        contact_info["email"] = email_m.group(0).strip()
     if linkedin_m:
         linkedin_url = linkedin_m.group(0).strip()
-        if 'linkedin.com/in/' in linkedin_url:
-            contact_info['linkedin'] = linkedin_url.split('linkedin.com/in/')[-1].rstrip('/')
+        if "linkedin.com/in/" in linkedin_url:
+            contact_info["linkedin"] = linkedin_url.split("linkedin.com/in/")[
+                -1
+            ].rstrip("/")
         else:
-            contact_info['linkedin'] = linkedin_url
+            contact_info["linkedin"] = linkedin_url
 
     # Portfolio URL — prefer settings, else use the canonical custom domain
-    contact_info['portfolio'] = getattr(settings, 'portfolio_url', '') or 'https://gustavchristensen.dev'
+    contact_info["portfolio"] = (
+        getattr(settings, "portfolio_url", "") or "https://gustavchristensen.dev"
+    )
 
     # Generate PDF with structured data
     packet = generate_cv_pdf(
@@ -643,28 +697,31 @@ async def download_cv():
         summary=summary if summary else None,
         certifications=certs if certs else None,
         experience=exp if exp else None,
-        education=edus if edus else None
+        education=edus if edus else None,
     )
-    
+
     data = packet.getvalue()
     filename = f"CV_{settings.author_name.replace(' ', '_')}.pdf"
-    headers = {"Content-Disposition": f"attachment; filename=\"{filename}\""}
-    return Response(data, mimetype='application/pdf', headers=headers)
+    headers = {"Content-Disposition": f'attachment; filename="{filename}"'}
+    return Response(data, mimetype="application/pdf", headers=headers)
 
 
-@app.route('/favicon.ico')
+@app.route("/favicon.ico")
 async def favicon():
-    return Response(b'', mimetype='image/x-icon', status=204)
+    return Response(b"", mimetype="image/x-icon", status=204)
 
-@app.route('/apple-touch-icon.png')
+
+@app.route("/apple-touch-icon.png")
 async def apple_touch_icon():
-    return Response(b'', mimetype='image/png', status=204)
+    return Response(b"", mimetype="image/png", status=204)
 
-@app.route('/apple-touch-icon-precomposed.png')
+
+@app.route("/apple-touch-icon-precomposed.png")
 async def apple_touch_icon_precomposed():
-    return Response(b'', mimetype='image/png', status=204)
+    return Response(b"", mimetype="image/png", status=204)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import uvicorn
-    uvicorn.run('app.app:app', host='127.0.0.1', port=8000, reload=True)
+
+    uvicorn.run("app.app:app", host="127.0.0.1", port=8000, reload=True)

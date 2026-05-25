@@ -37,10 +37,11 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2em;
-    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.75em;
-    line-height: 1.8;
+    font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.82em;
+    line-height: 1.85;
     text-align: left;
+    letter-spacing: 0.01em;
 }
 
 .py-line {
@@ -51,38 +52,38 @@
     padding-left: 2em;
 }
 
-.py-var {
-    color: #9cdcfe;
-}
+/* VSCode dark+ inspired token colors */
+.py-var      { color: #9cdcfe; }            /* variable name */
+.py-operator { color: rgba(212, 212, 212, 0.85); }
+.py-bracket  { color: #ffd700; }
+.py-string   { color: #ce9178; }            /* string literal */
 
-.py-operator {
-    color: #d4d4d4;
-}
-
-.py-bracket {
-    color: #ffd700;
-}
-
-.py-string {
-    color: #ce9178;
-}
-
+/* Links inside strings: same orange as surrounding string text so they
+   blend into the syntax-highlighted look. Underline is a subtle hint. */
 .py-link {
-    color: rgba(255, 255, 255, 0.9);
+    color: #ce9178;
     text-decoration: underline;
-    text-decoration-color: rgba(255, 255, 255, 0.3);
-    transition: all 0.2s ease;
+    text-decoration-color: rgba(206, 145, 120, 0.3);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    transition: color 0.18s ease, text-decoration-color 0.18s ease;
+    cursor: pointer;
 }
 
 .py-link:hover {
-    color: #ffffff;
-    text-decoration-color: rgba(242, 132, 158, 0.8);
+    color: #ffb27a;                          /* brighter orange on hover */
+    text-decoration-color: rgba(255, 178, 122, 0.85);
 }
 
 .py-link.active {
-    color: rgba(242, 132, 158, 1);
-    text-decoration-color: rgba(242, 132, 158, 1);
-    font-weight: bold;
+    color: #f2849e;                          /* pink for current page */
+    text-decoration-color: rgba(242, 132, 158, 0.95);
+    font-weight: 600;
+}
+
+.py-link.active:hover {
+    color: #ff96b0;
+    text-decoration-color: #ff96b0;
 }
 
 /* Responsive */
