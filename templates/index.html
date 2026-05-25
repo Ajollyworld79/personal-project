@@ -346,57 +346,31 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
 }
 </style>
 
-<!-- Code Example Section -->
-<section class="reveal">
+<!-- GitHub Activity Section -->
+<section class="reveal" id="gh-activity-section" hidden>
   <header class="major">
-    <h2>Code Sample</h2>
+    <h2>GitHub Activity</h2>
+    <p class="muted" style="margin-top:-0.5em;">Public &amp; private commits over the past year. Updated hourly via GitHub GraphQL.</p>
   </header>
-  <div class="terminal-code-wrapper">
-    <div class="terminal-code-header">
-      <span class="terminal-dots">
-        <span class="dot red"></span>
-        <span class="dot yellow"></span>
-        <span class="dot green"></span>
-      </span>
-      <span class="terminal-code-title">~/projects/lifecycle.py — Python</span>
+  <div class="gh-card">
+    <div class="gh-card-head">
+      <div>
+        <span class="gh-total" id="gh-total">—</span>
+        <span class="gh-total-label">contributions in the last year</span>
+      </div>
+      <a class="gh-link" id="gh-link" href="https://github.com/Ajollyworld79" target="_blank" rel="noopener noreferrer">@Ajollyworld79 →</a>
     </div>
-    <div class="terminal-code-content">
-<table class="code-table">
-<tr><td class="line-number">1</td><td class="code-line"><span class="py-keyword">from</span> <span class="py-function">typing</span> <span class="py-keyword">import</span> <span class="py-class">Optional</span></td></tr>
-<tr><td class="line-number">2</td><td class="code-line"><span class="py-keyword">from</span> <span class="py-function">qdrant_client</span> <span class="py-keyword">import</span> <span class="py-class">QdrantClient</span></td></tr>
-<tr><td class="line-number">3</td><td class="code-line"></td></tr>
-<tr><td class="line-number">4</td><td class="code-line"><span class="py-keyword">class</span> <span class="py-function">LifeCycleManager</span>:</td></tr>
-<tr><td class="line-number">5</td><td class="code-line">    <span class="py-comment"># Singleton to manage long-lived resources (Qdrant, background tasks)</span></td></tr>
-<tr><td class="line-number">6</td><td class="code-line">    _instance = <span class="py-keyword">None</span></td></tr>
-<tr><td class="line-number">7</td><td class="code-line">    _qdrant_client: <span class="py-class">Optional</span>[<span class="py-class">QdrantClient</span>] = <span class="py-keyword">None</span></td></tr>
-<tr><td class="line-number">8</td><td class="code-line"></td></tr>
-<tr><td class="line-number">9</td><td class="code-line">    <span class="py-keyword">def</span> <span class="py-function">__new__</span>(<span class="py-keyword">cls</span>):</td></tr>
-<tr><td class="line-number">10</td><td class="code-line">        <span class="py-keyword">if</span> <span class="py-keyword">cls</span>._instance <span class="py-keyword">is</span> <span class="py-keyword">None</span>:</td></tr>
-<tr><td class="line-number">11</td><td class="code-line">            <span class="py-keyword">cls</span>._instance = <span class="py-keyword">super</span>(<span class="py-keyword">LifeCycleManager</span>, <span class="py-keyword">cls</span>).__new__(<span class="py-keyword">cls</span>)</td></tr>
-<tr><td class="line-number">12</td><td class="code-line">        <span class="py-keyword">return</span> <span class="py-keyword">cls</span>._instance</td></tr>
-<tr><td class="line-number">13</td><td class="code-line"></td></tr>
-<tr><td class="line-number">14</td><td class="code-line">    <span class="py-decorator">@property</span></td></tr>
-<tr><td class="line-number">15</td><td class="code-line">    <span class="py-keyword">def</span> <span class="py-function">qdrant_client</span>(<span class="py-keyword">self</span>) -> <span class="py-class">Optional</span>[<span class="py-class">QdrantClient</span>]:</td></tr>
-<tr><td class="line-number">16</td><td class="code-line">        <span class="py-keyword">return</span> <span class="py-keyword">self</span>._qdrant_client</td></tr>
-<tr><td class="line-number">17</td><td class="code-line"></td></tr>
-<tr><td class="line-number">18</td><td class="code-line">    <span class="py-keyword">async</span> <span class="py-keyword">def</span> <span class="py-function">startup</span>(<span class="py-keyword">self</span>):</td></tr>
-<tr><td class="line-number">19</td><td class="code-line">        <span class="py-comment">"""Initialize resources on application startup and schedule background tasks."""</span></td></tr>
-<tr><td class="line-number">20</td><td class="code-line">        <span class="py-function">logger</span>.<span class="py-function">info</span>(<span class="py-str">"Starting up application resources..."</span>)</td></tr>
-<tr><td class="line-number">21</td><td class="code-line">        <span class="py-comment"># Run Qdrant connection in a separate thread to avoid blocking startup</span></td></tr>
-<tr><td class="line-number">22</td><td class="code-line">        <span class="py-keyword">await</span> <span class="py-function">asyncio</span>.<span class="py-function">to_thread</span>(<span class="py-keyword">self</span>._connect_qdrant)</td></tr>
-<tr><td class="line-number">23</td><td class="code-line">        <span class="py-keyword">await</span> <span class="py-keyword">embeddings</span>.<span class="py-function">preload_embedding_models</span>()</td></tr>
-<tr><td class="line-number">24</td><td class="code-line"></td></tr>
-<tr><td class="line-number">25</td><td class="code-line">    <span class="py-keyword">def</span> <span class="py-function">_connect_qdrant</span>(<span class="py-keyword">self</span>):</td></tr>
-<tr><td class="line-number">26</td><td class="code-line">        <span class="py-comment"># Synchronous helper executed in a thread; keep configuration external.</span></td></tr>
-<tr><td class="line-number">27</td><td class="code-line">        <span class="py-keyword">try</span>:</td></tr>
-<tr><td class="line-number">28</td><td class="code-line">            <span class="py-keyword">self</span>._qdrant_client = <span class="py-function">QdrantClient</span>(<span class="py-comment"># configuration passed from settings</span>)</td></tr>
-<tr><td class="line-number">29</td><td class="code-line">            <span class="py-function">logger</span>.<span class="py-function">info</span>(<span class="py-str">"Qdrant client connected"</span>)</td></tr>
-<tr><td class="line-number">30</td><td class="code-line">        <span class="py-keyword">except</span> <span class="py-class">Exception</span> <span class="py-keyword">as</span> <span class="py-keyword">e</span>:</td></tr>
-<tr><td class="line-number">31</td><td class="code-line">            <span class="py-function">logger</span>.<span class="py-function">exception</span>(<span class="py-str">"Failed to connect Qdrant: %s"</span>, <span class="py-keyword">e</span>)</td></tr>
-<tr><td class="line-number">32</td><td class="code-line"></td></tr>
-<tr><td class="line-number">33</td><td class="code-line">    <span class="py-comment"># Usage example: lifecycle = LifeCycleManager(); await lifecycle.startup()</span></td></tr>
-
-</table>
+    <div class="gh-heatmap-wrap">
+      <div class="gh-heatmap" id="gh-heatmap" role="img" aria-label="GitHub contribution heatmap"></div>
+    </div>
+    <div class="gh-legend">
+      <span class="gh-legend-label">Less</span>
+      <span class="gh-cell-demo gh-level-0"></span>
+      <span class="gh-cell-demo gh-level-1"></span>
+      <span class="gh-cell-demo gh-level-2"></span>
+      <span class="gh-cell-demo gh-level-3"></span>
+      <span class="gh-cell-demo gh-level-4"></span>
+      <span class="gh-legend-label">More</span>
     </div>
   </div>
 </section>
@@ -506,6 +480,72 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
   .cta-actions .button { width: 100%; text-align: center; }
 }
 
+/* === GitHub Activity heatmap === */
+.gh-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  margin-top: 1.5rem;
+}
+.gh-card-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+.gh-total {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #f2849e;
+  letter-spacing: 0.01em;
+}
+.gh-total-label {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.95em;
+  margin-left: 0.5rem;
+}
+.gh-link {
+  margin-left: auto;
+  color: #7ecff4;
+  font-size: 0.9em;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(126, 207, 244, 0.3);
+  transition: color 0.2s ease, border-bottom-color 0.2s ease;
+}
+.gh-link:hover { color: #fff; border-bottom-color: #fff; }
+.gh-heatmap-wrap { overflow-x: auto; padding: 0.25rem 0 0.5rem; }
+.gh-heatmap svg { display: block; min-width: 720px; }
+.gh-cell { transition: fill 0.15s ease; }
+.gh-cell:hover { stroke: rgba(255, 255, 255, 0.35); stroke-width: 1; }
+.gh-level-0 { fill: rgba(255, 255, 255, 0.06); }
+.gh-level-1 { fill: rgba(242, 132, 158, 0.28); }
+.gh-level-2 { fill: rgba(242, 132, 158, 0.5);  }
+.gh-level-3 { fill: rgba(242, 132, 158, 0.75); }
+.gh-level-4 { fill: rgba(242, 132, 158, 1);    }
+.gh-legend {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  font-size: 0.78em;
+  color: rgba(255, 255, 255, 0.45);
+}
+.gh-legend-label { padding: 0 0.25rem; }
+.gh-cell-demo {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+}
+.gh-cell-demo.gh-level-0 { background: rgba(255, 255, 255, 0.06); }
+.gh-cell-demo.gh-level-1 { background: rgba(242, 132, 158, 0.28); }
+.gh-cell-demo.gh-level-2 { background: rgba(242, 132, 158, 0.5);  }
+.gh-cell-demo.gh-level-3 { background: rgba(242, 132, 158, 0.75); }
+.gh-cell-demo.gh-level-4 { background: rgba(242, 132, 158, 1);    }
+
 </style>
 
 {% endblock %}
@@ -557,6 +597,90 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
   }, { threshold: 0.3 });
   var strip = document.querySelector('.stats-strip');
   if (strip) observer.observe(strip);
+})();
+
+// === GitHub Activity heatmap ===
+(() => {
+  const section = document.getElementById('gh-activity-section');
+  if (!section) return;
+
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const CELL = 11;
+  const GAP = 3;
+
+  const levelFor = (count, max) => {
+    if (count === 0) return 0;
+    const q1 = max * 0.25, q2 = max * 0.5, q3 = max * 0.75;
+    if (count <= q1) return 1;
+    if (count <= q2) return 2;
+    if (count <= q3) return 3;
+    return 4;
+  };
+
+  const render = (data) => {
+    const totalEl = document.getElementById('gh-total');
+    if (totalEl) totalEl.textContent = data.total.toLocaleString();
+
+    const linkEl = document.getElementById('gh-link');
+    if (linkEl && data.username) {
+      linkEl.href = `https://github.com/${data.username}`;
+      linkEl.textContent = `@${data.username} →`;
+    }
+
+    const container = document.getElementById('gh-heatmap');
+    if (!container) return;
+
+    const weeks = data.weeks || [];
+    const allCounts = weeks.flatMap(w => (w.contributionDays || []).map(d => d.contributionCount));
+    const maxCount = Math.max(1, ...allCounts);
+
+    const w = weeks.length * (CELL + GAP);
+    const h = 7 * (CELL + GAP);
+
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('preserveAspectRatio', 'xMinYMid meet');
+    svg.setAttribute('aria-label', `${data.total} contributions in the last year`);
+
+    weeks.forEach((week, wi) => {
+      (week.contributionDays || []).forEach((day) => {
+        const x = wi * (CELL + GAP);
+        const y = day.weekday * (CELL + GAP);
+        const level = levelFor(day.contributionCount, maxCount);
+
+        const rect = document.createElementNS(SVG_NS, 'rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width', CELL);
+        rect.setAttribute('height', CELL);
+        rect.setAttribute('rx', 2);
+        rect.classList.add('gh-cell', `gh-level-${level}`);
+
+        const title = document.createElementNS(SVG_NS, 'title');
+        const n = day.contributionCount;
+        title.textContent = `${n} contribution${n === 1 ? '' : 's'} on ${day.date}`;
+        rect.appendChild(title);
+
+        svg.appendChild(rect);
+      });
+    });
+
+    container.replaceChildren(svg);
+    section.hidden = false;
+  };
+
+  (async () => {
+    try {
+      const resp = await fetch('/api/github-activity');
+      if (!resp.ok) return;  // endpoint missing or token not configured — keep section hidden
+      const data = await resp.json();
+      if (data.error || !data.weeks) return;
+      render(data);
+    } catch {
+      // Network error — leave section hidden
+    }
+  })();
 })();
 
 </script>

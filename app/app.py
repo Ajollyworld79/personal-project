@@ -15,6 +15,7 @@ from app.config import get_settings
 from app.models import Project
 from app.data import PROJECTS
 import io
+import time
 from fpdf import FPDF, XPos, YPos
 import random
 import aiohttp
@@ -447,6 +448,92 @@ async def get_apology():
 
     except Exception as e:
         app.logger.exception("apology endpoint critical failure")
+        return jsonify({"error": str(e)}), 500
+
+
+# --- GitHub activity (contribution heatmap) ---
+# Cache structure: {"ts": epoch_seconds, "data": payload | None}
+_GITHUB_CACHE: dict = {"ts": 0.0, "data": None}
+_GITHUB_CACHE_TTL = 3600  # 1 hour
+_GITHUB_USERNAME = os.getenv("GITHUB_USERNAME", "Ajollyworld79")
+
+_GITHUB_QUERY = """
+query($username: String!) {
+  user(login: $username) {
+    contributionsCollection {
+      contributionCalendar {
+        totalContributions
+        weeks {
+          contributionDays { date contributionCount weekday }
+        }
+      }
+    }
+  }
+}
+"""
+
+
+@app.route('/api/github-activity')
+async def github_activity():
+    """Return GitHub contribution-calendar data for the configured user.
+
+    Cached in-memory for 1 hour to stay well under GitHub's 5000 req/hr quota
+    and avoid hammering the API on every page load.
+    """
+    now = time.time()
+    cached = _GITHUB_CACHE.get("data")
+    if cached and now - _GITHUB_CACHE["ts"] < _GITHUB_CACHE_TTL:
+        return jsonify(cached)
+
+    token = os.getenv("GITHUB_TOKEN")
+    if not token:
+        # Serve stale cache if available; otherwise tell the frontend to hide
+        if cached:
+            return jsonify({**cached, "_stale": True})
+        return jsonify({"error": "GITHUB_TOKEN not configured"}), 503
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "User-Agent": "gustavchristensen.dev-portfolio",
+        "Accept": "application/json",
+    }
+    payload = {"query": _GITHUB_QUERY, "variables": {"username": _GITHUB_USERNAME}}
+
+    try:
+        timeout = aiohttp.ClientTimeout(total=10.0)
+        async with aiohttp.ClientSession(timeout=timeout) as http:
+            async with http.post("https://api.github.com/graphql",
+                                 headers=headers, json=payload) as resp:
+                if resp.status != 200:
+                    body = await resp.text()
+                    app.logger.warning("github graphql %s: %s", resp.status, body[:200])
+                    if cached:
+                        return jsonify({**cached, "_stale": True})
+                    return jsonify({"error": f"GitHub API {resp.status}"}), 502
+                body = await resp.json()
+
+        user = (body.get("data") or {}).get("user")
+        if not user:
+            errors = body.get("errors") or []
+            app.logger.warning("github graphql empty user: %s", errors[:2])
+            if cached:
+                return jsonify({**cached, "_stale": True})
+            return jsonify({"error": "GitHub returned no user data"}), 502
+
+        cal = user["contributionsCollection"]["contributionCalendar"]
+        result = {
+            "username": _GITHUB_USERNAME,
+            "total": cal["totalContributions"],
+            "weeks": cal["weeks"],
+        }
+        _GITHUB_CACHE["data"] = result
+        _GITHUB_CACHE["ts"] = now
+        return jsonify(result)
+
+    except Exception as e:
+        app.logger.exception("github-activity endpoint failed")
+        if cached:
+            return jsonify({**cached, "_stale": True})
         return jsonify({"error": str(e)}), 500
 
 
