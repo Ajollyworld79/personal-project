@@ -516,7 +516,12 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
 }
 .gh-link:hover { color: #fff; border-bottom-color: #fff; }
 .gh-heatmap-wrap { overflow-x: auto; padding: 0.25rem 0 0.5rem; }
-.gh-heatmap svg { display: block; min-width: 720px; }
+.gh-heatmap svg { display: block; min-width: 750px; }
+.gh-axis-label {
+  fill: rgba(255, 255, 255, 0.5);
+  font-size: 9px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
 .gh-cell { transition: fill 0.15s ease; }
 .gh-cell:hover { stroke: rgba(255, 255, 255, 0.35); stroke-width: 1; }
 .gh-level-0 { fill: rgba(255, 255, 255, 0.06); }
@@ -607,6 +612,9 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const CELL = 11;
   const GAP = 3;
+  const MONTH_LABEL_H = 14;   // space above the grid for month labels
+  const DAY_LABEL_W  = 24;   // space left of the grid for weekday labels
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
   const levelFor = (count, max) => {
     if (count === 0) return 0;
@@ -615,6 +623,15 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
     if (count <= q2) return 2;
     if (count <= q3) return 3;
     return 4;
+  };
+
+  const makeText = (x, y, text, cls) => {
+    const t = document.createElementNS(SVG_NS, 'text');
+    t.setAttribute('x', x);
+    t.setAttribute('y', y);
+    t.classList.add(cls);
+    t.textContent = text;
+    return t;
   };
 
   const render = (data) => {
@@ -634,19 +651,52 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
     const allCounts = weeks.flatMap(w => (w.contributionDays || []).map(d => d.contributionCount));
     const maxCount = Math.max(1, ...allCounts);
 
-    const w = weeks.length * (CELL + GAP);
-    const h = 7 * (CELL + GAP);
+    const gridW = weeks.length * (CELL + GAP);
+    const gridH = 7 * (CELL + GAP);
+    const svgW  = DAY_LABEL_W + gridW;
+    const svgH  = MONTH_LABEL_H + gridH;
 
     const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.setAttribute('viewBox', `0 0 ${svgW} ${svgH}`);
     svg.setAttribute('width', '100%');
     svg.setAttribute('preserveAspectRatio', 'xMinYMid meet');
     svg.setAttribute('aria-label', `${data.total} contributions in the last year`);
 
+    // --- Month labels along the top ---
+    // Place a label above the first week of each month (skipping the very first week
+    // if its label would collide with the next, and avoiding labels too close to the edge).
+    let lastMonth = -1;
+    weeks.forEach((week, wi) => {
+      const firstDay = (week.contributionDays || [])[0];
+      if (!firstDay) return;
+      const month = new Date(firstDay.date).getMonth();
+      if (month !== lastMonth) {
+        lastMonth = month;
+        // Skip if first week (label would sit at very left edge with little room)
+        // or if very last week (likely partial month, label would clip).
+        if (wi >= 1 && wi <= weeks.length - 2) {
+          const x = DAY_LABEL_W + wi * (CELL + GAP);
+          svg.appendChild(makeText(x, MONTH_LABEL_H - 4, MONTHS[month], 'gh-axis-label'));
+        }
+      }
+    });
+
+    // --- Weekday labels on the left (Mon / Wed / Fri) ---
+    const dayLabels = [
+      { weekday: 1, label: 'Mon' },
+      { weekday: 3, label: 'Wed' },
+      { weekday: 5, label: 'Fri' },
+    ];
+    dayLabels.forEach(({ weekday, label }) => {
+      const y = MONTH_LABEL_H + weekday * (CELL + GAP) + CELL - 1;
+      svg.appendChild(makeText(0, y, label, 'gh-axis-label'));
+    });
+
+    // --- Cells ---
     weeks.forEach((week, wi) => {
       (week.contributionDays || []).forEach((day) => {
-        const x = wi * (CELL + GAP);
-        const y = day.weekday * (CELL + GAP);
+        const x = DAY_LABEL_W + wi * (CELL + GAP);
+        const y = MONTH_LABEL_H + day.weekday * (CELL + GAP);
         const level = levelFor(day.contributionCount, maxCount);
 
         const rect = document.createElementNS(SVG_NS, 'rect');
