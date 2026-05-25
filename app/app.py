@@ -415,12 +415,15 @@ def generate_cv_pdf(
 async def get_apology():
     """Fetch a live apology from the MCP server with robust parsing and fallbacks."""
     severity = random.choice(["TRIVIAL", "MINOR", "MAJOR", "CRITICAL", "NUCLEAR"])
-    style = random.choice(["PROFESSIONAL", "CASUAL", "POETIC", "GROVELING", "HAIKU"])
+    style = random.choice([
+        "PROFESSIONAL", "CASUAL", "POETIC", "GROVELING", "HAIKU",
+        "LEGAL_DISCLAIMER", "CORPORATE_DOUBLESPEAK", "SHAKESPEAREAN", "PIRATE",
+    ])
     context = "the live demo button"
 
     try:
-        # Connect to the live MCP server using the simple demo endpoint (HTTP GET)
-        # This bypasses SSE validation complexities for the simple button click
+        # The MCP server's /demo endpoint is a plain HTTP wrapper around
+        # generate_apology — perfect for a one-shot button click.
 
         timeout = aiohttp.ClientTimeout(total=10.0)
         async with aiohttp.ClientSession(timeout=timeout) as http_session:
