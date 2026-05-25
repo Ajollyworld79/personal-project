@@ -5,14 +5,24 @@ from pydantic import HttpUrl
 PROJECTS = [
     Project(
         slug="llm-assistant",
-        title="AI-Powered Document Assistant with RAG",
+        title="AI-Powered IT Support Agent with RAG & GDPR Compliance",
         description=(
-            "Production-ready Retrieval-Augmented Generation (RAG) system with multi-format document parsing (PDF, DOCX, CSV with link extraction), intelligent semantic chunking, and vector search using Qdrant."
+            "Production RAG system positioned as a GDPR-compliant internal IT support agent. Multilingual (Danish/English) responses grounded in customer-uploaded documentation, with a read-only backend viewer customers can inspect end-to-end."
             "<!--more-->"
-            "Features Azure OpenAI integration with conversation history, content filtering, adaptive garbage collection, and API monitoring with performance alerts. Built with async Quart backend, multiple embedding providers (SentenceTransformers, Azure, FastEmbed), and comprehensive lifecycle management."
+            "<strong>Architecture.</strong> Async Quart backend with Qdrant local vector store, fastembed ONNX embeddings (no torch dependency), and Azure OpenAI in Sweden Central with auto-failover between <code>gpt-5-nano</code> (primary) and <code>gpt-5-mini</code> (fallback)."
+            "<br><br>"
+            "<strong>Prompt design optimized for cost.</strong> Stable ~1500-token system prompt placed first so Azure automatic prompt-caching hits across requests — cached input tokens cost 50% of the standard rate. Structured outputs use strict-mode JSON schema instead of brittle text markers; the schema returns typed <code>source</code> (documents/general_knowledge/refusal), <code>language</code>, <code>answer_markdown</code>, and <code>refusal_reason</code>. Scope is tightly bounded to workplace IT — M365, Windows, hardware, networking, identity — anything outside scope returns a categorized refusal."
+            "<br><br>"
+            "<strong>GDPR built into the data plane, not bolted on.</strong> AES-256-GCM encryption of Qdrant payload text at rest. PII redaction (email, Danish CPR, phone) on every prompt before logging. Document TTL with hourly auto-cleanup background worker. Right-to-be-forgotten and Art. 20 data-portability endpoints scoped to the caller's session cookie. EU data residency end-to-end (Azure Sweden Central + Railway EU + local Qdrant volume)."
+            "<br><br>"
+            "<strong>Cost guardrails for a public demo.</strong> Per-IP rate limits (minute and day), per-session message caps, and a persistent daily Azure token budget written to the Qdrant volume so a restart loop cannot bypass it. Primary-to-fallback failover is logged with an invocation counter exposed in the dashboard."
+            "<br><br>"
+            "<strong>Read-only backend viewer at <code>/backend</code>.</strong> Tab-based dashboard customers can open without touching anything: Overview tiles (model, region, deploy, token budget, encryption status), Models catalog with primary/fallback annotation, Prompt Playground (textarea + live preview, Send button permanently disabled), GDPR &amp; Data Flow visualization, and Usage History with Chart.js graphs (requests/hour, tokens/hour, cache-hit %, fallback-rate %) backed by a Postgres event log. <code>BACKEND_DEMO_LOCKED=true</code> enforces 403 on every mutation endpoint; config dump is sanitized through an allowlist so no key can leak."
+            "<br><br>"
+            "<em>Repository is private — contact guch79@gmail.com for access or commercial options.</em>"
         ),
-        technologies=["Python", "Quart", "Qdrant", "Azure OpenAI", "RAG", "Vector Search", "NLP"],
-        repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/llm-assistant")
+        technologies=["Python", "Quart", "Qdrant", "Azure OpenAI (GPT-5)", "fastembed (ONNX)", "PostgreSQL", "Chart.js", "AES-256-GCM", "GDPR", "RAG", "Structured Outputs", "Railway"],
+        live_url=cast(HttpUrl, "https://llm-assistant-production-aa36.up.railway.app/")
     ),
 
     Project(
