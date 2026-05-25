@@ -128,6 +128,45 @@ p.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1rem; }
 .project-body { max-height: 0; overflow: hidden; transition: max-height 320ms ease; }
 .project-open .project-body { max-height: 640px; }
 
+/* Native <details> "Read more" for long project descriptions */
+.project-more { margin-top: 0.25rem; }
+.project-more > summary {
+  cursor: pointer;
+  color: #f2849e;
+  font-weight: 600;
+  font-size: 0.9em;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0;
+  transition: color 0.2s ease;
+}
+.project-more > summary::-webkit-details-marker { display: none; }
+.project-more > summary::after {
+  content: '▾';
+  font-size: 0.9em;
+  transition: transform 0.2s ease;
+}
+.project-more[open] > summary::after { transform: rotate(180deg); }
+.project-more > summary:hover { color: #ff96b0; }
+.project-more-body {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.7;
+}
+.project-more-body p { margin: 0 0 0.75rem 0; }
+.project-more-body code {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  color: #f2849e;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+}
+
 /* Terminal / code block */
 .terminal-code-wrapper { background: #0f1419; border-radius: 10px; overflow: hidden; margin: 2rem 0; box-shadow: 0 8px 30px rgba(3,6,18,0.6); }
 .terminal-code-header { padding: 0.6rem 0.9rem; background: #1a1d23; border-bottom: 1px solid rgba(255,255,255,0.1); }

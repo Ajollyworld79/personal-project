@@ -166,10 +166,16 @@
     {% for p in projects %}
     <article class="{% if loop.first %}featured{% endif %}">
       <h3>{{ p.title }}</h3>
-      {% if p.slug == 'apology-service' %}
-      <p>{{ p.description | safe }}</p>
+      {% set _desc = p.description %}
+      {% if '<!--more-->' in _desc %}
+        {% set _parts = _desc.split('<!--more-->', 1) %}
+        <p>{{ _parts[0] | safe }}</p>
+        <details class="project-more">
+          <summary>Read more</summary>
+          <div class="project-more-body">{{ _parts[1] | safe }}</div>
+        </details>
       {% else %}
-      <p>{{ p.description }}</p>
+        <p>{{ p.description | safe }}</p>
       {% endif %}
       <p class="tech-tags">
         {% for t in p.technologies %}<span class="tech-badge">{{ t }}</span>{% if not loop.last %} {% endif %}{% endfor %}
