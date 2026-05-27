@@ -384,22 +384,33 @@ header.major[role="banner"] {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 .chat-suggestion {
   text-align: left;
   background: transparent;
   border: none;
   border-radius: var(--r-2);
-  padding: 9px 10px;
+  padding: 7px 10px;
   font-family: var(--font-mono);
-  font-size: 0.83rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
   color: var(--ink-soft);
   cursor: pointer;
   transition: background 100ms, color 100ms, padding-left 150ms;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+.chat-suggestion > span,
+.chat-suggestion {
+  min-width: 0;
 }
 .chat-suggestion::before {
   content: "▸";
