@@ -565,9 +565,44 @@ LLM_ASSISTANT_URL = os.getenv(
     "LLM_ASSISTANT_URL",
     "https://llm-assistant-production-aa36.up.railway.app",
 )
-# Optional bearer token sent to the llm-assistant. Only needed if /search is
-# locked down on the backend; leave unset for the open public endpoint.
+# Bearer token sent to the llm-assistant. Once SEARCH_API_TOKEN is set on the
+# llm-assistant side, this MUST match — otherwise the proxy falls back to mock.
 LLM_ASSISTANT_API_KEY = os.getenv("LLM_ASSISTANT_API_KEY", "").strip()
+
+# --- Rate limiting for /api/cv-chat (per-IP sliding window) ---------------------
+# In-memory only; single-instance Railway is fine. For multi-instance, swap with
+# Redis. Defaults: 20 requests per 60s per IP.
+CV_CHAT_RATE_LIMIT = int(os.getenv("CV_CHAT_RATE_LIMIT", "20"))
+CV_CHAT_RATE_WINDOW = int(os.getenv("CV_CHAT_RATE_WINDOW_SECONDS", "60"))
+_rate_buckets: dict[str, list[float]] = {}
+
+
+def _client_ip() -> str:
+    """Pick a stable client IP — honour Railway/Cloudflare proxy headers."""
+    fwd = request.headers.get("X-Forwarded-For", "")
+    if fwd:
+        return fwd.split(",")[0].strip()
+    real = request.headers.get("X-Real-IP", "")
+    if real:
+        return real.strip()
+    return request.remote_addr or "unknown"
+
+
+def _is_rate_limited(ip: str) -> bool:
+    """True if `ip` has exceeded CV_CHAT_RATE_LIMIT within the sliding window."""
+    now = time.time()
+    cutoff = now - CV_CHAT_RATE_WINDOW
+    bucket = [t for t in _rate_buckets.get(ip, []) if t > cutoff]
+    if len(bucket) >= CV_CHAT_RATE_LIMIT:
+        _rate_buckets[ip] = bucket
+        return True
+    bucket.append(now)
+    _rate_buckets[ip] = bucket
+    # Opportunistic cleanup: every ~100 unique IPs, prune empties.
+    if len(_rate_buckets) > 100:
+        for stale_ip in [k for k, v in _rate_buckets.items() if not v]:
+            del _rate_buckets[stale_ip]
+    return False
 
 
 def _is_useful_rag_answer(payload: dict) -> bool:
@@ -596,11 +631,20 @@ async def cv_chat():
     """Answer a question about Gustav's CV.
 
     Strategy:
-      1. Forward the query to the llm-assistant RAG backend (real grounded RAG).
-      2. If the backend is unreachable, in demo mode, or returns no useful
+      1. Rate-limit per-IP to prevent abuse of the proxy itself.
+      2. Forward the query to the llm-assistant RAG backend (real grounded RAG)
+         with a Bearer token so /search on the backend can require auth.
+      3. If the backend is unreachable, in demo mode, or returns no useful
          answer, fall back to keyword-matched canned facts.
     """
     try:
+        ip = _client_ip()
+        if _is_rate_limited(ip):
+            return jsonify({
+                "answer": "Rate limit reached — slow down a bit and try again in a moment.",
+                "source": "rate_limited",
+            }), 429
+
         body = await request.get_json(silent=True) or {}
         raw_query = str(body.get("query", "")).strip()
         query_lower = raw_query.lower()
