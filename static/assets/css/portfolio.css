@@ -216,8 +216,8 @@ header.major[role="banner"] {
   position: relative;
   z-index: 2;
 }
-.hero-left { display: flex; flex-direction: column; justify-content: center; }
-.hero-right { display: flex; flex-direction: column; align-items: stretch; justify-content: center; }
+.hero-left { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.hero-right { display: flex; flex-direction: column; align-items: stretch; justify-content: center; min-width: 0; }
 
 .hero-eyebrow {
   font-family: var(--font-mono);
@@ -300,6 +300,9 @@ header.major[role="banner"] {
   position: relative;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: min(640px, 70vh);
   box-shadow:
     0 0 0 1px var(--accent-soft),
@@ -419,6 +422,10 @@ header.major[role="banner"] {
   padding: var(--s-3);
   border-radius: var(--r-2);
   border: 1px solid var(--border);
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .chat-msg.user {
   background: var(--surface-2);
