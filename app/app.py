@@ -658,14 +658,14 @@ async def cv_chat():
 
         # --- 1. Try real RAG via llm-assistant ----------------------------------
         try:
-            timeout = aiohttp.ClientTimeout(total=15.0)
+            timeout = aiohttp.ClientTimeout(total=45.0)
             headers = {"Content-Type": "application/json"}
             if LLM_ASSISTANT_API_KEY:
                 headers["Authorization"] = f"Bearer {LLM_ASSISTANT_API_KEY}"
             connector = aiohttp.TCPConnector(ssl=_SSL_CTX)
             async with aiohttp.ClientSession(timeout=timeout, connector=connector) as http_session:
                 rag_url = f"{LLM_ASSISTANT_URL.rstrip('/')}/search"
-                payload = {"query": raw_query, "top_k": 4}
+                payload = {"query": raw_query, "top_k": 10}
                 async with http_session.post(rag_url, json=payload, headers=headers) as resp:
                     if resp.status == 200:
                         rag_data = await resp.json()
