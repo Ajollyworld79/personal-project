@@ -17,10 +17,10 @@
         <meta name="twitter:image" content="{{ url_for('static', filename='assets/images/me.jpg', _external=True) }}" />
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='assets/images/favicon.svg') }}" />
-    <!-- Webfont (Inter) for improved typography -->
+    <!-- Webfonts: Inter (body) + JetBrains Mono (display, terminal) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Site base styles (loaded before portfolio.css so per-component overrides win) -->
     <link rel="stylesheet" href="/static/assets/css/site.css" />
     <link rel="stylesheet" href="/static/assets/css/portfolio.css" />
@@ -52,31 +52,30 @@
     padding-left: 2em;
 }
 
-/* VSCode dark+ inspired token colors */
-.py-var      { color: #9cdcfe; }            /* variable name */
-.py-operator { color: rgba(212, 212, 212, 0.85); }
-.py-bracket  { color: #ffd700; }
-.py-string   { color: #ce9178; }            /* string literal */
+/* Syntax-highlight colors — yellow removed, palette aligned with pink/blue */
+.py-var      { color: #7ecff4; }            /* variable name (sky blue, --accent-2) */
+.py-operator { color: rgba(212, 212, 212, 0.75); }
+.py-bracket  { color: rgba(242, 132, 158, 0.85); }  /* pink brackets, matches --accent */
+.py-string   { color: rgba(230, 238, 246, 0.85); }  /* soft off-white strings (no orange) */
 
-/* Links inside strings: same orange as surrounding string text so they
-   blend into the syntax-highlighted look. Underline is a subtle hint. */
+/* Links inside strings: soft off-white, pink on hover */
 .py-link {
-    color: #ce9178;
+    color: #e6eef6;
     text-decoration: underline;
-    text-decoration-color: rgba(206, 145, 120, 0.3);
+    text-decoration-color: rgba(230, 238, 246, 0.35);
     text-decoration-thickness: 1px;
-    text-underline-offset: 0.25em;
-    transition: color 0.18s ease, text-decoration-color 0.18s ease;
+    text-underline-offset: 0.3em;
+    transition: color 0.18s ease, text-decoration-color 0.18s ease, text-shadow 0.18s ease;
     cursor: pointer;
 }
 
 .py-link:hover {
-    color: #ffb27a;                          /* brighter orange on hover */
-    text-decoration-color: rgba(255, 178, 122, 0.85);
+    color: #f2849e;
+    text-decoration-color: rgba(242, 132, 158, 0.85);
 }
 
 .py-link.active {
-    color: #f2849e;                          /* pink for current page */
+    color: #f2849e;
     text-decoration-color: rgba(242, 132, 158, 0.95);
     font-weight: 600;
 }
@@ -118,7 +117,7 @@
         background: transparent; /* remove boxy background */
         text-decoration: underline; /* keep clear affordance */
     }
-    .py-link:hover { background: rgba(255,255,255,0.03); }
+    .py-link:hover { background: rgba(242, 132, 158, 0.06); }
 
     /* Keep 'Download CV' inline and unboxed on small screens */
     .py-line > a.py-link[href="/download_cv"] {

@@ -16,9 +16,15 @@ from app.models import Project
 from app.data import PROJECTS
 import io
 import time
+import ssl
 from fpdf import FPDF, XPos, YPos
 import random
 import aiohttp
+import certifi
+
+# Shared SSL context backed by certifi so aiohttp can verify TLS certs on
+# Homebrew/portable Python builds that lack a system CA bundle.
+_SSL_CTX = ssl.create_default_context(cafile=certifi.where())
 
 settings = get_settings()
 
@@ -480,6 +486,169 @@ async def get_apology():
 
     except Exception as e:
         app.logger.exception("apology endpoint critical failure")
+        return jsonify({"error": str(e)}), 500
+
+
+# --- CV chat (mock RAG over Gustav's CV) ---
+# Lightweight keyword-matched responses grounded in the live about.html content.
+# Swap with a real RAG call (e.g. llm-assistant on Railway) when ready.
+_CV_FACTS = {
+    "llm": (
+        "Gustav has hands-on production experience with LLMs — building RAG pipelines, "
+        "prompt engineering, and integrating providers like Gemini, Anthropic, and OpenAI. "
+        "His stack: Qdrant for vector search, FastEmbed for embeddings, and Quart/FastAPI "
+        "for async serving. Currently running multiple live LLM demos on Railway."
+    ),
+    "rag": (
+        "Multiple production RAG systems shipped. Architecture: document ingestion → "
+        "chunking → FastEmbed/ONNX embeddings → Qdrant vector store → semantic retrieval → "
+        "Gemini/Anthropic generation with grounded citations. See the LLM Assistant project."
+    ),
+    "projects": (
+        "Featured projects on Railway: (1) LLM Assistant — RAG chat over uploaded docs, "
+        "(2) Document Intelligence Pipeline — OCR + structured extraction, (3) Apology-as-a-Service — "
+        "MCP server with style/severity dimensions, (4) Interdimensional Tales — automated horror "
+        "YouTube channel powered by Claude. All Python, all async, all in production."
+    ),
+    "stack": (
+        "Python everywhere. Web: Quart, FastAPI, Flask. Data: SQLAlchemy, MS SQL, Postgres, "
+        "Pandas, NumPy. AI: Anthropic SDK, OpenAI SDK, Qdrant, FastEmbed, ONNX. Cloud: Azure, "
+        "Railway, Docker. Editor: VS Code with Claude Code."
+    ),
+    "experience": (
+        "15+ years in IT spanning support, operations, and software development. "
+        "Specialized in Python automation, data engineering, and AI/LLM integration. "
+        "Strong on cross-functional delivery — from planning to production."
+    ),
+    "contact": (
+        "Email: guch79@gmail.com · Phone: +45 60 25 34 18 · "
+        "LinkedIn: gustav-wind-christensen · GitHub: @Ajollyworld79"
+    ),
+    "certifications": (
+        "PCEP™ Certified Entry-Level Python Programmer · Complete Python Developer "
+        "(Zero to Mastery 2023) · Python Special Methods (Advanced Classes) · "
+        "Microsoft Certified Professional (MCPS) · Windows 7 Desktop Support Technician."
+    ),
+    "languages": (
+        "Danish — native. English — professional working proficiency. "
+        "(Code: fluent in Python, conversational in TypeScript/SQL/Bash.)"
+    ),
+    "location": (
+        "Based in Denmark. Comfortable with remote, hybrid, and on-site collaboration "
+        "across European timezones."
+    ),
+    "default": (
+        "I'm a mock CV bot for the demo — keyword-matched responses for now. "
+        "Ask about LLMs, RAG, projects, stack, experience, certifications, contact, or location. "
+        "(Real RAG over the full CV is one wire-up away.)"
+    ),
+}
+
+_CV_KEYWORDS = [
+    (("llm", "language model", "gpt", "gemini", "claude", "anthropic"), "llm"),
+    (("rag", "retrieval", "vector", "qdrant", "embedding"), "rag"),
+    (("project", "projekt", "build", "bygget", "lavet", "shipped", "ship"),
+     "projects"),
+    (("stack", "tech", "framework", "tool", "language", "sprog"), "stack"),
+    (("experience", "erfaring", "years", "år", "background", "history"), "experience"),
+    (("contact", "kontakt", "email", "phone", "linkedin", "reach"), "contact"),
+    (("cert", "qualific", "license", "credentials"), "certifications"),
+    (("language", "speak", "danish", "english", "dansk", "engelsk", "tale"), "languages"),
+    (("location", "where", "based", "remote", "denmark", "danmark", "hvor"),
+     "location"),
+]
+
+
+# URL of the llm-assistant RAG backend. Defaults to the Railway deployment which
+# already has Gustav's CV indexed; override locally with LLM_ASSISTANT_URL=http://127.0.0.1:8002.
+LLM_ASSISTANT_URL = os.getenv(
+    "LLM_ASSISTANT_URL",
+    "https://llm-assistant-production-aa36.up.railway.app",
+)
+# Optional bearer token sent to the llm-assistant. Only needed if /search is
+# locked down on the backend; leave unset for the open public endpoint.
+LLM_ASSISTANT_API_KEY = os.getenv("LLM_ASSISTANT_API_KEY", "").strip()
+
+
+def _is_useful_rag_answer(payload: dict) -> bool:
+    """Decide whether the llm-assistant returned something worth showing.
+
+    Demo-mode responses with no matched documents are worse than our mock,
+    so we fall back to keyword facts in that case.
+    """
+    if not payload:
+        return False
+    answer = (payload.get("answer") or "").strip()
+    if not answer:
+        return False
+    # Demo-mode marker: no docs matched, generic apology.
+    if payload.get("demo") and not payload.get("results"):
+        return False
+    if "no documents matched" in answer.lower():
+        return False
+    if "no confident matches" in answer.lower():
+        return False
+    return True
+
+
+@app.route("/api/cv-chat", methods=["POST"])
+async def cv_chat():
+    """Answer a question about Gustav's CV.
+
+    Strategy:
+      1. Forward the query to the llm-assistant RAG backend (real grounded RAG).
+      2. If the backend is unreachable, in demo mode, or returns no useful
+         answer, fall back to keyword-matched canned facts.
+    """
+    try:
+        body = await request.get_json(silent=True) or {}
+        raw_query = str(body.get("query", "")).strip()
+        query_lower = raw_query.lower()
+
+        if not raw_query:
+            return jsonify({
+                "answer": _CV_FACTS["default"],
+                "matched": "default",
+                "source": "mock",
+            })
+
+        # --- 1. Try real RAG via llm-assistant ----------------------------------
+        try:
+            timeout = aiohttp.ClientTimeout(total=15.0)
+            headers = {"Content-Type": "application/json"}
+            if LLM_ASSISTANT_API_KEY:
+                headers["Authorization"] = f"Bearer {LLM_ASSISTANT_API_KEY}"
+            connector = aiohttp.TCPConnector(ssl=_SSL_CTX)
+            async with aiohttp.ClientSession(timeout=timeout, connector=connector) as http_session:
+                rag_url = f"{LLM_ASSISTANT_URL.rstrip('/')}/search"
+                payload = {"query": raw_query, "top_k": 4}
+                async with http_session.post(rag_url, json=payload, headers=headers) as resp:
+                    if resp.status == 200:
+                        rag_data = await resp.json()
+                        if _is_useful_rag_answer(rag_data):
+                            return jsonify({
+                                "answer": rag_data.get("answer", ""),
+                                "sources": rag_data.get("results") or rag_data.get("sources") or [],
+                                "source": "rag",
+                            })
+                    else:
+                        app.logger.info(f"cv-chat: llm-assistant returned HTTP {resp.status}; using mock")
+        except (aiohttp.ClientError, OSError) as e:
+            app.logger.info(f"cv-chat: llm-assistant unreachable ({e}); using mock")
+        except Exception as e:
+            app.logger.warning(f"cv-chat: RAG call failed ({e}); using mock")
+
+        # --- 2. Fall back to keyword-matched mock --------------------------------
+        matched = "default"
+        for keywords, topic in _CV_KEYWORDS:
+            if any(k in query_lower for k in keywords):
+                matched = topic
+                break
+
+        answer = _CV_FACTS.get(matched, _CV_FACTS["default"])
+        return jsonify({"answer": answer, "matched": matched, "source": "mock"})
+    except Exception as e:
+        app.logger.exception("cv-chat endpoint failure")
         return jsonify({"error": str(e)}), 500
 
 

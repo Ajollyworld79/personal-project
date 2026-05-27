@@ -2,40 +2,78 @@
 {% block content %}
 
 <!-- Hero Section -->
-<header class="major" role="banner" style="margin-top: -2rem; margin-bottom: 0; padding-bottom: 0;">
+<header class="major" role="banner">
+  <!-- Token stream background — animated tokens scrolling behind hero -->
+  <div class="token-stream-bg" aria-hidden="true">
+    <div class="token-row">the of and to in a is that for it as with on by from but at this an or are not have model attention transformer embedding vector context softmax gradient layer token weight tensor python async def class import return  the of and to in a is that for it as with on by from but at this an or are not have model attention transformer embedding vector context softmax gradient layer token weight tensor python async def class import return </div>
+    <div class="token-row">embedding vector retrieval generation reasoning prompt context window completion stream chunk semantic similarity cosine distance index query top_k rerank cache retrieval generation reasoning prompt context window completion stream chunk semantic similarity cosine distance index query top_k rerank cache embedding vector retrieval generation reasoning prompt context window </div>
+    <div class="token-row">def encode(text): return model.embed(text)  async def generate(prompt): yield from llm.stream(prompt)  class RAGPipeline: def __init__(self, vectordb, llm): self.vdb = vectordb  def encode(text): return model.embed(text)  async def generate(prompt): yield from llm.stream(prompt)  class RAGPipeline: def __init__(self, vectordb, llm): self.vdb = vectordb </div>
+    <div class="token-row">qdrant fastapi gemini anthropic openai claude transformer langchain pandas numpy sqlalchemy postgres azure railway docker quart pydantic asyncio httpx loguru pytest jupyter qdrant fastapi gemini anthropic openai claude transformer langchain pandas numpy sqlalchemy postgres azure railway docker quart pydantic asyncio httpx </div>
+    <div class="token-row">embeddings = await model.aencode(texts)  results = qdrant.search(collection, query_vector, limit=4)  answer = await gemini.generate(prompt, context=results)  embeddings = await model.aencode(texts)  results = qdrant.search(collection, query_vector, limit=4)  answer = await gemini.generate(prompt, context=results) </div>
+    <div class="token-row">RAG architecture vector database semantic search prompt engineering function calling agent tools structured output streaming inference batch fine-tuning evaluation guardrails RAG architecture vector database semantic search prompt engineering function calling agent tools structured output streaming inference batch fine-tuning evaluation guardrails </div>
+    <div class="token-row">production scalable async pipeline orchestration observability logging metrics tracing alerting deployment ci cd kubernetes docker railway azure production scalable async pipeline orchestration observability logging metrics tracing alerting deployment ci cd kubernetes docker railway azure production scalable async </div>
+    <div class="token-row">@router.post async def chat(req: ChatRequest): ctx = await retriever.invoke(req.query); answer = await llm.ainvoke(prompt | ctx); return ChatResponse(text=answer)  @router.post async def chat(req: ChatRequest): ctx = await retriever.invoke(req.query); answer = await llm.ainvoke(prompt | ctx); return ChatResponse(text=answer) </div>
+    <div class="token-row">embedding retrieval generation reasoning context chunking semantic similarity vector index quantization fine-tuning evaluation rubric guardrails moderation embedding retrieval generation reasoning context chunking semantic similarity vector index quantization fine-tuning evaluation rubric guardrails moderation </div>
+    <div class="token-row">gustav.run()  print("hello, world")  if __name__ == "__main__": app.run(host=HOST, port=PORT)  gustav.run()  print("hello, world")  if __name__ == "__main__": app.run(host=HOST, port=PORT)  gustav.run()  print("hello, world")  if __name__ == "__main__": app.run(host=HOST, port=PORT) </div>
+  </div>
+
   <div class="container hero">
     <div class="hero-left">
-      <h1>Gustav Christensen — AI, LLM & Python Developer</h1>
-      <p class="lead" style="margin-top: 1rem;">I build production-ready AI architectures and Python solutions with a focus on Large Language Models, data engineering, and scalability. Specialized in model setup, prompt engineering, pipeline automation, and backend development.</p>
+      <div class="hero-eyebrow">model: gustav-v15 · status: ready</div>
+      <h1>Gustav <span class="accent">Christensen</span><span class="dot">.</span><br><span class="dim">Python &amp; LLM engineer</span></h1>
+      <p class="lead">I build production-ready AI systems — RAG pipelines, vector search, prompt orchestration. Python at the core, LLMs as the runtime. Based in Denmark, shipping to Railway.</p>
       <ul class="actions">
-        <li><a href="/download_cv" class="button big">Download CV (PDF)</a></li>
-        <li><a href="/about" class="button big alt">Contact / About Me</a></li>
+        <li><a href="/download_cv" class="button big">▾ Download CV</a></li>
+        <li><a href="/about" class="button big alt">→ About me</a></li>
       </ul>
     </div>
+
     <div class="hero-right">
-      <img class="avatar" src="/static/assets/images/me.jpg" alt="Gustav Christensen" title="Gustav Christensen" />
-      <p class="subtle">Python • AI / LLMs • Systems</p>
+      <!-- CV chat widget — ask my CV directly -->
+      <div class="chat-widget" id="cv-chat">
+        <div class="chat-widget-header">
+          <span class="meta"><span class="dot"></span>cv-chat.py · live</span>
+          <span class="traffic-dots"><span></span><span></span><span></span></span>
+        </div>
+        <div class="chat-widget-body" id="cv-chat-body">
+          <div class="chat-prompt">
+            <span class="label">stdin</span>
+            Ask anything about Gustav — his CV, projects, or LLM work. I'll answer in real time.
+          </div>
+          <div class="chat-suggestions" id="cv-chat-suggestions">
+            <button type="button" class="chat-suggestion" data-q="What is Gustav's experience with LLMs and RAG?">What is Gustav's experience with LLMs and RAG?</button>
+            <button type="button" class="chat-suggestion" data-q="Hvilke projekter har Gustav bygget?">Hvilke projekter har Gustav bygget?</button>
+            <button type="button" class="chat-suggestion" data-q="What tech stack does Gustav use?">What tech stack does Gustav use?</button>
+          </div>
+        </div>
+        <form class="chat-input-row" id="cv-chat-form" autocomplete="off">
+          <span class="prefix">&gt;&gt;&gt;</span>
+          <input type="text" id="cv-chat-input" placeholder="Ask my CV…" aria-label="Ask Gustav's CV" />
+          <button type="submit" id="cv-chat-send">RUN</button>
+        </form>
+      </div>
+      <p class="subtle" style="margin-top: 0.75rem; text-align: center;">// powered by RAG · embedded vectors</p>
     </div>
   </div>
 </header>
 
-<!-- Impact Stats -->
+<!-- Model metadata strip (formerly impact stats) -->
 <section class="stats-strip reveal">
-  <div class="stat-item">
-    <span class="stat-number" data-target="15">0</span><span class="stat-suffix">+</span>
-    <span class="stat-label">Years in IT</span>
+  <div class="stat-item" data-key="params">
+    <span class="stat-number" data-target="15">0</span><span class="stat-suffix">Y</span>
+    <span class="stat-label">years in IT</span>
   </div>
-  <div class="stat-item">
+  <div class="stat-item" data-key="checkpoints">
     <span class="stat-number" data-target="5">0</span>
-    <span class="stat-label">Live Projects</span>
+    <span class="stat-label">live projects</span>
   </div>
-  <div class="stat-item">
+  <div class="stat-item" data-key="dependencies">
     <span class="stat-number" data-target="20">0</span><span class="stat-suffix">+</span>
-    <span class="stat-label">Technologies</span>
+    <span class="stat-label">technologies</span>
   </div>
-  <div class="stat-item">
+  <div class="stat-item" data-key="validators">
     <span class="stat-number" data-target="5">0</span>
-    <span class="stat-label">Certifications</span>
+    <span class="stat-label">certifications</span>
   </div>
 </section>
 
@@ -556,6 +594,90 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
 {% endblock %}
 
 {% block scripts_extra %}
+<script>
+// === CV Chat Widget ===
+(function() {
+  const widget = document.getElementById('cv-chat');
+  if (!widget) return;
+
+  const body = document.getElementById('cv-chat-body');
+  const form = document.getElementById('cv-chat-form');
+  const input = document.getElementById('cv-chat-input');
+  const sendBtn = document.getElementById('cv-chat-send');
+  const suggestions = document.getElementById('cv-chat-suggestions');
+  let msgCounter = 0;
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function hideSuggestions() {
+    if (suggestions) suggestions.style.display = 'none';
+    const prompt = body.querySelector('.chat-prompt');
+    if (prompt) prompt.style.display = 'none';
+  }
+
+  function appendMsg(type, text, extra) {
+    msgCounter++;
+    const div = document.createElement('div');
+    div.className = 'chat-msg ' + type + (extra ? ' ' + extra : '');
+    div.setAttribute('data-idx', msgCounter);
+    div.innerHTML = escapeHtml(text);
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+    return div;
+  }
+
+  async function ask(question) {
+    if (!question || !question.trim()) return;
+    hideSuggestions();
+    appendMsg('user', question);
+    input.value = '';
+    sendBtn.disabled = true;
+
+    const thinking = appendMsg('bot', 'thinking…', 'thinking');
+
+    try {
+      const res = await fetch('/api/cv-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: question })
+      });
+      const data = await res.json();
+      thinking.remove();
+      msgCounter--; // re-use slot for real response
+      appendMsg('bot', data.answer || data.error || 'No answer.');
+    } catch (err) {
+      thinking.remove();
+      msgCounter--;
+      appendMsg('bot', 'Network error — try again in a moment.');
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  // Suggestion clicks
+  if (suggestions) {
+    suggestions.addEventListener('click', (e) => {
+      const btn = e.target.closest('.chat-suggestion');
+      if (!btn) return;
+      const q = btn.getAttribute('data-q') || btn.textContent.trim();
+      ask(q);
+    });
+  }
+
+  // Form submit
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    ask(input.value);
+  });
+})();
+</script>
+
 <script>
 // === Scroll Reveal (IntersectionObserver) ===
 (function() {
