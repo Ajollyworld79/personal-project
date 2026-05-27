@@ -215,37 +215,37 @@ select:focus-visible,
                 <div class="py-line"><span class="py-var">navigation</span> <span class="py-operator">=</span> <span class="py-bracket">{</span></div>
                 <div class="py-indent">
                     <div class="py-line">
-                        <span class="py-string">"home"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"<a href="/" class="py-link" data-nav-role="key">home</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
                         <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/"</span><span class="py-bracket">,</span>
                         <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/" class="py-link">Home</a>"</span>
                         <span class="py-bracket">},</span>
                     </div>
                     <div class="py-line">
-                        <span class="py-string">"about"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"<a href="/about" class="py-link" data-nav-role="key">about</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
                         <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/about"</span><span class="py-bracket">,</span>
                         <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/about" class="py-link">About Me</a>"</span>
                         <span class="py-bracket">},</span>
                     </div>
                     <div class="py-line">
-                        <span class="py-string">"projects"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"<a href="/projects" class="py-link" data-nav-role="key">projects</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
                         <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/projects"</span><span class="py-bracket">,</span>
                         <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/projects" class="py-link">Projects</a>"</span>
                         <span class="py-bracket">},</span>
                     </div>
                     <div class="py-line">
-                        <span class="py-string">"github"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"<a href="https://github.com/Ajollyworld79" class="py-link" data-nav-role="key" target="_blank" rel="noopener noreferrer">github</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
                         <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"https://github.com/Ajollyworld79"</span><span class="py-bracket">,</span>
                         <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://github.com/Ajollyworld79" class="py-link" target="_blank" rel="noopener noreferrer">GitHub</a>"</span>
                         <span class="py-bracket">},</span>
                     </div>
                     <div class="py-line">
-                        <span class="py-string">"ocr_demo"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"<a href="https://document-intelligence-pipeline-production.up.railway.app" class="py-link" data-nav-role="key" target="_blank" rel="noopener noreferrer">ocr_demo</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
                         <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"https://document-intelligence-pipeline-production.up.railway.app"</span><span class="py-bracket">,</span>
                         <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://document-intelligence-pipeline-production.up.railway.app" class="py-link" target="_blank" rel="noopener noreferrer">OCR Demo</a>"</span>
                         <span class="py-bracket">},</span>
                     </div>
                     <div class="py-line">
-                        <span class="py-string">"chat_demo"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
+                        <span class="py-string">"<a href="https://llm-assistant-production-aa36.up.railway.app" class="py-link" data-nav-role="key" target="_blank" rel="noopener noreferrer">chat_demo</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
                         <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"https://llm-assistant-production-aa36.up.railway.app"</span><span class="py-bracket">,</span>
                         <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://llm-assistant-production-aa36.up.railway.app" class="py-link" target="_blank" rel="noopener noreferrer">Chat Demo</a>"</span>
                         <span class="py-bracket">}</span>
@@ -326,6 +326,9 @@ document.addEventListener('DOMContentLoaded', () => {
     fragment.appendChild(placeholder);
 
     for (const link of pyLinks) {
+        // Skip key-links (the lowercase "home"/"about"/...) so the mobile
+        // select doesn't show duplicate entries for each route.
+        if (link.dataset.navRole === 'key') continue;
         const href = link.getAttribute('href');
         const text = link.textContent.trim();
         if (!href || href.startsWith('#')) continue;
