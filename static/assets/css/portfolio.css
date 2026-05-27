@@ -425,7 +425,7 @@ header.major[role="banner"] {
   color: var(--ink);
 }
 .chat-msg.user::before {
-  content: "in[" attr(data-idx) "]: ";
+  content: "you[" attr(data-idx) "]: ";
   color: var(--accent-2);
   font-weight: 600;
 }
@@ -434,7 +434,7 @@ header.major[role="banner"] {
   color: var(--ink);
 }
 .chat-msg.bot::before {
-  content: "out[" attr(data-idx) "]: ";
+  content: "AI[" attr(data-idx) "]: ";
   color: var(--accent);
   font-weight: 600;
 }
@@ -442,6 +442,59 @@ header.major[role="banner"] {
 .chat-msg.bot.thinking::after {
   content: "▊";
   animation: blink 1s steps(2, end) infinite;
+}
+
+/* Markdown rendering inside bot answers — kept compact so it fits the
+   REPL-style widget without breaking the monospace tone. */
+.chat-msg.bot > *:first-child { margin-top: 0; }
+.chat-msg.bot > *:last-child { margin-bottom: 0; }
+.chat-msg.bot p { margin: 0 0 0.5rem; }
+.chat-msg.bot h1,
+.chat-msg.bot h2,
+.chat-msg.bot h3,
+.chat-msg.bot h4 {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0.6rem 0 0.3rem;
+  color: var(--accent);
+  letter-spacing: 0.01em;
+}
+.chat-msg.bot ul,
+.chat-msg.bot ol {
+  margin: 0.25rem 0 0.5rem;
+  padding-left: 1.25rem;
+}
+.chat-msg.bot li { margin-bottom: 0.2rem; }
+.chat-msg.bot strong { font-weight: 700; color: var(--ink); }
+.chat-msg.bot em { font-style: italic; color: var(--ink-soft, var(--ink)); }
+.chat-msg.bot code {
+  background: var(--surface-2);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.78rem;
+}
+.chat-msg.bot pre {
+  background: var(--surface-2);
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--r-2);
+  overflow-x: auto;
+  margin: 0.4rem 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+.chat-msg.bot pre code { background: transparent; padding: 0; }
+.chat-msg.bot blockquote {
+  border-left: 2px solid var(--accent);
+  margin: 0.4rem 0;
+  padding-left: 0.6rem;
+  color: var(--ink-mute);
+  font-style: italic;
+}
+.chat-msg.bot a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
 }
 @keyframes blink { 50% { opacity: 0; } }
 

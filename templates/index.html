@@ -594,6 +594,8 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
 {% endblock %}
 
 {% block scripts_extra %}
+<script src="https://cdn.jsdelivr.net/npm/marked@13.0.3/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
 <script>
 // === CV Chat Widget ===
 (function() {
@@ -614,6 +616,29 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
       .replace(/>/g, '&gt;');
   }
 
+  // The LLM sometimes collapses markdown to a single line — `###` / `* ` /
+  // `- ` only render as blocks at line-start, so we re-inject newlines when
+  // we see block markers glued to the previous sentence.
+  function normalizeMarkdown(text) {
+    return String(text)
+      .replace(/(\S)[ \t]+(?=#{1,6}\s)/g, '$1\n\n')
+      .replace(/([.!?:)\]])[ \t]+(?=\*\s\*\*)/g, '$1\n')
+      .replace(/([.!?:)\]])[ \t]+(?=-\s)/g, '$1\n')
+      .replace(/([.!?:)\]])[ \t]+(?=\d+\.\s)/g, '$1\n');
+  }
+
+  function renderBotHtml(text) {
+    try {
+      if (typeof marked === 'undefined' || typeof DOMPurify === 'undefined') {
+        return escapeHtml(text);
+      }
+      const html = marked.parse(normalizeMarkdown(text), { breaks: true, gfm: true });
+      return DOMPurify.sanitize(html);
+    } catch (e) {
+      return escapeHtml(text);
+    }
+  }
+
   function hideSuggestions() {
     if (suggestions) suggestions.style.display = 'none';
     const prompt = body.querySelector('.chat-prompt');
@@ -625,7 +650,9 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
     const div = document.createElement('div');
     div.className = 'chat-msg ' + type + (extra ? ' ' + extra : '');
     div.setAttribute('data-idx', msgCounter);
-    div.innerHTML = escapeHtml(text);
+    // Bot answers are LLM markdown; user input is plain text and must be escaped.
+    const isBotAnswer = type === 'bot' && !(extra && extra.indexOf('thinking') !== -1);
+    div.innerHTML = isBotAnswer ? renderBotHtml(text) : escapeHtml(text);
     body.appendChild(div);
     body.scrollTop = body.scrollHeight;
     return div;
