@@ -590,18 +590,10 @@ header.major[role="banner"] {
   align-items: flex-start !important;
 }
 .stat-item:last-child { border-right: none; }
-.stat-item::before {
-  content: attr(data-key);
-  position: absolute;
-  top: var(--s-3);
-  left: var(--s-4);
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--ink-mute);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-weight: 600;
-}
+/* (Removed the cryptic per-stat key — params/checkpoints/dependencies/validators.
+   It sat above the real label and forced readers to decode it. The "model
+   metadata" tone still lives in the mono numbers + lowercase labels, and the
+   LLM concept lives on in the eyebrow, token stream and the "model" card tag.) */
 .stat-number {
   font-family: var(--font-mono);
   font-size: clamp(1.8rem, 3vw, 2.6rem);
@@ -613,7 +605,6 @@ header.major[role="banner"] {
   background-clip: initial !important;
   line-height: 1;
   display: inline-block;
-  margin-top: var(--s-5);
 }
 .stat-suffix {
   font-family: var(--font-mono);
