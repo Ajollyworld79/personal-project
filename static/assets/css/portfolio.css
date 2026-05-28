@@ -1110,11 +1110,10 @@ ul.actions li { margin: 0; }
    ============================================================ */
 
 .gh-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-3);
-  padding: var(--s-6);
-  margin-top: var(--s-7);
+  /* Boxless: the heatmap grid + headline number give enough structure on
+     their own, so it sits on the transparent page background (no card)
+     to avoid box-on-box with the CTA banner below. */
+  margin-top: var(--s-5);
   position: relative;
   z-index: 1;
 }
@@ -1221,6 +1220,14 @@ ul.actions li { margin: 0; }
 .reveal.revealed {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Vertical rhythm between stacked homepage sections — keeps each section
+   heading (Skills, Featured Project, GitHub Activity, CTA) from crowding
+   the content above it. The hero is a separate banner header, unaffected. */
+section.reveal { margin-top: var(--s-8); }
+@media screen and (max-width: 736px) {
+  section.reveal { margin-top: var(--s-7); }
 }
 
 /* ============================================================
