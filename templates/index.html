@@ -192,7 +192,6 @@
 <section class="reveal">
   <header class="major">
     <h2>Featured Project</h2>
-    <p>A production system I'm especially proud of — see the rest on the <a href="/projects">projects page</a>.</p>
   </header>
   <div class="posts">
     {% for p in projects if p.slug == 'llm-assistant' %}
@@ -231,6 +230,7 @@
     </article>
     {% endfor %}
   </div>
+  <p class="subtle" style="margin-top: var(--s-5);"><a href="/projects">See all projects →</a></p>
 </section>
 
 <!-- Apology Modal (Copied from projects.html for homepage access) -->
