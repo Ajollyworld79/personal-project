@@ -450,11 +450,18 @@ header.major[role="banner"] {
 .chat-msg.bot {
   background: var(--bg);
   color: var(--ink);
+  /* Answer prose in sans for comfortable reading of long RAG answers; the
+     terminal frame (mono prefix, prompt, RUN, user input) keeps the REPL
+     identity. Input = code (mono), output = readable prose (sans). */
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 .chat-msg.bot::before {
   content: "AI[" attr(data-idx) "]: ";
   color: var(--accent);
   font-weight: 600;
+  font-family: var(--font-mono);
 }
 .chat-msg.bot.thinking { color: var(--ink-mute); font-style: italic; }
 .chat-msg.bot.thinking::after {

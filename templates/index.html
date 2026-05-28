@@ -191,25 +191,11 @@
 <!-- Projects Section -->
 <section class="reveal">
   <header class="major">
-    <h2>Featured Projects</h2>
-    <p>Examples of technical solutions I have developed, with special emphasis on AI/LLMs, Python, and system architecture.</p>
+    <h2>Featured Project</h2>
+    <p>A production system I'm especially proud of — see the rest on the <a href="/projects">projects page</a>.</p>
   </header>
-  <div class="filter-bar">
-    <div class="filter-helper" style="margin-bottom:0.5rem; font-size:0.95em; color: rgba(255,255,255,0.9);"><strong>Filter by technology:</strong></div>
-    <div class="filter-controls">
-      <button class="filter-btn" data-tech="Python">Python</button>
-      <button class="filter-btn" data-tech="Qdrant">Qdrant</button>
-      <button class="filter-btn" data-tech="RAG">RAG</button>
-      <button class="filter-btn" data-tech="OCR">OCR</button>
-      <button class="filter-btn" data-tech="Quart">Quart</button>
-      <button class="filter-btn" data-tech="FastMCP">FastMCP</button>
-      <button class="filter-btn" data-tech="Pandas">Pandas</button>
-      <button class="filter-btn" data-tech="SQLAlchemy">SQLAlchemy</button>
-      <button id="clear-filters" class="filter-btn" style="margin-left:0.5rem; background:#fff; color:#333; border:1px solid #ddd;">Clear</button>
-    </div>
-  </div>
   <div class="posts">
-    {% for p in projects %}
+    {% for p in projects if p.slug == 'llm-assistant' %}
     <article class="{% if loop.first %}featured{% endif %}">
       <h3>{{ p.title }}</h3>
       {% set _desc = p.description %}
