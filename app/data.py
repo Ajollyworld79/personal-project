@@ -5,23 +5,21 @@ from pydantic import HttpUrl
 PROJECTS = [
     Project(
         slug="llm-assistant",
-        title="AI-Powered IT Support Agent with RAG & GDPR Compliance",
+        title="AI-Powered IT Support Agent with RAG",
         description=(
-            "Production RAG system positioned as a GDPR-compliant internal IT support agent. Multilingual (Danish/English) responses grounded in customer-uploaded documentation, with a read-only backend viewer customers can inspect end-to-end."
+            "Production RAG system positioned as an internal IT support agent. Multilingual (Danish/English) answers grounded in customer-uploaded documentation, with a read-only backend dashboard customers can inspect end-to-end."
             "<!--more-->"
-            "<strong>Architecture.</strong> Async Quart backend with Qdrant local vector store, fastembed ONNX embeddings (no torch dependency), and Azure OpenAI in Sweden Central with auto-failover between <code>gpt-5-nano</code> (primary) and <code>gpt-5-mini</code> (fallback)."
+            "<strong>Architecture.</strong> Async Quart backend with a local Qdrant vector store and fastembed ONNX embeddings (multilingual incl. Danish; no torch dependency, stays well under 200MB resident). Generation runs on Google <code>gemini-2.5-flash</code> via the google-genai SDK, with automatic fallback to <code>gemini-2.5-flash-lite</code>."
             "<br><br>"
-            "<strong>Prompt design optimized for cost.</strong> Stable ~1500-token system prompt placed first so Azure automatic prompt-caching hits across requests — cached input tokens cost 50% of the standard rate. Structured outputs use strict-mode JSON schema instead of brittle text markers; the schema returns typed <code>source</code> (documents/general_knowledge/refusal), <code>language</code>, <code>answer_markdown</code>, and <code>refusal_reason</code>. Scope is tightly bounded to workplace IT — M365, Windows, hardware, networking, identity — anything outside scope returns a categorized refusal."
+            "<strong>Provider-agnostic — GDPR-ready by configuration.</strong> The embedding and LLM layers are pluggable: fastembed (local) and Gemini by default, but both can be repointed to Azure OpenAI in an EU region. Because Azure OpenAI runs under Microsoft's EU data-processing terms, the same codebase becomes a GDPR-compliant, EU-data-residency deployment with no architectural changes."
             "<br><br>"
-            "<strong>GDPR built into the data plane, not bolted on.</strong> AES-256-GCM encryption of Qdrant payload text at rest. PII redaction (email, Danish CPR, phone) on every prompt before logging. Document TTL with hourly auto-cleanup background worker. Right-to-be-forgotten and Art. 20 data-portability endpoints scoped to the caller's session cookie. EU data residency end-to-end (Azure Sweden Central + Railway EU + local Qdrant volume)."
+            "<strong>Cost guardrails for a public demo.</strong> Per-IP rate limits (per minute and per day), per-session message caps, and a persistent daily token budget written to disk so a restart loop cannot bypass it."
             "<br><br>"
-            "<strong>Cost guardrails for a public demo.</strong> Per-IP rate limits (minute and day), per-session message caps, and a persistent daily Azure token budget written to the Qdrant volume so a restart loop cannot bypass it. Primary-to-fallback failover is logged with an invocation counter exposed in the dashboard."
-            "<br><br>"
-            "<strong>Read-only backend viewer at <code>/backend</code>.</strong> Tab-based dashboard customers can open without touching anything: Overview tiles (model, region, deploy, token budget, encryption status), Models catalog with primary/fallback annotation, Prompt Playground (textarea + live preview, Send button permanently disabled), GDPR &amp; Data Flow visualization, and Usage History with Chart.js graphs (requests/hour, tokens/hour, cache-hit %, fallback-rate %) backed by a Postgres event log. <code>BACKEND_DEMO_LOCKED=true</code> enforces 403 on every mutation endpoint; config dump is sanitized through an allowlist so no key can leak."
+            "<strong>Read-only backend dashboard at <code>/backend</code>.</strong> A lockable view customers can open without touching anything: model and region configuration sanitized through an allowlist so no key can leak, plus live usage metrics and rate-limit/budget status. A demo-lock flag enforces 403 on every mutation endpoint."
             "<br><br>"
             "<em>Repository is private — contact guch79@gmail.com for access or commercial options.</em>"
         ),
-        technologies=["Python", "Quart", "Qdrant", "Azure OpenAI (GPT-5)", "fastembed (ONNX)", "PostgreSQL", "Chart.js", "AES-256-GCM", "GDPR", "RAG", "Structured Outputs", "Railway"],
+        technologies=["Python", "Quart", "Gemini 2.5 Flash", "google-genai", "Qdrant", "fastembed (ONNX)", "RAG", "Azure OpenAI (optional)", "Railway"],
         live_url=cast(HttpUrl, "https://llm-assistant-production-aa36.up.railway.app/")
     ),
 
