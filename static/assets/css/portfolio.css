@@ -395,7 +395,10 @@ header.major[role="banner"] {
   font-family: var(--font-mono);
   font-size: 0.78rem;
   line-height: 1.4;
-  color: var(--ink);
+  color: var(--ink) !important;
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 400;
   cursor: pointer;
   transition: background 100ms, color 100ms, padding-left 150ms;
   display: flex;
@@ -420,7 +423,7 @@ header.major[role="banner"] {
 }
 .chat-suggestion:hover {
   background: var(--accent-soft);
-  color: var(--ink);
+  color: var(--accent) !important;
   padding-left: 14px;
 }
 .chat-suggestion:hover::before { transform: translateX(2px); }
