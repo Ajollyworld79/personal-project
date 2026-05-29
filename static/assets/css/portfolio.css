@@ -383,7 +383,7 @@ header.major[role="banner"] {
 .chat-suggestions {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
   min-width: 0;
 }
 .chat-suggestion {
@@ -391,11 +391,11 @@ header.major[role="banner"] {
   background: transparent;
   border: none;
   border-radius: var(--r-2);
-  padding: 7px 10px;
+  padding: 8px 10px;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  line-height: 1.35;
-  color: var(--ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--ink);
   cursor: pointer;
   transition: background 100ms, color 100ms, padding-left 150ms;
   display: flex;
