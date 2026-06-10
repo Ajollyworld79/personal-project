@@ -2,18 +2,28 @@
 {% block content %}
 <section class="cv section" aria-labelledby="about-heading">
     <header class="cv__header">
-        <p class="cv__eyebrow">About Me</p>
-        <h1 id="about-heading" class="cv__title">Gustav Wind Christensen</h1>
-        <p class="cv__lede">Python and SQL developer with extensive experience in data engineering, automation, and AI/LLM integration. Specialized in building robust, scalable solutions with a strong foundation in support and operations.</p>
+        <div class="cv__head">
+            <img src="/static/assets/images/me.jpg" alt="Gustav Wind Christensen" class="avatar small" width="120" height="120" />
+            <div class="cv__head-text">
+                <p class="cv__eyebrow">gustav.about()</p>
+                <h1 id="about-heading" class="cv__title">Gustav Wind Christensen</h1>
+                <p class="cv__lede">Python &amp; LLM engineer with 15+ years in IT. I build production AI systems — RAG pipelines, vector search, autonomous LLM workflows — on a foundation of data engineering, automation, and operations experience.</p>
+                <ul class="actions cv__actions">
+                    <li><a href="/download_cv" class="button">$ download cv.pdf</a></li>
+                    <li><a href="/#cv-chat" class="button alt">&gt;&gt;&gt; ask my cv</a></li>
+                </ul>
+            </div>
+        </div>
     </header>
 
-    <div class="cards mt-2">
+    <div class="cards">
         <article class="card">
             <h3>Contact</h3>
             <address class="card__contact">
-                <span>Telefon: <a href="tel:+4560253418">+45 60 25 34 18</a></span>
                 <span>Email: <a href="mailto:guch79@gmail.com">guch79@gmail.com</a></span>
                 <span>LinkedIn: <a href="https://www.linkedin.com/in/gustav-wind-christensen-b61a0330" target="_blank" rel="noopener noreferrer">gustav-wind-christensen</a></span>
+                <span>GitHub: <a href="https://github.com/Ajollyworld79" target="_blank" rel="noopener noreferrer">@Ajollyworld79</a></span>
+                <span>Location: Denmark</span>
             </address>
         </article>
         <article class="card">
@@ -28,7 +38,10 @@
         </article>
         <article class="card">
             <h3>Languages</h3>
-            <p>Danish — Native or Bilingual<br>English — Professional working proficiency</p>
+            <ul>
+                <li>Danish — native</li>
+                <li>English — professional</li>
+            </ul>
         </article>
     </div>
 
@@ -39,25 +52,19 @@
 
     <hr class="separator" aria-hidden="true">
 
-    <h2>Certifications</h2>
-    <ul>
-        <li><a href="https://www.credly.com/badges/5e99ca10-b73c-40e9-b1d8-c68d780d8ed3/linked_in_profile" target="_blank" rel="noopener noreferrer">PCEP™ – Certified Entry-Level Python Programmer [PCEP-30-02]</a></li>
-        <li><a href="https://udemy-certificate.s3.amazonaws.com/image/UC-6105e32b-5fb2-4f5e-819b-bef728365e45.jpg" target="_blank" rel="noopener noreferrer">Complete Python Developer – Zero to Mastery (2023)</a></li>
-        <li>Python Special Methods – Advanced Classes</li>
-        <li>Microsoft Certified Professional (MCPS)</li>
-        <li>Windows 7 Enterprise Desktop Support Technician (MS)</li>
-    </ul>
-
-    <hr class="separator" aria-hidden="true">
-
     <h2>Experience</h2>
     <ol class="timeline" role="list">
         <li class="timeline-item">
-            <p class="timeline-date"><time datetime="2020">2020</time> — Present</p>
+            <p class="timeline-date"><time datetime="2020">2020</time> — present</p>
             <div class="timeline-content">
-                <h3 class="timeline-role"><em>Data Engineer</em></h3>
+                <h3 class="timeline-role">Data Engineer</h3>
                 <p class="timeline-company">3F – Fagligt Fælles Forbund · Copenhagen</p>
-                <p>Data engineering, pipeline automation, ETL processes, and Python development. Building scalable data solutions and integrating AI/LLM capabilities.</p>
+                <p>Building and running the data backbone for one of Denmark's largest trade unions.</p>
+                <ul class="timeline-points">
+                    <li>Design and operate ETL pipelines from Microsoft Dataverse and internal systems into SQL Server — with parallel processing, connection pooling, and circuit breakers.</li>
+                    <li>Python automation replacing manual workflows across the organisation.</li>
+                    <li>AI/LLM integration: RAG-based tooling and LLM-assisted automation on Azure.</li>
+                </ul>
                 <ul class="timeline-tech" role="list" aria-label="Technologies">
                     <li><span class="tech-badge">Python</span></li>
                     <li><span class="tech-badge">SQL</span></li>
@@ -70,7 +77,7 @@
         <li class="timeline-item">
             <p class="timeline-date"><time datetime="2014">2014</time> — <time datetime="2020">2020</time></p>
             <div class="timeline-content">
-                <h3 class="timeline-role"><em>IT Operations Specialist</em></h3>
+                <h3 class="timeline-role">IT Operations Specialist</h3>
                 <p class="timeline-company">3F – Fagligt Fælles Forbund</p>
                 <p>Server operations, SCOM development, SLA reporting, and Orchestrator batch automation.</p>
                 <ul class="timeline-tech" role="list" aria-label="Technologies">
@@ -84,7 +91,7 @@
         <li class="timeline-item">
             <p class="timeline-date"><time datetime="2008">2008</time> — <time datetime="2014">2014</time></p>
             <div class="timeline-content">
-                <h3 class="timeline-role"><em>IT Support Specialist</em></h3>
+                <h3 class="timeline-role">IT Support Specialist</h3>
                 <p class="timeline-company">3F – Fagligt Fælles Forbund</p>
                 <p>End-user support, troubleshooting, and technical assistance.</p>
                 <ul class="timeline-tech" role="list" aria-label="Technologies">
@@ -94,8 +101,6 @@
             </div>
         </li>
     </ol>
-
-    <hr class="separator" aria-hidden="true">
 
     <h3>Previous Roles</h3>
     <ol class="timeline timeline-compact" role="list">
@@ -123,394 +128,55 @@
 
     <hr class="separator" aria-hidden="true">
 
-    <h2>Education</h2>
-    <ul>
-        <li>Zero To Mastery Academy – Python Developer Bootcamp (<time datetime="2023">2023</time>)</li>
-        <li>Business College Syd – Sales &amp; Commerce (<time datetime="2001">2001</time>)</li>
-        <li>Køge Handelsskole – Business School (<time datetime="1996">1996</time>-<time datetime="1997">1997</time>)</li>
-        <li>Bernstorffsminde Efterskole – 10th Grade (<time datetime="1995">1995</time>-<time datetime="1996">1996</time>)</li>
+    <h2>Certifications</h2>
+    <div class="cert-grid">
+        <article class="cert-card">
+            <span class="cert-abbr" aria-hidden="true">PCEP</span>
+            <p class="cert-name">
+                <a href="https://www.credly.com/badges/5e99ca10-b73c-40e9-b1d8-c68d780d8ed3/linked_in_profile" target="_blank" rel="noopener noreferrer">Certified Entry-Level Python Programmer</a>
+                <span class="cert-issuer">Python Institute · PCEP-30-02</span>
+            </p>
+        </article>
+        <article class="cert-card">
+            <span class="cert-abbr" aria-hidden="true">MCPS</span>
+            <p class="cert-name">
+                Microsoft Certified Professional
+                <span class="cert-issuer">Microsoft</span>
+            </p>
+        </article>
+        <article class="cert-card">
+            <span class="cert-abbr" aria-hidden="true">MS</span>
+            <p class="cert-name">
+                Windows 7 Enterprise Desktop Support Technician
+                <span class="cert-issuer">Microsoft</span>
+            </p>
+        </article>
+    </div>
+
+    <hr class="separator" aria-hidden="true">
+
+    <h2>Education &amp; Courses</h2>
+    <ul class="plain">
+        <li>Zero To Mastery Academy — Python Developer Bootcamp <span class="year">2023</span></li>
+        <li><a href="https://udemy-certificate.s3.amazonaws.com/image/UC-6105e32b-5fb2-4f5e-819b-bef728365e45.jpg" target="_blank" rel="noopener noreferrer">Complete Python Developer – Zero to Mastery</a> <span class="year">2023</span></li>
+        <li>Python Special Methods — Advanced Classes</li>
+        <li>Business College Syd — Sales &amp; Commerce <span class="year">2001</span></li>
+        <li>Køge Handelsskole — Business School <span class="year">1996–1997</span></li>
+        <li>Bernstorffsminde Efterskole — 10th Grade <span class="year">1995–1996</span></li>
     </ul>
 
     <hr class="separator" aria-hidden="true">
 
-    <aside class="cta-box">
-        <div class="cta-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
+    <section class="cta-section">
+        <div class="cta-banner">
+            <h2>Want the full picture?</h2>
+            <p>Explore live demos and production AI projects — or ask the RAG assistant on the front page anything about my background.</p>
+            <div class="cta-actions">
+                <a href="/projects" class="button big">View Projects</a>
+                <a href="/#cv-chat" class="button big alt">Ask my CV</a>
+                <a href="/download_cv" class="button big alt">Download CV</a>
+            </div>
         </div>
-        <div class="cta-content">
-            <h3 class="cta-title">Technical Portfolio</h3>
-            <p class="cta-text">Explore my work in AI/LLM integration, data engineering, and Python development. View live demos and code examples showcasing production-ready solutions.</p>
-            <a href="/projects" class="button cta-button">View Projects</a>
-        </div>
-    </aside>
+    </section>
 </section>
-
-<style>
-.cv {
-    --accent: #f2849e;
-    --accent-2: #7ecff4;
-    --surface: rgba(255, 255, 255, 0.04);
-    --surface-hover: rgba(255, 255, 255, 0.06);
-    --border: rgba(255, 255, 255, 0.12);
-    --border-strong: rgba(242, 132, 158, 0.4);
-    --text: rgba(255, 255, 255, 0.9);
-    --text-muted: rgba(255, 255, 255, 0.8);
-    --text-dim: rgba(255, 255, 255, 0.5);
-
-    max-width: 1200px;
-    margin-inline: auto;
-}
-
-.cv__header {
-    text-align: center;
-    margin-block-end: 3rem;
-}
-
-.cv__eyebrow {
-    color: var(--accent);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    font-size: 0.9em;
-    margin-block-end: 0.5rem;
-}
-
-.cv__title {
-    font-size: clamp(2rem, 1.5rem + 2vw, 2.75rem);
-    margin-block: 1rem;
-}
-
-.cv__lede {
-    max-width: 800px;
-    margin-inline: auto;
-    font-size: 1.1em;
-    line-height: 1.7;
-    color: var(--text-muted);
-}
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-block: 2rem;
-}
-
-.card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.75rem;
-    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-4px);
-    border-color: var(--border-strong);
-    background: var(--surface-hover);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-}
-
-.card h3 {
-    color: var(--accent);
-    font-size: 1.2em;
-    margin: 0 0 1rem 0;
-    font-weight: 700;
-}
-
-.card p,
-.card__contact {
-    margin: 0;
-    line-height: 1.8;
-    color: var(--text-muted);
-}
-
-.card__contact {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    font-style: normal;
-}
-
-.card a {
-    color: var(--accent-2);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(126, 207, 244, 0.3);
-    transition: color 0.2s ease, border-bottom-color 0.2s ease;
-}
-
-.card a:hover {
-    color: #fff;
-    border-bottom-color: var(--accent-2);
-}
-
-.card ul {
-    margin: 0;
-    padding-inline-start: 1.5rem;
-    list-style: none;
-}
-
-.card ul li {
-    position: relative;
-    padding-inline-start: 0.5rem;
-    margin-block-end: 0.5rem;
-    color: var(--text-muted);
-}
-
-.card ul li::before {
-    content: '';
-    position: absolute;
-    inset-inline-start: -1rem;
-    inset-block-start: 0.6em;
-    width: 6px;
-    height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-}
-
-.separator {
-    height: 1px;
-    border: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    margin-block: 3rem;
-}
-
-.cv h2 {
-    color: #fff;
-    font-size: clamp(1.5rem, 1.2rem + 1vw, 1.8rem);
-    margin: 0 0 1.5rem 0;
-    font-weight: 700;
-    position: relative;
-    padding-block-end: 0.5rem;
-}
-
-.cv h2::after {
-    content: '';
-    position: absolute;
-    inset-block-end: 0;
-    inset-inline-start: 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--accent-2));
-    border-radius: 2px;
-}
-
-.cv h3 {
-    color: #fff;
-    font-size: 1.3em;
-    margin: 1.5rem 0 1rem 0;
-    font-weight: 600;
-}
-
-.cv p {
-    line-height: 1.8;
-    color: var(--text-muted);
-    margin-block-end: 1rem;
-}
-
-.cv ul {
-    line-height: 1.9;
-}
-
-.cv > ul > li {
-    margin-block-end: 0.75rem;
-    color: var(--text-muted);
-}
-
-.cv > ul > li > a {
-    color: var(--text-muted);
-    text-decoration: underline;
-    text-decoration-color: rgba(255, 255, 255, 0.3);
-    transition: color 0.2s ease, text-decoration-color 0.2s ease;
-}
-
-.cv > ul > li > a:hover {
-    color: #fff;
-    text-decoration-color: var(--text);
-}
-
-.cv em {
-    color: var(--accent);
-    font-style: normal;
-    font-weight: 600;
-}
-
-.cta-box {
-    margin-block-start: 2rem;
-    padding: 2rem;
-    background: linear-gradient(135deg, rgba(242, 132, 158, 0.15), rgba(126, 207, 244, 0.15));
-    border: 1px solid rgba(242, 132, 158, 0.3);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-.cta-box:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 32px rgba(242, 132, 158, 0.2);
-    border-color: rgba(242, 132, 158, 0.5);
-}
-
-.cta-icon {
-    flex-shrink: 0;
-    inline-size: 60px;
-    block-size: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(242, 132, 158, 0.2);
-    border-radius: 12px;
-    color: var(--accent);
-}
-
-.cta-icon svg {
-    inline-size: 32px;
-    block-size: 32px;
-}
-
-.cta-content {
-    flex: 1;
-}
-
-.cta-title {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.3em;
-}
-
-.cta-text {
-    margin: 0 0 1rem 0;
-    color: var(--text-muted);
-}
-
-.cta-button {
-    display: inline-block;
-}
-
-@media (max-width: 736px) {
-    .cards {
-        grid-template-columns: 1fr;
-    }
-
-    .cta-box {
-        flex-direction: column;
-        text-align: center;
-    }
-}
-
-/* === Experience Timeline === */
-.timeline {
-    position: relative;
-    padding-inline-start: 2rem;
-    margin-block: 1.5rem;
-    list-style: none;
-}
-
-.timeline::before {
-    content: '';
-    position: absolute;
-    inset-inline-start: 0;
-    inset-block: 0;
-    inline-size: 2px;
-    background: linear-gradient(180deg, var(--accent), rgba(126, 207, 244, 0.3), transparent);
-}
-
-.timeline-item {
-    position: relative;
-    padding-block-end: 2rem;
-    padding-inline-start: 1.5rem;
-}
-
-.timeline-item::before {
-    content: '';
-    position: absolute;
-    inset-inline-start: -2rem;
-    inset-block-start: 6px;
-    inline-size: 12px;
-    block-size: 12px;
-    border-radius: 50%;
-    background: #0b0f13;
-    border: 2px solid var(--accent);
-    z-index: 1;
-}
-
-.timeline-item:first-child::before {
-    background: var(--accent);
-    box-shadow: 0 0 0 4px rgba(242, 132, 158, 0.2);
-}
-
-.timeline-date {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.4);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-block-end: 0.4rem;
-}
-
-.timeline-role {
-    font-size: 1.15em !important;
-    margin: 0 0 0.25rem !important;
-}
-
-.timeline-company {
-    font-size: 0.9rem;
-    color: var(--text-dim);
-    margin-block-end: 0.5rem;
-}
-
-.timeline-content p {
-    margin-block-end: 0.75rem;
-}
-
-.timeline-tech {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-}
-
-.timeline-tech > li {
-    margin: 0;
-    padding: 0;
-}
-
-.timeline-tech .tech-badge {
-    font-size: 0.7em;
-    padding: 0.25em 0.6em;
-}
-
-/* Compact timeline for previous roles */
-.timeline-compact .timeline-item {
-    padding-block-end: 0.75rem;
-}
-
-.timeline-compact .timeline-item::before {
-    inline-size: 8px;
-    block-size: 8px;
-    inset-block-start: 5px;
-    inset-inline-start: -1.85rem;
-    border-width: 1.5px;
-}
-
-.timeline-compact .timeline-content {
-    font-size: 0.95em;
-    color: rgba(255, 255, 255, 0.75);
-}
-
-.timeline-compact .timeline-content strong {
-    color: #fff;
-}
-
-@media (max-width: 480px) {
-    .timeline { padding-inline-start: 1.25rem; }
-    .timeline-item { padding-inline-start: 1rem; }
-    .timeline-item::before { inset-inline-start: -1.3rem; inline-size: 10px; block-size: 10px; }
-    .timeline-compact .timeline-item::before { inset-inline-start: -1.15rem; }
-}
-</style>
 {% endblock %}

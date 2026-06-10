@@ -93,57 +93,12 @@
     }
 }
 
+/* Below 736px the full code-nav gets cramped — switch to the compact select. */
 @media screen and (max-width: 736px) {
-    .nav-header-wrapper {
-        padding: 1.2em 0;
-    }
-    
-    .py-nav {
-        font-size: 0.88em; /* slightly smaller for less dominance */
-        padding: 0 0.9em;
-    }
-    
-    .py-indent {
-        padding-left: 0.6em;
-    }
+    .nav-header-wrapper { padding: 1.2em 0; }
 
-    /* Subtle touch targets and spacing for mobile */
-    .py-line { margin-bottom: 0.45em; line-height: 1.5; }
-    .py-link {
-        display: inline-block;
-        padding: 0.2em 0.35em; /* reduced padding */
-        border-radius: 4px;
-        font-size: 1.0em;
-        background: transparent; /* remove boxy background */
-        text-decoration: underline; /* keep clear affordance */
-    }
-    .py-link:hover { background: rgba(242, 132, 158, 0.06); }
-
-    /* Keep 'Download CV' inline and unboxed on small screens */
-    .py-line > a.py-link[href="/download_cv"] {
-        display: inline;
-        padding: 0;
-        background: transparent;
-        border-radius: 0;
-        font-weight: 500;
-        margin-right: 0.6rem;
-        text-decoration: underline;
-    }
-}
-
-/* Extra small screens (phones) */
-@media screen and (max-width: 480px) {
-    .nav-header-wrapper { padding: 1em 0; }
-    .py-nav { font-size: 0.95em; padding: 0 0.6em; }
-    .py-line { margin-bottom: 0.5em; }
-    .py-link { display: block; width: 100%; box-sizing: border-box; padding: 0.45em 0.5em; font-size: 1.0em; background: transparent; border-radius: 6px; }
-    .py-indent { padding-left: 0.5em; }
-    /* Ensure Download CV stays inline and not full-width on tiny screens */
-    .py-line > a.py-link[href="/download_cv"] { display: inline; width: auto; padding: 0; text-align: left; }
-
-    /* Compact dropdown nav for small screens */
-    .py-nav { display: none; } /* hide full dict */
-    .py-nav-compact { display: block; max-width: 720px; margin: 0 auto; padding: 0 0.6em; position: relative; }
+    .py-nav { display: none; }
+    .py-nav-compact { display: block; max-width: 720px; margin: 0 auto; padding: 0 0.9em; position: relative; }
     .py-nav-compact select {
         -webkit-appearance: none;
         -moz-appearance: none;
@@ -211,50 +166,10 @@ select:focus-visible,
     <body class="is-preload">
         <!-- Navigation Header -->
         <div class="nav-header-wrapper">
-            <nav class="py-nav">
-                <div class="py-line"><span class="py-var">navigation</span> <span class="py-operator">=</span> <span class="py-bracket">{</span></div>
-                <div class="py-indent">
-                    <div class="py-line">
-                        <span class="py-string">"<a href="/" class="py-link" data-nav-role="key">home</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
-                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/" class="py-link">Home</a>"</span>
-                        <span class="py-bracket">},</span>
-                    </div>
-                    <div class="py-line">
-                        <span class="py-string">"<a href="/about" class="py-link" data-nav-role="key">about</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
-                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/about"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/about" class="py-link">About Me</a>"</span>
-                        <span class="py-bracket">},</span>
-                    </div>
-                    <div class="py-line">
-                        <span class="py-string">"<a href="/projects" class="py-link" data-nav-role="key">projects</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
-                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"/projects"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="/projects" class="py-link">Projects</a>"</span>
-                        <span class="py-bracket">},</span>
-                    </div>
-                    <div class="py-line">
-                        <span class="py-string">"<a href="https://github.com/Ajollyworld79" class="py-link" data-nav-role="key" target="_blank" rel="noopener noreferrer">github</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
-                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"https://github.com/Ajollyworld79"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://github.com/Ajollyworld79" class="py-link" target="_blank" rel="noopener noreferrer">GitHub</a>"</span>
-                        <span class="py-bracket">},</span>
-                    </div>
-                    <div class="py-line">
-                        <span class="py-string">"<a href="https://document-intelligence-pipeline-production.up.railway.app" class="py-link" data-nav-role="key" target="_blank" rel="noopener noreferrer">ocr_demo</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
-                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"https://document-intelligence-pipeline-production.up.railway.app"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://document-intelligence-pipeline-production.up.railway.app" class="py-link" target="_blank" rel="noopener noreferrer">OCR Demo</a>"</span>
-                        <span class="py-bracket">},</span>
-                    </div>
-                    <div class="py-line">
-                        <span class="py-string">"<a href="https://llm-assistant-production-aa36.up.railway.app" class="py-link" data-nav-role="key" target="_blank" rel="noopener noreferrer">chat_demo</a>"</span><span class="py-operator">:</span> <span class="py-bracket">{</span>
-                        <span class="py-string">"url"</span><span class="py-operator">:</span> <span class="py-string">"https://llm-assistant-production-aa36.up.railway.app"</span><span class="py-bracket">,</span>
-                        <span class="py-string">"name"</span><span class="py-operator">:</span> <span class="py-string">"<a href="https://llm-assistant-production-aa36.up.railway.app" class="py-link" target="_blank" rel="noopener noreferrer">Chat Demo</a>"</span>
-                        <span class="py-bracket">}</span>
-                    </div>
-                </div>
-                <div class="py-line"><span class="py-bracket">}</span></div>
-                <div class="py-line" style="padding-top: 0.75em;">
-                    <a href="/download_cv" class="py-link" style="margin-right:1rem;">Download CV</a>
-                </div>
+            <nav class="py-nav" aria-label="Main navigation">
+                <div class="py-line"><span class="py-var">nav</span> <span class="py-operator">=</span> <span class="py-bracket">[</span><span class="py-string">"<a href="/" class="py-link" data-nav-name="Home">home</a>"</span><span class="py-bracket">,</span> <span class="py-string">"<a href="/about" class="py-link" data-nav-name="About Me">about</a>"</span><span class="py-bracket">,</span> <span class="py-string">"<a href="/projects" class="py-link" data-nav-name="Projects">projects</a>"</span><span class="py-bracket">,</span> <span class="py-string">"<a href="https://github.com/Ajollyworld79" class="py-link" data-nav-name="GitHub" target="_blank" rel="noopener noreferrer">github</a>"</span><span class="py-bracket">]</span></div>
+                <div class="py-line"><span class="py-var">demos</span> <span class="py-operator">=</span> <span class="py-bracket">[</span><span class="py-string">"<a href="https://document-intelligence-pipeline-production.up.railway.app" class="py-link" data-nav-name="OCR Demo" target="_blank" rel="noopener noreferrer">ocr_demo</a>"</span><span class="py-bracket">,</span> <span class="py-string">"<a href="https://llm-assistant-production-aa36.up.railway.app" class="py-link" data-nav-name="Chat Demo" target="_blank" rel="noopener noreferrer">chat_demo</a>"</span><span class="py-bracket">]</span></div>
+                <div class="py-line"><span class="py-operator">&gt;&gt;&gt;</span> <a href="/download_cv" class="py-link" data-nav-name="Download CV">download_cv()</a></div>
             </nav>
         <!-- Compact select-based nav for small screens -->
         <div class="py-nav-compact">
@@ -326,11 +241,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fragment.appendChild(placeholder);
 
     for (const link of pyLinks) {
-        // Skip key-links (the lowercase "home"/"about"/...) so the mobile
-        // select doesn't show duplicate entries for each route.
-        if (link.dataset.navRole === 'key') continue;
         const href = link.getAttribute('href');
-        const text = link.textContent.trim();
+        const text = link.dataset.navName || link.textContent.trim();
         if (!href || href.startsWith('#')) continue;
         const opt = new Option(text, href);
         if (href === currentPath) opt.selected = true;

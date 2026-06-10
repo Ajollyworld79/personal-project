@@ -23,8 +23,8 @@
       <h1>Gustav <span class="accent">Christensen</span><span class="dot">.</span><br><span class="dim">Python &amp; LLM engineer</span></h1>
       <p class="lead">I build production-ready AI systems — RAG pipelines, vector search, prompt orchestration. Python at the core, LLMs as the runtime. Based in Denmark.</p>
       <ul class="actions">
-        <li><a href="/download_cv" class="button big">▾ Download CV</a></li>
-        <li><a href="/about" class="button big alt">→ About me</a></li>
+        <li><a href="/download_cv" class="button big">$ download cv.pdf</a></li>
+        <li><a href="/about" class="button big alt">$ cd /about</a></li>
       </ul>
     </div>
 
@@ -61,141 +61,134 @@
 <section class="stats-strip reveal">
   <div class="stat-item" data-key="params">
     <span class="stat-number" data-target="15">0</span><span class="stat-suffix">+</span>
-    <span class="stat-label">years in IT</span>
+    <span class="stat-label">years_in_it</span>
   </div>
   <div class="stat-item" data-key="checkpoints">
     <span class="stat-number" data-target="6">0</span>
-    <span class="stat-label">live projects</span>
+    <span class="stat-label">live_projects</span>
   </div>
   <div class="stat-item" data-key="dependencies">
     <span class="stat-number" data-target="20">0</span><span class="stat-suffix">+</span>
     <span class="stat-label">technologies</span>
   </div>
   <div class="stat-item" data-key="validators">
-    <span class="stat-number" data-target="5">0</span>
+    <span class="stat-number" data-target="3">0</span>
     <span class="stat-label">certifications</span>
   </div>
 </section>
 
-<!-- Kompetencer Section -->
+<!-- Kompetencer Section — grouped so the hierarchy reads: AI first, then backend, then data/ops -->
 <section class="reveal">
   <header class="major">
     <h2>Skills & Technologies</h2>
   </header>
-  <div class="tech-grid">
-    <!-- Python ecosystem -->
-    <div class="tech-tile">
-      <img src="/static/assets/images/python.svg" alt="Python" />
-      <span>Python</span>
+
+  <div class="tech-group">
+    <p class="tech-group-label">ai_llm</p>
+    <div class="tech-grid">
+      <div class="tech-tile">
+        <svg viewBox="0 0 24 24" role="img" aria-label="RAG / LLM">
+          <circle cx="12" cy="12" r="12" fill="#111" />
+          <text x="12" y="16" font-size="8" text-anchor="middle" fill="#f2849e">LLM</text>
+        </svg>
+        <span>RAG · LLM</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/anthropic.svg" alt="Anthropic SDK" />
+        <span>Anthropic SDK</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/openai.svg" alt="OpenAI SDK" />
+        <span>OpenAI SDK</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/azure.svg" alt="Azure AI" />
+        <span>Azure AI</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/qdrant.svg" alt="Qdrant" />
+        <span>Qdrant</span>
+      </div>
     </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/fastapi.svg" alt="FastAPI" />
-      <span>FastAPI</span>
+  </div>
+
+  <div class="tech-group">
+    <p class="tech-group-label">python_backend</p>
+    <div class="tech-grid">
+      <div class="tech-tile">
+        <img src="/static/assets/images/python.svg" alt="Python" />
+        <span>Python</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/fastapi.svg" alt="FastAPI" />
+        <span>FastAPI</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/flask.svg" alt="Flask and Quart" />
+        <span>Flask · Quart</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/sqlalchemy.svg" alt="SQLAlchemy" />
+        <span>SQLAlchemy</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/pandas.svg" alt="Pandas" />
+        <span>Pandas</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/numpy.svg" alt="NumPy" />
+        <span>NumPy</span>
+      </div>
     </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/flask.svg" alt="Flask" />
-      <span>Flask</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/flask.svg" alt="Quart" />
-      <span>Quart</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/pandas.svg" alt="Pandas" />
-      <span>Pandas</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/numpy.svg" alt="NumPy" />
-      <span>NumPy</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/azure.svg" alt="Azure AI" />
-      <span>Azure AI</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/qdrant.svg" alt="Qdrant" style="width:60px; height:60px;"/>
-      <span>Qdrant</span>
-    </div>
-    <div class="tech-tile">
-      <svg viewBox="0 0 24 24" style="width: 60px; height: 60px; margin-bottom: 0.75em;">
-        <circle cx="12" cy="12" r="12" fill="#111" />
-        <text x="12" y="16" font-size="8" text-anchor="middle" fill="#f2849e">LLM</text>
-      </svg>
-      <span>LLM</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/anthropic.svg" alt="Anthropic SDK" />
-      <span>Anthropic SDK</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/openai.svg" alt="OpenAI SDK" />
-      <span>OpenAI SDK</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/sqlalchemy.svg" alt="SQLAlchemy" />
-      <span>SQLAlchemy</span>
-    </div>
-    
-    <!-- Databases & Data -->
-    <div class="tech-tile">
-      <img src="/static/assets/images/mssql.svg" alt="MS SQL" />
-      <span>MS SQL</span>
-    </div>
-    <div class="tech-tile">
-      <svg viewBox="0 0 100 100" style="width: 60px; height: 60px; margin-bottom: 0.75em;">
-        <defs>
-          <linearGradient id="etlGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#f2849e;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#7ecff4;stop-opacity:1" />
-          </linearGradient>
-        </defs>
-        <circle cx="20" cy="50" r="12" fill="url(#etlGrad)" />
-        <rect x="40" y="45" width="20" height="10" fill="url(#etlGrad)" />
-        <polygon points="70,30 90,30 80,50 90,70 70,70 80,50" fill="url(#etlGrad)" />
-        <path d="M 32 50 L 38 50" stroke="url(#etlGrad)" stroke-width="3" fill="none" />
-        <path d="M 60 50 L 68 50" stroke="url(#etlGrad)" stroke-width="3" fill="none" />
-      </svg>
-      <span>ETL</span>
-    </div>
-    
-    <!-- DevOps & Tools -->
-    <div class="tech-tile">
-      <img src="/static/assets/images/azuredevops.svg" alt="Azure DevOps" />
-      <span>Azure DevOps</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/github.svg" alt="GitHub" />
-      <span>GitHub</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/azure.svg" alt="Automation" />
-      <span>Automation</span>
-    </div>
-    
-    <!-- Systems & Editors -->
-    <div class="tech-tile">
-      <img src="/static/assets/images/windows.svg" alt="Windows Server" />
-      <span>Windows Server</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/linux.svg" alt="Linux" />
-      <span>Linux</span>
-    </div>
-    <div class="tech-tile">
-      <img src="/static/assets/images/vscode.svg" alt="VS Code" />
-      <span>VS Code</span>
+  </div>
+
+  <div class="tech-group">
+    <p class="tech-group-label">data_ops</p>
+    <div class="tech-grid">
+      <div class="tech-tile">
+        <img src="/static/assets/images/mssql.svg" alt="MS SQL" />
+        <span>MS SQL</span>
+      </div>
+      <div class="tech-tile">
+        <svg viewBox="0 0 100 100" role="img" aria-label="ETL">
+          <defs>
+            <linearGradient id="etlGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#f2849e;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#7ecff4;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <circle cx="20" cy="50" r="12" fill="url(#etlGrad)" />
+          <rect x="40" y="45" width="20" height="10" fill="url(#etlGrad)" />
+          <polygon points="70,30 90,30 80,50 90,70 70,70 80,50" fill="url(#etlGrad)" />
+          <path d="M 32 50 L 38 50" stroke="url(#etlGrad)" stroke-width="3" fill="none" />
+          <path d="M 60 50 L 68 50" stroke="url(#etlGrad)" stroke-width="3" fill="none" />
+        </svg>
+        <span>ETL</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/azuredevops.svg" alt="Azure DevOps" />
+        <span>Azure DevOps</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/github.svg" alt="GitHub" />
+        <span>GitHub</span>
+      </div>
+      <div class="tech-tile">
+        <img src="/static/assets/images/linux.svg" alt="Linux" />
+        <span>Linux</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Projects Section -->
+<!-- Projects Section — the two strongest projects: RAG in production + autonomous LLM pipeline -->
 <section class="reveal">
   <header class="major">
-    <h2>Featured Project</h2>
+    <h2>Featured Projects</h2>
   </header>
-  <div class="posts">
-    {% for p in projects if p.slug == 'llm-assistant' %}
-    <article class="{% if loop.first %}featured{% endif %}">
+  <div class="posts duo">
+    {% for p in projects if p.slug in ['llm-assistant', 'the-cold-file'] %}
+    <article class="featured">
       <h3>{{ p.title }}</h3>
       {% set _desc = p.description %}
       {% if '<!--more-->' in _desc %}
@@ -215,15 +208,7 @@
         {% if p.repo_url %}
         <a href="{{ p.repo_url }}" class="button" target="_blank" rel="noopener">View Code</a>
         {% endif %}
-        
-        {% if p.slug == 'apology-service' %}
-        <button onclick="fetchApology(this)" class="button primary" style="cursor: pointer;">
-            <svg style="width: 18px; height: 18px; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 3l14 9-14 9V3z"/>
-            </svg>
-            Generate Live Apology
-        </button>
-        {% elif p.live_url %}
+        {% if p.live_url %}
         <a href="{{ p.live_url }}" class="button primary" target="_blank" rel="noopener">Demo</a>
         {% endif %}
       </div>
@@ -232,143 +217,6 @@
   </div>
   <p class="subtle" style="margin-top: var(--s-5);"><a href="/projects">See all projects →</a></p>
 </section>
-
-<!-- Apology Modal (Copied from projects.html for homepage access) -->
-<div id="apologyModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>🤖 Apology Generated</h3>
-            <button onclick="closeModal()" class="close-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div id="apologyText" style="font-size: 1.1em; line-height: 1.6; margin-bottom: 1rem; white-space: pre-wrap;"></div>
-            <div id="apologyMeta" style="font-size: 0.8em; color: rgba(255,255,255,0.5); font-family: monospace;"></div>
-        </div>
-    </div>
-</div>
-
-<script>
-async function fetchApology(btn) {
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<span class="loader"></span> Generating...';
-    btn.disabled = true;
-    
-    try {
-        const response = await fetch('/api/get-apology');
-        const data = await response.json();
-        
-        if (data.error) {
-            alert('Error generating apology: ' + data.error);
-        } else {
-            document.getElementById('apologyText').textContent = data.apology;
-            document.getElementById('apologyMeta').textContent = data.meta;
-            document.getElementById('apologyModal').style.display = 'flex';
-        }
-    } catch (e) {
-        alert('Network error while contacting the MCP server');
-    } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }
-}
-
-function closeModal() {
-    document.getElementById('apologyModal').style.display = 'none';
-}
-
-// Close modal when clicking outside
-document.getElementById('apologyModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeModal();
-    }
-});
-</script>
-
-<script>
-/* Project filtering is now handled in /static/assets/js/portfolio.js to avoid duplicate handlers */
-</script> 
-
-<style> 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    animation: fadeIn 0.2s ease;
-}
-
-.modal-content {
-    background: #1a1a1a;
-    border: 1px solid rgba(242, 132, 158, 0.3);
-    border-radius: 12px;
-    padding: 2rem;
-    max-width: 600px;
-    width: 90%;
-    position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 1rem;
-}
-
-.modal-header h3 {
-    margin: 0;
-    color: #f2849e;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-}
-
-.close-btn:hover {
-    color: #f2849e;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.loader {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-radius: 50%;
-    border-top-color: #fff;
-    animation: spin 1s ease-in-out infinite;
-    margin-right: 0.5rem;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-</style>
 
 <!-- GitHub Activity Section -->
 <section class="reveal" id="gh-activity-section" hidden>
@@ -411,171 +259,6 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
     </div>
   </div>
 </section>
-
-<style>
-/* Filter bar */
-.filter-bar { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:1rem; }
-.filter-bar span { font-weight:600; margin-right:0.5rem; }
-.filter-btn { background:transparent; border:1px solid rgba(255,255,255,0.06); color:inherit; padding:0.4rem 0.7rem; border-radius:6px; cursor:pointer; font-weight:600; text-transform:none; }
-.filter-btn:hover { transform:translateY(-2px); }
-.filter-btn.active { background:#f2849e; color:white; border-color:#f2849e; }
-
-.posts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2em;
-}
-
-/* === Impact Stats Strip === */
-.stats-strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  padding: 1.5rem 0;
-  margin: 0 0 1rem;
-  border-top: 1px solid rgba(255,255,255,0.06);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  text-align: center;
-}
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.stat-number {
-  font-size: 2.8rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #f2849e, #7ecff4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-}
-.stat-suffix {
-  font-size: 2.8rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #f2849e, #7ecff4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-}
-.stat-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: rgba(255,255,255,0.5);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-top: 0.5rem;
-}
-@media (max-width: 736px) {
-  .stats-strip { grid-template-columns: repeat(2, 1fr); gap: 1.5rem 1rem; }
-  .stat-number, .stat-suffix { font-size: 2rem; }
-}
-
-/* === Scroll Reveal === */
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* === Portfolio CTA === */
-.cta-banner {
-  text-align: center;
-  padding: 3rem 2rem;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(242,132,158,0.08) 0%, rgba(126,207,244,0.08) 100%);
-  border: 1px solid rgba(242,132,158,0.2);
-}
-.cta-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-@media (max-width: 480px) {
-  .cta-banner { padding: 2rem 1rem; }
-  .cta-actions .button { width: 100%; text-align: center; }
-}
-
-/* === GitHub Activity heatmap === */
-.gh-card {
-  /* Boxless — see portfolio.css .gh-card. Sits on transparent page bg. */
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin-top: 1.5rem;
-}
-.gh-card-head {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
-}
-.gh-total {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #f2849e;
-  letter-spacing: 0.01em;
-}
-.gh-total-label {
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 0.95em;
-  margin-left: 0.5rem;
-}
-.gh-link {
-  margin-left: auto;
-  color: #7ecff4;
-  font-size: 0.9em;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(126, 207, 244, 0.3);
-  transition: color 0.2s ease, border-bottom-color 0.2s ease;
-}
-.gh-link:hover { color: #fff; border-bottom-color: #fff; }
-.gh-heatmap-wrap { overflow-x: auto; padding: 0.25rem 0 0.5rem; }
-.gh-heatmap svg { display: block; min-width: 750px; }
-.gh-axis-label {
-  fill: rgba(255, 255, 255, 0.5);
-  font-size: 9px;
-  font-family: 'Inter', system-ui, sans-serif;
-}
-.gh-cell { transition: fill 0.15s ease; }
-.gh-cell:hover { stroke: rgba(255, 255, 255, 0.35); stroke-width: 1; }
-.gh-level-0 { fill: rgba(255, 255, 255, 0.06); }
-.gh-level-1 { fill: rgba(242, 132, 158, 0.28); }
-.gh-level-2 { fill: rgba(242, 132, 158, 0.5);  }
-.gh-level-3 { fill: rgba(242, 132, 158, 0.75); }
-.gh-level-4 { fill: rgba(242, 132, 158, 1);    }
-.gh-legend {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 0.35rem;
-  margin-top: 0.5rem;
-  font-size: 0.78em;
-  color: rgba(255, 255, 255, 0.45);
-}
-.gh-legend-label { padding: 0 0.25rem; }
-.gh-cell-demo {
-  display: inline-block;
-  width: 11px;
-  height: 11px;
-  border-radius: 2px;
-}
-.gh-cell-demo.gh-level-0 { background: rgba(255, 255, 255, 0.06); }
-.gh-cell-demo.gh-level-1 { background: rgba(242, 132, 158, 0.28); }
-.gh-cell-demo.gh-level-2 { background: rgba(242, 132, 158, 0.5);  }
-.gh-cell-demo.gh-level-3 { background: rgba(242, 132, 158, 0.75); }
-.gh-cell-demo.gh-level-4 { background: rgba(242, 132, 158, 1);    }
-
-</style>
 
 {% endblock %}
 
