@@ -88,6 +88,39 @@
     text-decoration-color: #ff96b0;
 }
 
+/* Blinking REPL caret after download_cv() — the nav is a live prompt */
+.nav-caret {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.05em;
+    margin-left: 7px;
+    vertical-align: -2px;
+    background: #f2849e;
+    animation: navCaretBlink 1.1s steps(1) infinite;
+}
+@keyframes navCaretBlink { 50% { opacity: 0; } }
+
+/* Typing reveal — each line "types itself" on first visit (JS sets the vars).
+   Width-reveal with steps() over a monospace font reads exactly like typing.
+   The class is removed on animationend so layout returns to natural flow. */
+.py-nav .py-line.type-anim {
+    overflow: hidden;
+    width: 0;
+    /* caret stays invisible until this line's turn — otherwise the waiting
+       lines' carets stack into one tall bar */
+    border-right: 2px solid transparent;
+    animation:
+        navType var(--type-dur, 900ms) steps(var(--type-steps, 40)) var(--type-delay, 0ms) forwards,
+        navCaretOn 1ms linear var(--type-delay, 0ms) forwards;
+}
+@keyframes navType {
+    from { width: 0; }
+    to   { width: var(--type-w, 100%); }
+}
+@keyframes navCaretOn {
+    to { border-right-color: rgba(242, 132, 158, 0.9); }
+}
+
 /* Responsive */
 @media screen and (max-width: 980px) {
     .py-nav {
@@ -172,8 +205,40 @@ select:focus-visible,
             <nav class="py-nav" aria-label="Main navigation">
                 <div class="py-line"><span class="py-var">nav</span> <span class="py-operator">=</span> <span class="py-bracket">[</span><span class="py-string">"<a href="/" class="py-link" data-nav-name="Home">home</a>"</span><span class="py-bracket">,</span> <span class="py-string">"<a href="/about" class="py-link" data-nav-name="About Me">about</a>"</span><span class="py-bracket">,</span> <span class="py-string">"<a href="/projects" class="py-link" data-nav-name="Projects">projects</a>"</span><span class="py-bracket">,</span> <span class="py-string">"<a href="https://github.com/Ajollyworld79" class="py-link" data-nav-name="GitHub" target="_blank" rel="noopener noreferrer">github</a>"</span><span class="py-bracket">]</span></div>
                 <div class="py-line"><span class="py-var">demos</span> <span class="py-operator">=</span> <span class="py-bracket">[</span><span class="py-string">"<a href="https://document-intelligence-pipeline-production.up.railway.app" class="py-link" data-nav-name="OCR Demo" target="_blank" rel="noopener noreferrer">ocr_demo</a>"</span><span class="py-bracket">,</span> <span class="py-string">"<a href="https://llm-assistant-production-aa36.up.railway.app" class="py-link" data-nav-name="Chat Demo" target="_blank" rel="noopener noreferrer">chat_demo</a>"</span><span class="py-bracket">]</span></div>
-                <div class="py-line"><span class="py-operator">&gt;&gt;&gt;</span> <a href="/download_cv" class="py-link" data-nav-name="Download CV">download_cv()</a></div>
+                <div class="py-line"><span class="py-operator">&gt;&gt;&gt;</span> <a href="/download_cv" class="py-link" data-nav-name="Download CV">download_cv()</a><span class="nav-caret" aria-hidden="true"></span></div>
             </nav>
+            <script>
+            // REPL typing reveal — first visit per session only. Runs inline right
+            // after the nav markup so lines collapse before first paint (no flash).
+            (function () {
+                var played = false;
+                try { played = sessionStorage.getItem('navTyped') === '1'; } catch (e) {}
+                var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                var lines = document.querySelectorAll('.py-nav .py-line');
+                // Skip when already played, reduced motion, or nav hidden (mobile select nav).
+                if (played || reduced || !lines.length || !lines[0].offsetWidth) return;
+
+                var delay = 200;
+                lines.forEach(function (line) {
+                    var w = line.scrollWidth;
+                    var chars = (line.textContent || '').length || 1;
+                    var dur = Math.min(1300, chars * 20);
+                    line.style.setProperty('--type-w', w + 'px');
+                    line.style.setProperty('--type-steps', chars);
+                    line.style.setProperty('--type-dur', dur + 'ms');
+                    line.style.setProperty('--type-delay', delay + 'ms');
+                    line.classList.add('type-anim');
+                    line.addEventListener('animationend', function onEnd(e) {
+                        // navCaretOn finishes early — only the width reveal ends the line
+                        if (e.animationName !== 'navType') return;
+                        line.removeEventListener('animationend', onEnd);
+                        line.classList.remove('type-anim');
+                    });
+                    delay += dur + 140;
+                });
+                try { sessionStorage.setItem('navTyped', '1'); } catch (e) {}
+            })();
+            </script>
         <!-- Compact select-based nav for small screens -->
         <div class="py-nav-compact">
             <label for="py-nav-select" class="sr-only">Navigation</label>
