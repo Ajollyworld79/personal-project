@@ -20,7 +20,8 @@ PROJECTS = [
             "<em>Repository is private — contact guch79@gmail.com for access or commercial options.</em>"
         ),
         technologies=["Python", "Quart", "Gemini 2.5 Flash", "google-genai", "Qdrant", "fastembed (ONNX)", "RAG", "Azure OpenAI (optional)", "Railway"],
-        live_url=cast(HttpUrl, "https://llm-assistant-production-aa36.up.railway.app/")
+        live_url=cast(HttpUrl, "https://llm-assistant-production-aa36.up.railway.app/"),
+        image="assets/images/projects/llm-assistant.png",
     ),
 
     Project(
@@ -34,7 +35,8 @@ PROJECTS = [
             "Repository is private — contact guch79@gmail.com for access and commercial options."
         ),
         technologies=["Python", "Quart", "OCR", "Tesseract", "spaCy", "PDF processing", "NLP"],
-        live_url=cast(HttpUrl,"https://document-intelligence-pipeline-production.up.railway.app")
+        live_url=cast(HttpUrl,"https://document-intelligence-pipeline-production.up.railway.app"),
+        image="assets/images/projects/document-intelligence-pipeline.png",
     ),
 
     Project(
@@ -46,7 +48,8 @@ PROJECTS = [
             "Features intelligent HTML-to-PDF conversion with structured data extraction, professional formatting, and clickable links. Built with modern async Python patterns."
         ),
         technologies=["Quart", "Uvicorn", "FPDF2", "Async Python", "Jinja2"],
-        repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/personal-project")
+        repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/personal-project"),
+        image="assets/images/projects/personal-project.png",
     ),
     Project(
         slug="apology-service",
@@ -60,7 +63,8 @@ PROJECTS = [
         ),
         technologies=["Python", "MCP Protocol", "SSE", "Docker", "Async", "FastMCP"],
         repo_url=cast(HttpUrl, "https://github.com/Ajollyworld79/Apology-as-a-Service"),
-        live_url=cast(HttpUrl, "https://apology-as-a-service-production.up.railway.app/sse")
+        live_url=cast(HttpUrl, "https://apology-as-a-service-production.up.railway.app/sse"),
+        image="assets/images/projects/apology-service.svg",
     ),
     Project(
         slug="data-pipeline",
@@ -71,7 +75,8 @@ PROJECTS = [
             "Includes fake data generation with Faker for testing before production deployment. Features parallel processing, connection pooling, and circuit breakers."
         ),
         technologies=["Python", "Pandas", "SQLAlchemy", "Dataverse", "Faker"],
-        repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/data-pipeline")
+        repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/data-pipeline"),
+        image="assets/images/projects/data-pipeline.svg",
     ),
 
     Project(
@@ -102,6 +107,18 @@ PROJECTS = [
         ),
         technologies=["Python", "Claude (Opus/Sonnet/Haiku)", "Anthropic SDK", "Azure Flux", "Nano Banana (Gemini Image)", "Azure MultiTalker TTS", "FFmpeg", "PostgreSQL", "YouTube API", "NewsAPI", "Railway"],
         live_url=cast(HttpUrl, "https://www.youtube.com/@The_Cold_File"),
+        image="assets/images/projects/the-cold-file.jpg",
     ),
 
 ]
+
+# Display order — strongest projects first on /projects.
+_ORDER = [
+    "the-cold-file",
+    "llm-assistant",
+    "document-intelligence-pipeline",
+    "apology-service",
+    "data-pipeline",
+    "personal-project",
+]
+PROJECTS.sort(key=lambda p: _ORDER.index(p.slug) if p.slug in _ORDER else len(_ORDER))

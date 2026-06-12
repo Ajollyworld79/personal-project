@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 680" font-family="'JetBrains Mono','Fira Code',Menlo,Consolas,monospace">
+  <defs>
+    <linearGradient id="flow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f2849e"/>
+      <stop offset="100%" stop-color="#7ecff4"/>
+    </linearGradient>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7ecff4"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="680" fill="#0F0F18"/>
+  <text x="64" y="84" fill="#6A736A" font-size="22" letter-spacing="4">$ python etl_pipeline.py --parallel</text>
+
+  <!-- Source -->
+  <rect x="64" y="240" width="250" height="180" rx="14" fill="#15151F" stroke="#2A2A3E" stroke-width="2"/>
+  <text x="189" y="312" fill="#7ecff4" font-size="26" font-weight="700" text-anchor="middle">Dataverse</text>
+  <text x="189" y="350" fill="#6A736A" font-size="18" text-anchor="middle">Microsoft 365</text>
+
+  <!-- ETL stages -->
+  <rect x="394" y="200" width="492" height="260" rx="14" fill="#15151F" stroke="#f2849e" stroke-opacity="0.45" stroke-width="2"/>
+  <text x="640" y="180" fill="#f2849e" font-size="20" text-anchor="middle" letter-spacing="3">PARALLEL WORKERS</text>
+  <rect x="424" y="250" width="130" height="76" rx="10" fill="#0F0F18" stroke="#2A2A3E" stroke-width="2"/>
+  <text x="489" y="295" fill="#E8F0E8" font-size="22" text-anchor="middle">extract</text>
+  <rect x="574" y="250" width="142" height="76" rx="10" fill="#0F0F18" stroke="#2A2A3E" stroke-width="2"/>
+  <text x="645" y="295" fill="#E8F0E8" font-size="22" text-anchor="middle">transform</text>
+  <rect x="736" y="250" width="120" height="76" rx="10" fill="#0F0F18" stroke="#2A2A3E" stroke-width="2"/>
+  <text x="796" y="295" fill="#E8F0E8" font-size="22" text-anchor="middle">load</text>
+  <line x1="554" y1="288" x2="574" y2="288" stroke="#7ecff4" stroke-width="3" marker-end="url(#arr)"/>
+  <line x1="716" y1="288" x2="736" y2="288" stroke="#7ecff4" stroke-width="3" marker-end="url(#arr)"/>
+  <text x="424" y="392" fill="#6A736A" font-size="18">⚡ connection pooling</text>
+  <text x="424" y="426" fill="#6A736A" font-size="18">⛔ circuit breakers · retry w/ backoff</text>
+
+  <!-- Target -->
+  <rect x="966" y="240" width="250" height="180" rx="14" fill="#15151F" stroke="#2A2A3E" stroke-width="2"/>
+  <text x="1091" y="312" fill="#f2849e" font-size="26" font-weight="700" text-anchor="middle">SQL Server</text>
+  <text x="1091" y="350" fill="#6A736A" font-size="18" text-anchor="middle">business-ready tables</text>
+
+  <!-- Flow arrows -->
+  <line x1="314" y1="330" x2="390" y2="330" stroke="url(#flow)" stroke-width="4" marker-end="url(#arr)"/>
+  <line x1="886" y1="330" x2="962" y2="330" stroke="url(#flow)" stroke-width="4" marker-end="url(#arr)"/>
+
+  <text x="64" y="560" fill="#B5BFB5" font-size="20">Faker-generated test data → validated before production cutover</text>
+  <text x="64" y="600" fill="#3D423D" font-size="18">pandas · SQLAlchemy · asyncio</text>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 680" font-family="'JetBrains Mono','Fira Code',Menlo,Consolas,monospace">
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f2849e"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="680" fill="#0F0F18"/>
+  <text x="64" y="84" fill="#6A736A" font-size="22" letter-spacing="4">$ mcp connect apology-as-a-service --transport sse</text>
+
+  <!-- Agent -->
+  <rect x="64" y="250" width="270" height="170" rx="14" fill="#15151F" stroke="#2A2A3E" stroke-width="2"/>
+  <text x="199" y="320" fill="#7ecff4" font-size="26" font-weight="700" text-anchor="middle">AI Agent</text>
+  <text x="199" y="358" fill="#6A736A" font-size="18" text-anchor="middle">Claude · any MCP client</text>
+
+  <!-- SSE link -->
+  <line x1="334" y1="335" x2="470" y2="335" stroke="#f2849e" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#arr2)"/>
+  <text x="402" y="305" fill="#f2849e" font-size="18" text-anchor="middle">MCP / SSE</text>
+
+  <!-- Server -->
+  <rect x="474" y="170" width="500" height="340" rx="14" fill="#15151F" stroke="#f2849e" stroke-opacity="0.45" stroke-width="2"/>
+  <text x="724" y="150" fill="#f2849e" font-size="20" text-anchor="middle" letter-spacing="3">APOLOGY ENGINE · FastMCP</text>
+  <text x="510" y="240" fill="#E8F0E8" font-size="22">generate_apology(</text>
+  <text x="550" y="282" fill="#7ecff4" font-size="20">severity</text>
+  <text x="660" y="282" fill="#6A736A" font-size="20">= TRIVIAL → NUCLEAR,</text>
+  <text x="550" y="320" fill="#7ecff4" font-size="20">style</text>
+  <text x="660" y="320" fill="#6A736A" font-size="20">= HAIKU | LEGAL | PIRATE</text>
+  <text x="660" y="354" fill="#6A736A" font-size="20">| SHAKESPEAREAN | …,</text>
+  <text x="550" y="392" fill="#7ecff4" font-size="20">context</text>
+  <text x="660" y="392" fill="#6A736A" font-size="20">= "what broke"</text>
+  <text x="510" y="434" fill="#E8F0E8" font-size="22">)</text>
+  <text x="510" y="478" fill="#3D423D" font-size="18">9 styles × 5 severities · Docker · Railway</text>
+
+  <!-- Output -->
+  <line x1="974" y1="335" x2="1100" y2="335" stroke="#f2849e" stroke-width="4" marker-end="url(#arr2)"/>
+  <rect x="1104" y="262" width="112" height="146" rx="14" fill="#15151F" stroke="#2A2A3E" stroke-width="2"/>
+  <text x="1160" y="330" fill="#E8F0E8" font-size="40" text-anchor="middle">🙏</text>
+  <text x="1160" y="378" fill="#6A736A" font-size="16" text-anchor="middle">sorry.txt</text>
+
+  <text x="64" y="600" fill="#B5BFB5" font-size="20">Live crisis communication for AI agents — test it with the button below</text>
+</svg>

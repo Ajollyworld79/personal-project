@@ -1,9 +1,12 @@
 from typing import List
 from datetime import datetime, timezone
+import asyncio
+import json
 import os
 import sys
 import re
 import html as html_lib
+import xml.etree.ElementTree as ET
 
 # Ensure project root in path
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -626,9 +629,53 @@ def _is_useful_rag_answer(payload: dict) -> bool:
     return True
 
 
+async def _query_rag_backend(raw_query: str) -> dict | None:
+    """Call the llm-assistant /search endpoint. Returns the payload or None."""
+    try:
+        timeout = aiohttp.ClientTimeout(total=45.0)
+        headers = {"Content-Type": "application/json"}
+        if LLM_ASSISTANT_API_KEY:
+            headers["Authorization"] = f"Bearer {LLM_ASSISTANT_API_KEY}"
+        connector = aiohttp.TCPConnector(ssl=_SSL_CTX)
+        async with aiohttp.ClientSession(timeout=timeout, connector=connector) as http_session:
+            rag_url = f"{LLM_ASSISTANT_URL.rstrip('/')}/search"
+            payload = {"query": raw_query, "top_k": 10}
+            async with http_session.post(rag_url, json=payload, headers=headers) as resp:
+                if resp.status == 200:
+                    return await resp.json()
+                app.logger.info(f"cv-chat: llm-assistant returned HTTP {resp.status}; using mock")
+    except (aiohttp.ClientError, OSError) as e:
+        app.logger.info(f"cv-chat: llm-assistant unreachable ({e}); using mock")
+    except Exception as e:
+        app.logger.warning(f"cv-chat: RAG call failed ({e}); using mock")
+    return None
+
+
+def _mock_answer(query_lower: str) -> tuple[str, str]:
+    """Keyword-matched canned fallback. Returns (answer, matched_topic)."""
+    matched = "default"
+    for keywords, topic in _CV_KEYWORDS:
+        if any(k in query_lower for k in keywords):
+            matched = topic
+            break
+    return _CV_FACTS.get(matched, _CV_FACTS["default"]), matched
+
+
+def _public_sources(rag_data: dict) -> list[dict]:
+    """Trim retrieval hits to what the RAG-trace panel needs (no full chunks)."""
+    out = []
+    for r in (rag_data.get("results") or [])[:6]:
+        out.append({
+            "filename": r.get("filename", "unknown"),
+            "score": round(float(r.get("score") or 0.0), 3),
+            "excerpt": (r.get("chunk_text") or "")[:180],
+        })
+    return out
+
+
 @app.route("/api/cv-chat", methods=["POST"])
 async def cv_chat():
-    """Answer a question about Gustav's CV.
+    """Answer a question about Gustav's CV (non-streaming fallback).
 
     Strategy:
       1. Rate-limit per-IP to prevent abuse of the proxy itself.
@@ -656,44 +703,268 @@ async def cv_chat():
                 "source": "mock",
             })
 
-        # --- 1. Try real RAG via llm-assistant ----------------------------------
-        try:
-            timeout = aiohttp.ClientTimeout(total=45.0)
-            headers = {"Content-Type": "application/json"}
-            if LLM_ASSISTANT_API_KEY:
-                headers["Authorization"] = f"Bearer {LLM_ASSISTANT_API_KEY}"
-            connector = aiohttp.TCPConnector(ssl=_SSL_CTX)
-            async with aiohttp.ClientSession(timeout=timeout, connector=connector) as http_session:
-                rag_url = f"{LLM_ASSISTANT_URL.rstrip('/')}/search"
-                payload = {"query": raw_query, "top_k": 10}
-                async with http_session.post(rag_url, json=payload, headers=headers) as resp:
-                    if resp.status == 200:
-                        rag_data = await resp.json()
-                        if _is_useful_rag_answer(rag_data):
-                            return jsonify({
-                                "answer": rag_data.get("answer", ""),
-                                "sources": rag_data.get("results") or rag_data.get("sources") or [],
-                                "source": "rag",
-                            })
-                    else:
-                        app.logger.info(f"cv-chat: llm-assistant returned HTTP {resp.status}; using mock")
-        except (aiohttp.ClientError, OSError) as e:
-            app.logger.info(f"cv-chat: llm-assistant unreachable ({e}); using mock")
-        except Exception as e:
-            app.logger.warning(f"cv-chat: RAG call failed ({e}); using mock")
+        rag_data = await _query_rag_backend(raw_query)
+        if rag_data and _is_useful_rag_answer(rag_data):
+            return jsonify({
+                "answer": rag_data.get("answer", ""),
+                "sources": rag_data.get("results") or rag_data.get("sources") or [],
+                "source": "rag",
+            })
 
-        # --- 2. Fall back to keyword-matched mock --------------------------------
-        matched = "default"
-        for keywords, topic in _CV_KEYWORDS:
-            if any(k in query_lower for k in keywords):
-                matched = topic
-                break
-
-        answer = _CV_FACTS.get(matched, _CV_FACTS["default"])
+        answer, matched = _mock_answer(query_lower)
         return jsonify({"answer": answer, "matched": matched, "source": "mock"})
     except Exception as e:
         app.logger.exception("cv-chat endpoint failure")
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/cv-chat-stream", methods=["POST"])
+async def cv_chat_stream():
+    """Streaming variant of /api/cv-chat (Server-Sent Events).
+
+    Event protocol (each event is `data: <json>\\n\\n`):
+      {"type": "stage", "stage": "retrieve"}   — pipeline progress, sent immediately
+      {"type": "meta", ...}                    — source, retrieval hits, timings
+      {"type": "token", "t": "..."}            — answer text, word by word
+      {"type": "done"}
+
+    The llm-assistant backend returns the answer in one piece, so the token
+    events re-chunk it client-side-style; the meta event carries the real
+    pipeline numbers (embed_ms / ai_ms / scores) from the RAG backend.
+    """
+    ip = _client_ip()
+    if _is_rate_limited(ip):
+        return jsonify({
+            "answer": "Rate limit reached — slow down a bit and try again in a moment.",
+            "source": "rate_limited",
+        }), 429
+
+    body = await request.get_json(silent=True) or {}
+    raw_query = str(body.get("query", "")).strip()
+    query_lower = raw_query.lower()
+
+    def sse(obj: dict) -> str:
+        return f"data: {json.dumps(obj, ensure_ascii=False)}\n\n"
+
+    async def event_stream():
+        yield sse({"type": "stage", "stage": "retrieve"})
+
+        meta: dict = {"type": "meta", "source": "mock"}
+        answer = ""
+        if raw_query:
+            rag_data = await _query_rag_backend(raw_query)
+            if rag_data and _is_useful_rag_answer(rag_data):
+                answer = rag_data.get("answer", "")
+                meta.update({
+                    "source": "rag",
+                    "model": "gemini-2.5-flash",
+                    "embedding_provider": rag_data.get("embedding_provider"),
+                    "embed_ms": rag_data.get("embed_ms"),
+                    "ai_ms": rag_data.get("ai_ms"),
+                    "total_ms": rag_data.get("total_ms"),
+                    "sources": _public_sources(rag_data),
+                })
+        if not answer:
+            answer, matched = _mock_answer(query_lower)
+            meta["matched"] = matched
+        yield sse(meta)
+
+        # Word-level chunks; pace so long answers don't take forever.
+        words = re.findall(r"\S+\s*", answer) or [answer]
+        delay = min(0.028, max(0.006, 2.5 / max(len(words), 1)))
+        for w in words:
+            yield sse({"type": "token", "t": w})
+            await asyncio.sleep(delay)
+        yield sse({"type": "done"})
+
+    headers = {
+        "Cache-Control": "no-cache",
+        "X-Accel-Buffering": "no",  # disable proxy buffering so events flush
+    }
+    return Response(event_stream(), mimetype="text/event-stream", headers=headers)
+
+
+# --- Production status board -------------------------------------------------
+# Pings the live Railway deployments in parallel and caches for 60s so a page
+# load never fans out more than once a minute.
+_STATUS_CACHE: dict = {"ts": 0.0, "data": None}
+_STATUS_TTL = 60
+
+_STATUS_SERVICES = [
+    {
+        "id": "portfolio",
+        "name": "gustavchristensen.dev",
+        "desc": "this site — async Quart + RAG chat proxy",
+        "kind": "web",
+        "url": "https://gustavchristensen.dev/",
+        "check": "https://gustavchristensen.dev/",
+    },
+    {
+        "id": "llm-assistant",
+        "name": "llm-assistant",
+        "desc": "RAG backend — answers the CV chat on this page",
+        "kind": "web",
+        "url": "https://llm-assistant-production-aa36.up.railway.app/",
+        "check": "https://llm-assistant-production-aa36.up.railway.app/health",
+    },
+    {
+        "id": "doc-intel",
+        "name": "document-intelligence",
+        "desc": "OCR + structured document extraction demo",
+        "kind": "web",
+        "url": "https://document-intelligence-pipeline-production.up.railway.app/",
+        "check": "https://document-intelligence-pipeline-production.up.railway.app/health",
+    },
+    {
+        "id": "apology",
+        "name": "apology-as-a-service",
+        "desc": "live MCP server (SSE) for AI agents",
+        "kind": "mcp",
+        "url": "https://github.com/Ajollyworld79/Apology-as-a-Service",
+        "check": "https://apology-as-a-service-production.up.railway.app/health",
+    },
+    {
+        "id": "cold-file",
+        "name": "the-cold-file",
+        "desc": "autonomous podcast pipeline — hourly on Railway",
+        "kind": "pipeline",
+        "url": "https://www.youtube.com/@The_Cold_File",
+        "check": None,  # status derived from latest YouTube upload instead
+    },
+]
+
+
+async def _probe_service(http: "aiohttp.ClientSession", svc: dict) -> dict:
+    result = {
+        "id": svc["id"],
+        "name": svc["name"],
+        "desc": svc["desc"],
+        "kind": svc["kind"],
+        "url": svc["url"],
+        "status": "down",
+        "latency_ms": None,
+    }
+    if not svc.get("check"):
+        return result
+    t0 = time.perf_counter()
+    try:
+        async with http.get(svc["check"], headers={"User-Agent": "portfolio-status"}) as resp:
+            result["latency_ms"] = int((time.perf_counter() - t0) * 1000)
+            result["status"] = "up" if resp.status < 500 else "down"
+    except Exception:
+        result["latency_ms"] = None
+        result["status"] = "down"
+    return result
+
+
+@app.route("/api/status")
+async def production_status():
+    """Live health of every production deployment, checked in parallel."""
+    now = time.time()
+    cached = _STATUS_CACHE.get("data")
+    if cached and now - _STATUS_CACHE["ts"] < _STATUS_TTL:
+        return jsonify(cached)
+
+    timeout = aiohttp.ClientTimeout(total=6.0)
+    connector = aiohttp.TCPConnector(ssl=_SSL_CTX)
+    async with aiohttp.ClientSession(timeout=timeout, connector=connector) as http:
+        results = await asyncio.gather(
+            *[_probe_service(http, svc) for svc in _STATUS_SERVICES]
+        )
+    services = list(results)
+
+    # The Cold File is a scheduled pipeline, not an HTTP service — it is "up"
+    # if the channel got a new autonomous upload within the weekly cadence (+ slack).
+    try:
+        cold = await _get_coldfile_data()
+        latest = (cold or {}).get("latest")
+        for svc in services:
+            if svc["id"] == "cold-file" and latest:
+                published = datetime.fromisoformat(latest["published"])
+                age_days = (datetime.now(timezone.utc) - published).days
+                svc["status"] = "up" if age_days <= 9 else "idle"
+                svc["detail"] = f"last episode {age_days}d ago"
+    except Exception:
+        app.logger.exception("status: cold-file check failed")
+
+    payload = {
+        "services": services,
+        "checked_at": datetime.now(timezone.utc).isoformat(),
+    }
+    _STATUS_CACHE["data"] = payload
+    _STATUS_CACHE["ts"] = now
+    return jsonify(payload)
+
+
+# --- The Cold File — live channel data (YouTube RSS, no API key needed) -------
+_COLDFILE_CACHE: dict = {"ts": 0.0, "data": None}
+_COLDFILE_TTL = 1800  # 30 min
+_COLDFILE_CHANNEL_ID = os.getenv("COLDFILE_CHANNEL_ID", "UCN8k1J6MXu-ucl6anByx_oQ")
+_COLDFILE_FEED = f"https://www.youtube.com/feeds/videos.xml?channel_id={_COLDFILE_CHANNEL_ID}"
+_ATOM_NS = {
+    "a": "http://www.w3.org/2005/Atom",
+    "yt": "http://www.youtube.com/xml/schemas/2015",
+    "media": "http://search.yahoo.com/mrss/",
+}
+
+
+async def _get_coldfile_data() -> dict | None:
+    now = time.time()
+    cached = _COLDFILE_CACHE.get("data")
+    if cached and now - _COLDFILE_CACHE["ts"] < _COLDFILE_TTL:
+        return cached
+
+    try:
+        timeout = aiohttp.ClientTimeout(total=10.0)
+        connector = aiohttp.TCPConnector(ssl=_SSL_CTX)
+        async with aiohttp.ClientSession(timeout=timeout, connector=connector) as http:
+            async with http.get(_COLDFILE_FEED) as resp:
+                if resp.status != 200:
+                    return cached
+                xml_body = await resp.text()
+    except Exception:
+        app.logger.exception("coldfile: RSS fetch failed")
+        return cached
+
+    try:
+        root = ET.fromstring(xml_body)
+        episodes = []
+        for entry in root.findall("a:entry", _ATOM_NS):
+            vid = entry.find("yt:videoId", _ATOM_NS)
+            title = entry.find("a:title", _ATOM_NS)
+            published = entry.find("a:published", _ATOM_NS)
+            if vid is None or title is None or published is None:
+                continue
+            episodes.append({
+                "video_id": vid.text,
+                "title": title.text,
+                "published": published.text,
+                "thumbnail": f"https://i.ytimg.com/vi/{vid.text}/hqdefault.jpg",
+            })
+        if not episodes:
+            return cached
+        data = {
+            "channel_url": "https://www.youtube.com/@The_Cold_File",
+            # RSS caps at 15 entries; the frontend renders 15 as "15+".
+            "episode_count": len(episodes),
+            "latest": episodes[0],
+            "episodes": episodes[:3],
+        }
+        _COLDFILE_CACHE["data"] = data
+        _COLDFILE_CACHE["ts"] = now
+        return data
+    except Exception:
+        app.logger.exception("coldfile: RSS parse failed")
+        return cached
+
+
+@app.route("/api/coldfile")
+async def coldfile():
+    """Live data for The Cold File section — latest autonomous episodes."""
+    data = await _get_coldfile_data()
+    if not data:
+        return jsonify({"error": "channel data unavailable"}), 503
+    return jsonify(data)
 
 
 # --- GitHub activity (contribution heatmap) ---
@@ -842,17 +1113,17 @@ async def download_cv():
     langs = lang_block.group(1).strip() if lang_block else ""
     langs = re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", langs).strip()
     langs = html_lib.unescape(langs)
-    # Certifications
+    # Certifications — rendered as .cert-card articles, one <p class="cert-name"> each
     cert_block = re.search(
-        r"<h2>Certifications</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S
+        r"<h2>Certifications</h2>(.*?)<hr", cleaned, flags=re.S
     )
     certs = []
     if cert_block:
-        certs = re.findall(r"<li>(.*?)</li>", cert_block.group(1), flags=re.S)
-        certs = [re.sub(r"<[^>]+>", "", c).strip() for c in certs]
-        # Remove HTML entities and special characters
-        certs = [re.sub(r"<br\s*/?>|<BR\s*/?>|&nbsp;", " ", c).strip() for c in certs]
-        certs = [html_lib.unescape(c) for c in certs]
+        certs = re.findall(
+            r'<p class="cert-name">(.*?)</p>', cert_block.group(1), flags=re.S
+        )
+        certs = [re.sub(r"<[^>]+>", " ", c) for c in certs]
+        certs = [re.sub(r"\s+", " ", html_lib.unescape(c)).strip() for c in certs]
     # Summary (changed from Resume)
     summary_block = re.search(r"<h2>Summary</h2>.*?<p>(.*?)</p>", cleaned, flags=re.S)
     summary = summary_block.group(1).strip() if summary_block else ""
@@ -860,7 +1131,7 @@ async def download_cv():
     summary = html_lib.unescape(summary)
     # Experience — capture main timeline + previous roles (up to Education heading)
     exp_block = re.search(
-        r"<h2>Experience</h2>(.*?)<h2>Education</h2>", cleaned, flags=re.S
+        r"<h2>Experience</h2>(.*?)<h2>(?:Certifications|Education)", cleaned, flags=re.S
     )
     exp = ""
     if exp_block:
@@ -874,8 +1145,8 @@ async def download_cv():
         raw = re.sub(r"[ \t]+", " ", raw)
         raw = re.sub(r"\n\s*\n\s*\n", "\n\n", raw)
         exp = raw.strip()
-    # Education
-    edu_block = re.search(r"<h2>Education</h2>.*?<ul>(.*?)</ul>", cleaned, flags=re.S)
+    # Education — heading is "Education &amp; Courses"
+    edu_block = re.search(r"<h2>Education[^<]*</h2>.*?<ul[^>]*>(.*?)</ul>", cleaned, flags=re.S)
     edus = []
     if edu_block:
         edus = re.findall(r"<li>(.*?)</li>", edu_block.group(1), flags=re.S)

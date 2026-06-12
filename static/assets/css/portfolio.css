@@ -1207,12 +1207,15 @@ ul.actions li { margin: 0; }
    REVEAL ANIMATION
    ============================================================ */
 
-.reveal {
+/* Hidden-until-scroll only applies when JS is confirmed (html.js is set by an
+   inline head script). Crawlers, link previews, and no-JS browsers see all
+   content immediately instead of a blank page below the hero. */
+html.js .reveal {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1), transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.reveal.revealed {
+html.js .reveal.revealed {
   opacity: 1;
   transform: translateY(0);
 }
@@ -1604,4 +1607,255 @@ section.reveal { margin-top: var(--s-8); }
   .timeline-item { padding-left: var(--s-3); }
   .timeline-item::before { left: calc(-1 * var(--s-5) - 5px); width: 10px; height: 10px; }
   .timeline-compact .timeline-item::before { left: calc(-1 * var(--s-5) - 3px); }
+}
+
+/* ============================================================
+   RAG TRACE PANEL — pipeline visibility inside the chat widget
+   ============================================================ */
+
+.rag-trace {
+  position: relative;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  padding: var(--s-2) var(--s-4);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  max-height: 130px;
+  overflow-y: auto;
+}
+.rag-trace-line { white-space: normal; overflow-wrap: anywhere; }
+.rag-trace-line .ok   { color: #7ce38b; }
+.rag-trace-line .warn { color: var(--accent); }
+.rag-trace-line .dim  { color: var(--ink-mute); }
+.rag-trace-line .spin {
+  display: inline-block;
+  width: 0.8em; height: 0.8em;
+  border: 1.5px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: rag-spin 700ms linear infinite;
+  vertical-align: -1px;
+  margin-right: 2px;
+}
+@keyframes rag-spin { to { transform: rotate(360deg); } }
+
+.rag-trace-sources { margin-top: 2px; }
+.rag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 2px 4px 2px 0;
+  padding: 1px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink-soft);
+  cursor: default;
+}
+.rag-chip em {
+  font-style: normal;
+  color: var(--accent-2);
+  font-weight: 600;
+}
+
+/* Streaming caret at the end of a partially-streamed answer */
+.stream-caret {
+  display: inline-block;
+  width: 7px; height: 1em;
+  margin-left: 2px;
+  background: var(--accent);
+  vertical-align: -2px;
+  animation: caret-blink 800ms steps(1) infinite;
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+
+/* ============================================================
+   PRODUCTION STATUS BOARD
+   ============================================================ */
+
+.status-board {
+  border: 1px solid var(--border);
+  border-radius: var(--r-3, 12px);
+  background: var(--surface);
+  overflow: hidden;
+}
+.status-board-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.06em;
+}
+.status-board-head .meta { display: inline-flex; align-items: center; gap: 6px; }
+.status-board-head .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #7ce38b;
+  box-shadow: 0 0 8px rgba(124, 227, 139, 0.6);
+  animation: pulse 2s ease-in-out infinite;
+}
+.status-checked { color: var(--ink-mute); }
+
+.status-list { list-style: none; margin: 0; padding: 0; }
+.status-row {
+  display: grid;
+  grid-template-columns: 14px minmax(140px, 0.8fr) 2fr auto 52px;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+.status-row:last-child { border-bottom: none; }
+
+.status-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+}
+.status-dot.up {
+  background: #7ce38b;
+  box-shadow: 0 0 10px rgba(124, 227, 139, 0.65);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+.status-dot.idle { background: #e3c97c; box-shadow: 0 0 8px rgba(227, 201, 124, 0.5); }
+.status-dot.down { background: var(--accent); }
+
+.status-name { color: var(--ink); font-weight: 600; }
+.status-name:hover { color: var(--accent); }
+.status-desc { color: var(--ink-mute); font-size: 0.74rem; overflow-wrap: anywhere; }
+.status-latency { color: var(--accent-2); font-size: 0.74rem; text-align: right; white-space: nowrap; }
+.status-state { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-align: right; }
+.status-state.up   { color: #7ce38b; }
+.status-state.idle { color: #e3c97c; }
+.status-state.down { color: var(--accent); }
+
+@media screen and (max-width: 736px) {
+  .status-row {
+    grid-template-columns: 14px 1fr auto;
+    row-gap: 2px;
+  }
+  .status-desc { grid-column: 2 / 4; }
+  .status-latency { display: none; }
+}
+
+/* ============================================================
+   THE COLD FILE — live autonomous channel section
+   ============================================================ */
+
+.coldfile-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: var(--s-6);
+  align-items: start;
+}
+@media screen and (max-width: 980px) {
+  .coldfile-grid { grid-template-columns: 1fr; }
+}
+
+.coldfile-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--r-3, 12px);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.6);
+}
+.coldfile-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.coldfile-latest {
+  margin-top: var(--s-3);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+.coldfile-latest .dim { color: var(--ink-mute); }
+
+.coldfile-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+  margin: 0 0 var(--s-5) 0;
+}
+.coldfile-stats > div {
+  border: 1px solid var(--border);
+  border-radius: var(--r-2, 8px);
+  background: var(--surface);
+  padding: var(--s-3) var(--s-4);
+}
+.coldfile-stats dt {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-mute);
+  margin-bottom: 2px;
+}
+.coldfile-stats dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.coldfile-stats dd.accent { color: var(--accent); }
+
+.coldfile-desc {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  margin-bottom: var(--s-4);
+}
+
+/* ============================================================
+   PROJECT CARD THUMBNAILS (/projects)
+   ============================================================ */
+
+.project-thumb {
+  margin: -2rem -2rem 1.5rem -2rem; /* bleed to card edges (card padding is 2rem) */
+  aspect-ratio: 16 / 8.5;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.project-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  transition: transform 400ms ease;
+}
+.project-card:hover .project-thumb img { transform: scale(1.03); }
+@media screen and (max-width: 736px) {
+  .project-thumb { margin: -1.5rem -1.5rem 1.25rem -1.5rem; }
+}
+
+/* Featured card thumbnail (homepage) — contained, not edge-bleeding */
+.featured-thumb {
+  border-radius: var(--r-3);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  aspect-ratio: 21 / 9;
+  background: var(--surface-2);
+}
+.featured-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
 }

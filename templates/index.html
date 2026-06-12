@@ -46,34 +46,54 @@
             <button type="button" class="chat-suggestion" data-q="What tech stack does Gustav use?">What tech stack does Gustav use?</button>
           </div>
         </div>
+        <!-- RAG pipeline trace — fills with real numbers from the meta event -->
+        <div class="rag-trace" id="rag-trace" hidden aria-live="polite">
+          <div class="rag-trace-lines" id="rag-trace-lines"></div>
+        </div>
         <form class="chat-input-row" id="cv-chat-form" autocomplete="off">
           <span class="prefix">&gt;&gt;&gt;</span>
           <input type="text" id="cv-chat-input" placeholder="Ask my CV…" aria-label="Ask Gustav's CV" />
           <button type="submit" id="cv-chat-send">RUN</button>
         </form>
       </div>
-      <p class="subtle" style="margin-top: 0.75rem; text-align: center;">// powered by RAG · embedded vectors</p>
+      <p class="subtle" style="margin-top: 0.75rem; text-align: center;">// live RAG: fastembed → qdrant → gemini · watch the trace</p>
     </div>
   </div>
 </header>
 
 <!-- Model metadata strip (formerly impact stats) -->
 <section class="stats-strip reveal">
+  <!-- Numbers are pre-filled for no-JS/crawlers; the counter animation resets to 0 and counts up when JS runs. -->
   <div class="stat-item" data-key="params">
-    <span class="stat-number" data-target="15">0</span><span class="stat-suffix">+</span>
+    <span class="stat-number" data-target="15">15</span><span class="stat-suffix">+</span>
     <span class="stat-label">years_in_it</span>
   </div>
   <div class="stat-item" data-key="checkpoints">
-    <span class="stat-number" data-target="6">0</span>
-    <span class="stat-label">live_projects</span>
+    <span class="stat-number" data-target="5">5</span>
+    <span class="stat-label">systems_in_production</span>
   </div>
   <div class="stat-item" data-key="dependencies">
-    <span class="stat-number" data-target="20">0</span><span class="stat-suffix">+</span>
+    <span class="stat-number" data-target="20">20</span><span class="stat-suffix">+</span>
     <span class="stat-label">technologies</span>
   </div>
-  <div class="stat-item" data-key="validators">
-    <span class="stat-number" data-target="3">0</span>
-    <span class="stat-label">certifications</span>
+  <div class="stat-item" data-key="commits">
+    <span class="stat-number" id="stat-commits" data-target="700">700</span><span class="stat-suffix">+</span>
+    <span class="stat-label">commits_last_year</span>
+  </div>
+</section>
+
+<!-- Production status board — live health checks against the Railway fleet -->
+<section class="reveal" id="status-section" hidden>
+  <header class="major">
+    <h2>Running In Production</h2>
+    <p class="muted">Live health checks — these systems are pinged when you load this page.</p>
+  </header>
+  <div class="status-board">
+    <div class="status-board-head">
+      <span class="meta"><span class="dot"></span>$ gustav status --production</span>
+      <span class="status-checked" id="status-checked"></span>
+    </div>
+    <ul class="status-list" id="status-list" role="list"></ul>
   </div>
 </section>
 
@@ -188,7 +208,12 @@
   </header>
   <div class="posts duo">
     {% for p in projects if p.slug in ['llm-assistant', 'the-cold-file'] %}
-    <article class="featured">
+    <article class="featured project-visible">
+      {% if p.image %}
+      <div class="featured-thumb">
+        <img src="/static/{{ p.image }}" alt="{{ p.title }} — preview" loading="lazy" />
+      </div>
+      {% endif %}
       <h3>{{ p.title }}</h3>
       {% set _desc = p.description %}
       {% if '<!--more-->' in _desc %}
@@ -216,6 +241,34 @@
     {% endfor %}
   </div>
   <p class="subtle" style="margin-top: var(--s-5);"><a href="/projects">See all projects →</a></p>
+</section>
+
+<!-- The Cold File — live proof that the autonomous pipeline ships -->
+<section class="reveal coldfile" id="coldfile-section" hidden>
+  <header class="major">
+    <h2>This Channel Runs Itself</h2>
+    <p class="muted">Every episode below was written, voiced, illustrated, rendered, and uploaded by a Python pipeline I built — zero human edits. The pipeline wakes up hourly on Railway; this data is read live from the channel.</p>
+  </header>
+  <div class="coldfile-grid">
+    <div class="coldfile-player">
+      <div class="coldfile-frame">
+        <iframe id="coldfile-embed" src="" title="Latest autonomous episode — The Cold File"
+                loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture"
+                allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+      <p class="coldfile-latest"><span class="dim">latest_upload:</span> <span id="coldfile-title"></span></p>
+    </div>
+    <div class="coldfile-meta">
+      <dl class="coldfile-stats">
+        <div><dt>episodes_shipped</dt><dd id="coldfile-count">—</dd></div>
+        <div><dt>last_upload</dt><dd id="coldfile-age">—</dd></div>
+        <div><dt>runtime_per_episode</dt><dd>55–65 min</dd></div>
+        <div><dt>human_edits</dt><dd class="accent">0</dd></div>
+      </dl>
+      <p class="coldfile-desc">Claude writes the dual-host script, scores candidate concepts against a retention rubric, tunes the TTS voices per scene, prompts every image, and answers the comments. <a href="/projects#the-cold-file">Read how it works →</a></p>
+      <a class="button" id="coldfile-link" href="https://www.youtube.com/@The_Cold_File" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+    </div>
+  </div>
 </section>
 
 <!-- GitHub Activity Section -->
@@ -327,6 +380,82 @@
     return div;
   }
 
+  // === RAG trace panel — shows the pipeline working with real numbers ===
+  const trace = document.getElementById('rag-trace');
+  const traceLines = document.getElementById('rag-trace-lines');
+
+  function traceReset() {
+    if (!trace) return;
+    traceLines.innerHTML = '';
+    trace.hidden = false;
+  }
+
+  function traceLine(html, cls) {
+    if (!trace) return null;
+    const div = document.createElement('div');
+    div.className = 'rag-trace-line' + (cls ? ' ' + cls : '');
+    div.innerHTML = html;
+    traceLines.appendChild(div);
+    return div;
+  }
+
+  function traceMeta(meta) {
+    if (!trace) return;
+    traceLines.innerHTML = '';
+    if (meta.source === 'rag') {
+      const srcs = meta.sources || [];
+      const top = srcs.length ? Math.max.apply(null, srcs.map(s => s.score || 0)) : 0;
+      traceLine('<span class="ok">✓</span> embed query <span class="dim">· ' + (meta.embedding_provider || 'fastembed') + (meta.embed_ms ? ' · ' + meta.embed_ms + 'ms' : '') + '</span>');
+      traceLine('<span class="ok">✓</span> qdrant search <span class="dim">· ' + srcs.length + ' chunks · top score ' + top.toFixed(2) + '</span>');
+      traceLine('<span class="ok">✓</span> ' + (meta.model || 'gemini-2.5-flash') + ' <span class="dim">· ' + (meta.ai_ms ? (meta.ai_ms / 1000).toFixed(1) + 's' : 'streaming') + '</span>');
+      if (srcs.length) {
+        const chips = srcs.slice(0, 4).map(s =>
+          '<span class="rag-chip" title="' + escapeHtml(s.excerpt || '') + '">' + escapeHtml(s.filename) + ' <em>' + (s.score || 0).toFixed(2) + '</em></span>'
+        ).join('');
+        traceLine('<span class="dim">sources:</span> ' + chips, 'rag-trace-sources');
+      }
+    } else {
+      traceLine('<span class="warn">!</span> RAG backend cold — keyword fallback <span class="dim">· canned facts, no hallucinations</span>');
+    }
+  }
+
+  async function askStreaming(question, botDiv) {
+    const res = await fetch('/api/cv-chat-stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: question })
+    });
+    if (!res.ok || !res.body) throw new Error('stream unavailable (' + res.status + ')');
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '', text = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const events = buf.split('\n\n');
+      buf = events.pop();
+      for (const evt of events) {
+        const line = evt.split('\n').find(l => l.startsWith('data: '));
+        if (!line) continue;
+        let msg;
+        try { msg = JSON.parse(line.slice(6)); } catch { continue; }
+        if (msg.type === 'meta') {
+          traceMeta(msg);
+          botDiv.classList.remove('thinking');
+        } else if (msg.type === 'token') {
+          text += msg.t;
+          botDiv.innerHTML = renderBotHtml(text) + '<span class="stream-caret"></span>';
+          body.scrollTop = body.scrollHeight;
+        }
+      }
+    }
+    botDiv.innerHTML = renderBotHtml(text || 'No answer.');
+    body.scrollTop = body.scrollHeight;
+  }
+
   async function ask(question) {
     if (!question || !question.trim()) return;
     hideSuggestions();
@@ -334,25 +463,31 @@
     input.value = '';
     sendBtn.disabled = true;
 
-    const thinking = appendMsg('bot', 'thinking…', 'thinking');
+    traceReset();
+    traceLine('<span class="spin"></span> embed → retrieve → generate <span class="dim">· running…</span>');
+    const botDiv = appendMsg('bot', '', 'thinking');
 
     try {
-      const res = await fetch('/api/cv-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: question })
-      });
-      const data = await res.json();
-      thinking.remove();
-      msgCounter--; // re-use slot for real response
-      appendMsg('bot', data.answer || data.error || 'No answer.');
+      await askStreaming(question, botDiv);
     } catch (err) {
-      thinking.remove();
-      msgCounter--;
-      appendMsg('bot', 'Network error — try again in a moment.');
+      // Streaming failed — fall back to the plain JSON endpoint.
+      try {
+        const res = await fetch('/api/cv-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: question })
+        });
+        const data = await res.json();
+        botDiv.classList.remove('thinking');
+        botDiv.innerHTML = renderBotHtml(data.answer || data.error || 'No answer.');
+        traceMeta({ source: data.source });
+      } catch (err2) {
+        botDiv.classList.remove('thinking');
+        botDiv.innerHTML = escapeHtml('Network error — try again in a moment.');
+        if (trace) trace.hidden = true;
+      }
     } finally {
       sendBtn.disabled = false;
-      input.focus();
     }
   }
 
@@ -361,6 +496,7 @@
     suggestions.addEventListener('click', (e) => {
       const btn = e.target.closest('.chat-suggestion');
       if (!btn) return;
+      cancelAutoDemo();
       const q = btn.getAttribute('data-q') || btn.textContent.trim();
       ask(q);
     });
@@ -369,8 +505,47 @@
   // Form submit
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    cancelAutoDemo();
     ask(input.value);
   });
+
+  // === Auto-demo — the widget asks itself a question so visitors see the
+  // RAG pipeline run without touching anything. Once per session; cancelled
+  // by any interaction; skipped for reduced-motion users.
+  let demoCancelled = false;
+  let demoTimer = null;
+
+  function cancelAutoDemo() {
+    demoCancelled = true;
+    if (demoTimer) { clearTimeout(demoTimer); demoTimer = null; }
+  }
+
+  input.addEventListener('focus', cancelAutoDemo);
+  input.addEventListener('input', cancelAutoDemo);
+
+  (function scheduleAutoDemo() {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let played = false;
+    try { played = sessionStorage.getItem('cvDemoPlayed') === '1'; } catch {}
+    if (reduced || played) return;
+
+    const DEMO_Q = 'What has Gustav built with LLMs?';
+
+    demoTimer = setTimeout(async () => {
+      if (demoCancelled) return;
+      try { sessionStorage.setItem('cvDemoPlayed', '1'); } catch {}
+      input.placeholder = '';
+      for (const ch of DEMO_Q) {
+        if (demoCancelled) return;
+        input.value += ch;
+        await new Promise(r => setTimeout(r, 38 + Math.random() * 40));
+      }
+      if (demoCancelled) return;
+      await new Promise(r => setTimeout(r, 350));
+      if (demoCancelled) return;
+      ask(DEMO_Q);
+    }, 2200);
+  })();
 })();
 </script>
 
@@ -455,6 +630,15 @@
   const render = (data) => {
     const totalEl = document.getElementById('gh-total');
     if (totalEl) totalEl.textContent = data.total.toLocaleString();
+
+    // Feed the real commit count into the stats strip. If the counter already
+    // animated, set the text directly; otherwise update its target.
+    const commitStat = document.getElementById('stat-commits');
+    if (commitStat && data.total) {
+      const rounded = Math.floor(data.total / 50) * 50;
+      commitStat.setAttribute('data-target', rounded);
+      if (commitStat.textContent !== '0') commitStat.textContent = rounded;
+    }
 
     const linkEl = document.getElementById('gh-link');
     if (linkEl && data.username) {
@@ -549,6 +733,75 @@
       // Network error — leave section hidden
     }
   })();
+})();
+
+// === Production status board ===
+(async () => {
+  const section = document.getElementById('status-section');
+  const list = document.getElementById('status-list');
+  if (!section || !list) return;
+
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  try {
+    const resp = await fetch('/api/status');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const services = data.services || [];
+    if (!services.length) return;
+
+    list.innerHTML = services.map(svc => {
+      const cls = svc.status === 'up' ? 'up' : (svc.status === 'idle' ? 'idle' : 'down');
+      const state = svc.status === 'up' ? 'UP' : (svc.status === 'idle' ? 'IDLE' : 'DOWN');
+      const latency = svc.latency_ms != null ? svc.latency_ms + 'ms' : (svc.detail || '');
+      return '<li class="status-row">' +
+        '<span class="status-dot ' + cls + '" aria-hidden="true"></span>' +
+        '<a class="status-name" href="' + esc(svc.url) + '" target="_blank" rel="noopener noreferrer">' + esc(svc.name) + '</a>' +
+        '<span class="status-desc">' + esc(svc.desc) + '</span>' +
+        '<span class="status-latency">' + esc(latency) + '</span>' +
+        '<span class="status-state ' + cls + '">' + state + '</span>' +
+        '</li>';
+    }).join('');
+
+    const checked = document.getElementById('status-checked');
+    if (checked && data.checked_at) {
+      const dt = new Date(data.checked_at);
+      checked.textContent = 'checked ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    section.hidden = false;
+  } catch {
+    // leave hidden
+  }
+})();
+
+// === The Cold File — live channel data ===
+(async () => {
+  const section = document.getElementById('coldfile-section');
+  if (!section) return;
+  try {
+    const resp = await fetch('/api/coldfile');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    if (!data.latest) return;
+
+    const embed = document.getElementById('coldfile-embed');
+    if (embed) embed.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(data.latest.video_id);
+
+    const title = document.getElementById('coldfile-title');
+    if (title) title.textContent = data.latest.title;
+
+    const count = document.getElementById('coldfile-count');
+    if (count) count.textContent = data.episode_count >= 15 ? '15+' : String(data.episode_count);
+
+    const age = document.getElementById('coldfile-age');
+    if (age && data.latest.published) {
+      const days = Math.max(0, Math.floor((Date.now() - new Date(data.latest.published)) / 86400000));
+      age.textContent = days === 0 ? 'today' : days + (days === 1 ? ' day ago' : ' days ago');
+    }
+    section.hidden = false;
+  } catch {
+    // leave hidden
+  }
 })();
 
 </script>
