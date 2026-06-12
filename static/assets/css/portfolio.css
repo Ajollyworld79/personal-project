@@ -1873,9 +1873,27 @@ button.project-thumb {
   cursor: zoom-in;
   /* form controls don't stretch with width:auto — span the 2rem card padding explicitly */
   width: calc(100% + 4rem);
+  /* undo site.css's global pill-button styling (height: 3.5em clipped the diagram) */
+  height: auto;
+  line-height: normal;
+  box-shadow: none;
+  letter-spacing: normal;
+  white-space: normal;
+  text-transform: none;
+  text-align: inherit;
+  border-radius: 0;
+  font-size: 1em;
 }
 @media screen and (max-width: 736px) {
   button.project-thumb { width: calc(100% + 3rem); }
+}
+/* Buttons use a special internal layout: aspect-ratio on the button box and
+   percentage heights on its children don't resolve. Size the image itself
+   instead and let the button wrap it. */
+button.project-thumb { aspect-ratio: auto; }
+button.project-thumb img {
+  height: auto;
+  aspect-ratio: 16 / 8.5;
 }
 .project-thumb { position: relative; }
 
