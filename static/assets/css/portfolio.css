@@ -1859,3 +1859,86 @@ section.reveal { margin-top: var(--s-8); }
   object-position: top center;
   display: block;
 }
+
+/* Clickable project thumbnails — screenshots link out, diagrams open the lightbox */
+a.project-thumb { display: block; }
+button.project-thumb {
+  display: block;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0;
+  border-style: none;
+  background: var(--surface-2);
+  font: inherit;
+  cursor: zoom-in;
+  /* form controls don't stretch with width:auto — span the 2rem card padding explicitly */
+  width: calc(100% + 4rem);
+}
+@media screen and (max-width: 736px) {
+  button.project-thumb { width: calc(100% + 3rem); }
+}
+.project-thumb { position: relative; }
+
+.thumb-hint {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-bright);
+  background: rgba(7, 7, 12, 0.85);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  pointer-events: none;
+}
+.project-thumb:hover .thumb-hint,
+.project-thumb:focus-visible .thumb-hint { opacity: 1; transform: translateY(0); }
+
+/* Diagram lightbox */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-6);
+  background: rgba(7, 7, 12, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: modalFadeIn 0.2s ease;
+  cursor: zoom-out;
+}
+.lightbox-overlay[hidden] { display: none; }
+.lightbox-overlay img {
+  max-width: min(1400px, 94vw);
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  border-radius: var(--r-3);
+  border: 1px solid var(--border-bright);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.7);
+  cursor: default;
+}
+.lightbox-close {
+  position: absolute;
+  top: var(--s-5);
+  right: var(--s-5);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border-bright);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms;
+}
+.lightbox-close:hover { border-color: var(--accent); color: var(--accent); }
+a.featured-thumb { display: block; }

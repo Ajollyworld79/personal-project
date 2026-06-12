@@ -210,9 +210,15 @@
     {% for p in projects if p.slug in ['llm-assistant', 'the-cold-file'] %}
     <article class="featured project-visible">
       {% if p.image %}
+      {% if p.live_url %}
+      <a class="featured-thumb" href="{{ p.live_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ p.title }}">
+        <img src="/static/{{ p.image }}" alt="{{ p.title }} — preview" loading="lazy" />
+      </a>
+      {% else %}
       <div class="featured-thumb">
         <img src="/static/{{ p.image }}" alt="{{ p.title }} — preview" loading="lazy" />
       </div>
+      {% endif %}
       {% endif %}
       <h3>{{ p.title }}</h3>
       {% set _desc = p.description %}

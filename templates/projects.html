@@ -11,9 +11,19 @@
         {% for project in projects %}
         <article class="project-card project-visible" id="{{ project.slug }}">
             {% if project.image %}
-            <div class="project-thumb">
+            {% if project.image.endswith('.svg') %}
+            <!-- Architecture diagram — click opens the lightbox at full size -->
+            <button type="button" class="project-thumb thumb-zoom" data-lightbox-src="/static/{{ project.image }}" data-lightbox-alt="{{ project.title }} — architecture diagram" aria-label="View {{ project.title }} architecture diagram at full size">
+                <img src="/static/{{ project.image }}" alt="{{ project.title }} — architecture diagram" loading="lazy" />
+                <span class="thumb-hint">⤢ view diagram</span>
+            </button>
+            {% else %}
+            <!-- Live screenshot — click opens the real thing -->
+            <a class="project-thumb thumb-link" href="{{ project.live_url or project.repo_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ project.title }}">
                 <img src="/static/{{ project.image }}" alt="{{ project.title }} — preview" loading="lazy" />
-            </div>
+                <span class="thumb-hint">{% if project.live_url and 'youtube' in project.live_url|string %}↗ watch on youtube{% elif project.live_url %}↗ open live demo{% else %}↗ view on github{% endif %}</span>
+            </a>
+            {% endif %}
             {% endif %}
             <div class="project-header">
                 <div class="project-icon">
@@ -86,6 +96,12 @@
     </div>
 </section>
 
+<!-- Diagram Lightbox -->
+<div id="lightbox" class="lightbox-overlay" hidden>
+    <button type="button" class="lightbox-close" aria-label="Close diagram view">&times;</button>
+    <img id="lightbox-img" src="" alt="" />
+</div>
+
 <!-- Apology Modal -->
 <div id="apologyModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
@@ -135,6 +151,35 @@ document.getElementById('apologyModal').addEventListener('click', function(e) {
         closeModal();
     }
 });
+
+// === Diagram lightbox ===
+(function() {
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    if (!lb || !lbImg) return;
+
+    document.querySelectorAll('[data-lightbox-src]').forEach((el) => {
+        el.addEventListener('click', () => {
+            lbImg.src = el.getAttribute('data-lightbox-src');
+            lbImg.alt = el.getAttribute('data-lightbox-alt') || '';
+            lb.hidden = false;
+            document.body.style.overflow = 'hidden';
+        });
+    });
+
+    function closeLightbox() {
+        lb.hidden = true;
+        lbImg.src = '';
+        document.body.style.overflow = '';
+    }
+
+    lb.addEventListener('click', (e) => {
+        if (e.target !== lbImg) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !lb.hidden) closeLightbox();
+    });
+})();
 </script>
 
 <style>
