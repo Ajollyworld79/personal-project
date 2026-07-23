@@ -7,7 +7,7 @@ PROJECTS = [
         slug="llm-assistant",
         title="AI-Powered IT Support Agent with RAG",
         description=(
-            "Production RAG system positioned as an internal IT support agent. Multilingual (Danish/English) answers grounded in customer-uploaded documentation, with a read-only backend dashboard customers can inspect end-to-end."
+            "Multilingual IT support agent that answers from customer-owned documentation. Runs in production with an inspectable backend, hard cost controls, and a provider-swappable path to EU data residency."
             "<!--more-->"
             "<strong>Architecture.</strong> Async Quart backend with a local Qdrant vector store and fastembed ONNX embeddings (multilingual incl. Danish; no torch dependency, stays well under 200MB resident). Generation runs on Google <code>gemini-2.5-flash</code> via the google-genai SDK, with automatic fallback to <code>gemini-2.5-flash-lite</code>."
             "<br><br>"
@@ -28,8 +28,7 @@ PROJECTS = [
         slug="document-intelligence-pipeline",
         title="Document Intelligence Pipeline",
         description=(
-            "Local document processing pipeline for PDF, DOCX and scanned images: OCR (Tesseract), text extraction, "
-            "table detection & extraction, key-value parsing, entity recognition (spaCy), layout analysis and summarization."
+            "Local-first pipeline that turns PDFs, DOCX files, and scans into structured JSON — including OCR, tables, key values, entities, layout, and summaries."
             "<!--more-->"
             "Results are produced as structured JSON suitable for downstream ingestion (data lakes, BI, search indexes). "
             "Repository is private — contact guch79@gmail.com for access and commercial options."
@@ -43,7 +42,7 @@ PROJECTS = [
         slug="personal-project",
         title="Professional Portfolio & CV Generator",
         description=(
-            "Fully asynchronous Quart web application with auto-generated PDF CV from dynamic content."
+            "Production Quart application where the website and downloadable PDF CV share one live content source."
             "<!--more-->"
             "Features intelligent HTML-to-PDF conversion with structured data extraction, professional formatting, and clickable links. Built with modern async Python patterns."
         ),
@@ -55,7 +54,7 @@ PROJECTS = [
         slug="apology-service",
         title="Apology-as-a-Service (MCP Server)",
         description=(
-            "A live Model Context Protocol (MCP) server that provides context-aware crisis communication for AI agents."
+            "Live MCP server that gives AI agents context-aware crisis communication over SSE, with an interactive demo and ready-to-use connection config."
             "<!--more-->"
             "Test it live right here with the 'Generate Live Apology' button, or "
             "<a href='/static/mcp-config.json' target='_blank' rel='noopener noreferrer' style='color:#f2849e;'>download the config</a> "
@@ -70,7 +69,7 @@ PROJECTS = [
         slug="data-pipeline",
         title="ETL Data Pipeline - Dataverse to SQL Server",
         description=(
-            "Complete ETL pipeline for extracting data from Microsoft Dataverse, transforming with business logic, and loading to SQL Server."
+            "Production-style ETL from Microsoft Dataverse to SQL Server with parallel extraction, business-rule transforms, connection pooling, and circuit breakers."
             "<!--more-->"
             "Includes fake data generation with Faker for testing before production deployment. Features parallel processing, connection pooling, and circuit breakers."
         ),
@@ -83,9 +82,9 @@ PROJECTS = [
         slug="the-cold-file",
         title="The Cold File — Autonomous AI True-Crime Podcast Channel",
         description=(
-            "Production Python backend that fully operates a fictional dual-host true-crime podcast on YouTube — "
+            "Autonomous Python pipeline that turns a concept into a 55–65 minute YouTube episode — script, quality gate, voices, images, render, upload, and comment replies — with zero human edits. Watch it live at "
             "<a href='https://www.youtube.com/@The_Cold_File' target='_blank' rel='noopener noreferrer' style='color:#f2849e;'>@The_Cold_File</a> — "
-            "an autonomous AI system where Claude wears multiple intelligent hats — writer, LLM-as-judge quality gate, casting director, community manager — across a single 30,000-line pipeline."
+            "running hourly on Railway."
             "<!--more-->"
             "<strong>The show is a fictional dual-host podcast.</strong> Every case is AI-invented — no real names, locations, or events — which eliminates defamation, YouTube-strike, and family-complaint risk. Episodes run 9,000–11,000 words / 55–65 minutes of finished podcast audio rendered as YouTube video. The conversation is between two hosts: <em>Dr. Christy Hart</em> (criminal psychologist, always present) and a rotating male co-host — either <em>Jake Morgan</em> (investigative journalist, theory-heavy episodes) or <em>Marcus Reed</em> (retired homicide detective, investigation-heavy episodes). The male host is chosen deterministically via <code>hash(case_title) % 2</code> using the same formula in both the script-gen prompt and the TTS layer, so the persona named in the dialogue always matches the voice that gets played."
             "<br><br>"

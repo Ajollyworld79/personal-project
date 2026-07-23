@@ -682,6 +682,11 @@ async def index():
         projects=PROJECTS,
         author=settings.author_name,
         current_year=datetime.now(timezone.utc).year,
+        title="Gustav Christensen — Production AI Engineer",
+        meta_description=(
+            "Production AI engineer building autonomous LLM workflows, RAG systems, "
+            "and data pipelines in Python. Explore live systems or ask the CV assistant."
+        ),
     )
 
 
@@ -691,6 +696,11 @@ async def about():
         "about.html",
         author=settings.author_name,
         current_year=datetime.now(timezone.utc).year,
+        title="About Gustav Christensen — Production AI Engineer",
+        meta_description=(
+            "Gustav Wind Christensen is a production AI engineer with 15+ years in IT, "
+            "spanning data engineering, automation, operations, RAG, and LLM systems."
+        ),
     )
 
 
@@ -701,6 +711,11 @@ async def projects():
         projects=PROJECTS,
         author=settings.author_name,
         current_year=datetime.now(timezone.utc).year,
+        title="Production AI Projects — Gustav Christensen",
+        meta_description=(
+            "Production AI systems built by Gustav Christensen: autonomous LLM workflows, "
+            "RAG support, document intelligence, MCP, and data pipelines."
+        ),
     )
 
 

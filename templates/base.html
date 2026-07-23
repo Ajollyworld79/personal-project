@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
     <head>
-        <title>{{ title if title else 'Gustav Christensen — Python & LLM Engineer' }}</title>
+        <title>{{ title if title else 'Gustav Christensen — Production AI Engineer' }}</title>
         <meta charset="utf-8" />
         <!-- Mark JS as available before first paint — scroll-reveal styling only
              applies under html.js, so content stays visible for crawlers/no-JS. -->
@@ -9,10 +9,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="color-scheme" content="dark light" />
         <meta name="theme-color" content="#0b0f13" />
-        <meta name="description" content="Gustav Christensen — Python & LLM engineer. Production RAG pipelines, vector search, and autonomous AI systems. Ask the live RAG assistant anything about my CV." />
+        <meta name="description" content="{{ meta_description if meta_description else 'Gustav Christensen — production AI engineer building autonomous LLM workflows, RAG systems, and data pipelines in Python.' }}" />
         <meta name="keywords" content="Gustav Christensen, Python, AI, LLM, Machine Learning, Data Engineer, Portfolio, CV" />
-        <meta property="og:title" content="{{ title if title else 'Gustav Christensen — Python & AI Developer' }}" />
-        <meta property="og:description" content="Portfolio — Python development, AI / LLM projects, and technical experience." />
+        <meta property="og:title" content="{{ title if title else 'Gustav Christensen — Production AI Engineer' }}" />
+        <meta property="og:description" content="{{ meta_description if meta_description else 'Production AI systems, Python engineering, and live LLM projects.' }}" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="{{ url_for('static', filename='assets/images/me.jpg', _external=True) }}" />
         <meta property="og:image:alt" content="Gustav Christensen — Python & AI Developer" />
@@ -25,8 +25,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Site base styles (loaded before portfolio.css so per-component overrides win) -->
-    <link rel="stylesheet" href="/static/assets/css/site.css?v=4" />
-    <link rel="stylesheet" href="/static/assets/css/portfolio.css?v=4" />
+    <link rel="stylesheet" href="/static/assets/css/site.css?v=5" />
+    <link rel="stylesheet" href="/static/assets/css/portfolio.css?v=5" />
     <style>
 /* Python Dict Navigation Styling */
 .nav-header-wrapper {
@@ -63,6 +63,8 @@
 
 /* Links inside strings: soft off-white, pink on hover */
 .py-link {
+    display: inline-block;
+    padding: 0.25em 0;
     color: #e6eef6;
     text-decoration: underline;
     text-decoration-color: rgba(230, 238, 246, 0.35);
@@ -126,6 +128,7 @@
         color: #fff;
         border: 1px solid rgba(255,255,255,0.06);
         font-size: 1em;
+        min-height: 44px;
     }
     /* Decorative down arrow indicator (non-interactive) */
     .py-nav-compact::after {
@@ -199,11 +202,11 @@ select:focus-visible,
         <!-- Wrapper -->
         <div id="wrapper">
             <!-- Main -->
-            <div id="main">
+            <main id="main">
                 <div class="inner">
                     {% block content %}{% endblock %}
                 </div>
-            </div>
+            </main>
             <!-- Footer -->
             <footer id="footer">
                 <div class="inner">
