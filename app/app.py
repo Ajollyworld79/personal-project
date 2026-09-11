@@ -141,7 +141,7 @@ _CV_FACTS = {
         "Railway, Docker. Editor: VS Code with Claude Code."
     ),
     "experience": (
-        "15+ years in IT spanning support, operations, and software development. "
+        "20+ years in IT spanning support, operations, and software development. "
         "Specialized in Python automation, data engineering, and AI/LLM integration. "
         "Strong on cross-functional delivery — from planning to production."
     ),
@@ -712,7 +712,7 @@ async def about():
         "about",
         title="About Gustav Christensen — Production AI Engineer",
         meta_description=(
-            "Gustav Wind Christensen is a production AI engineer with 15+ years in IT, "
+            "Gustav Wind Christensen is a production AI engineer with 20+ years in IT, "
             "spanning data engineering, automation, operations, RAG, and LLM systems."
         ),
     )

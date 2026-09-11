@@ -128,6 +128,29 @@ test('streamed chat renders safe markdown and sources', async ({ page }) => {
   expect(await page.evaluate(() => 'bad' in window)).toBe(false);
 });
 
+test('portrait enlarges on desktop and mobile and restores keyboard focus', async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    await page.goto('/about');
+    const trigger = page.getByRole('button', { name: /Enlarge portrait/ });
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    const photo = dialog.locator('img');
+    await expect(photo).toBeVisible();
+    const bounds = await photo.boundingBox();
+    expect(bounds!.width).toBeGreaterThan(120);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+    await trigger.click();
+    await page.mouse.click(2, 2);
+    await expect(dialog).toHaveCount(0);
+  }
+});
+
 test('rate limits do not trigger a second request', async ({ page }) => {
   let fallbacks = 0;
   await mockLive(page);

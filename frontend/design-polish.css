@@ -1,6 +1,50 @@
 /* Seven approved refinements on top of the restored production design. */
 :root { --ink-mute: #9aa69d; }
 
+/* Keep the portrait's soft glow without concentric outlines. */
+.cv__head .avatar.small {
+  border: 0;
+  box-shadow: 0 20px 60px -20px var(--accent-glow);
+}
+.cv__head .portrait-trigger {
+  display: block;
+  position: relative;
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  line-height: 0;
+  cursor: zoom-in;
+}
+.portrait-trigger .avatar { display: block; }
+.portrait-zoom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--accent);
+}
+.portrait-zoom svg { width: 17px; height: 17px; }
+.portrait-trigger:hover .portrait-zoom { background: var(--accent); color: var(--bg); }
+.dialog .portrait-enlarged {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: calc(100dvh - 130px);
+  object-fit: contain;
+  padding: 16px;
+  margin: 0;
+}
+
 /* Readable actions, with a distinctly quieter unavailable repository. */
 .hero-actions .button, .cta-actions .button { color: #24131a !important; }
 .hero-actions .button.alt, .cta-actions .button.alt {
