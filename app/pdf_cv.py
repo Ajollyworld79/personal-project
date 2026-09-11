@@ -11,7 +11,7 @@ import html as html_lib
 import io
 import os
 import re
-from typing import Optional
+from typing import Optional, cast
 
 from fpdf import FPDF
 
@@ -408,7 +408,11 @@ def _projects_pages(pdf: FPDF, projects) -> None:
 
         # measure description + chips to know the card height up front
         pdf.set_font(SANS, "", 8.2)
-        desc_lines = pdf.multi_cell(inner_w, 4.1, desc, dry_run=True, output="LINES")
+        # LINES alone returns list[str]; fpdf2 annotates all output modes together.
+        desc_lines = cast(
+            list[str],
+            pdf.multi_cell(inner_w, 4.1, desc, dry_run=True, output="LINES"),
+        )
         pdf.set_font(MONO, "", 6.2)
         chip_rows, x = 1, 0.0
         for t in techs:
