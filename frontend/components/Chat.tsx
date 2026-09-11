@@ -48,8 +48,9 @@ export function Chat(): React.JSX.Element {
       if (!controller.signal.aborted) { setBusy(false); input.current?.focus({ preventScroll: true }); }
     }
   }
-  return <section className="chat-widget" id="cv-chat" aria-labelledby="chat-heading">
-    <div className="chat-widget-header"><span className="meta" id="chat-heading"><span className="dot" aria-hidden="true" />cv-chat.py · live</span><span className="traffic-dots" aria-hidden="true"><span /><span /><span /></span></div>
+  const status = busy ? (messages.at(-1)?.text ? 'Writing…' : 'Searching CV…') : error ? 'Try again' : 'Ready';
+  return <section className="chat-widget" id="cv-chat" aria-labelledby="chat-heading" data-busy={busy}>
+    <div className="chat-widget-header"><span className="meta" id="chat-heading"><span className="dot" aria-hidden="true" />cv-chat.py · live</span><span className="chat-status" role="status" data-busy={busy}>{status}</span><span className="traffic-dots" aria-hidden="true"><span /><span /><span /></span></div>
     <div className="chat-widget-body" ref={scroll} role="log" aria-label="Conversation" aria-live="polite" aria-busy={busy}>
       {messages.length === 0 ? <><div className="chat-prompt"><span className="label">stdin</span>Ask anything about Gustav — his CV, projects, or LLM work. I'll answer in real time.</div><div className="chat-suggestions">{suggestions.map(q => <button className="chat-suggestion" type="button" key={q} onClick={() => void ask(q)}>{q}</button>)}</div></> : null}
       {messages.map(message => <div key={message.id} className={`chat-message chat-msg ${message.role === 'assistant' ? 'bot assistant' : 'user'}`}><span className="label">{message.role === 'user' ? 'You' : 'CV assistant'}</span>{message.role === 'assistant' ? <Suspense fallback={<p>{message.text}</p>}><Markdown text={message.text || (busy ? 'Looking through my CV…' : '')} /></Suspense> : <p>{message.text}</p>}</div>)}

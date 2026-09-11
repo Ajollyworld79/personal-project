@@ -13,7 +13,7 @@ Siden skal se ud som [produktionen](https://gustavchristensen.dev/). Det tidlige
 - About bruger originalens `timeline`, `timeline-item` og `timeline-content`. Cirklernes position udledes dermed af den korrekte struktur.
 - React 19.3, TypeScript 7.0.2, prerendering og Python-API'er er bevaret. Der er ikke deployet.
 
-## Direkte sammenligning
+## Direkte sammenligning af baseline før designpolering
 
 Produktionen og den lokale side er målt i Chrome ved 1440 × 1000 og 390 × 1000. De sammenlignede elementer omfatter fontfamilie, fontstørrelse, fontvægt, linjehøjde, x/y-position, bredde og højde.
 
@@ -25,6 +25,20 @@ Produktionen og den lokale side er målt i Chrome ved 1440 × 1000 og 390 × 100
 | Projects, mobil | Samme mål for de kontrollerede kortdetaljer. Hele gitteret er ca. 26 pixels højere på grund af den opdaterede React/TypeScript-beskrivelse af selve portfolioen. |
 
 Dette er konkrete målinger og visuel sammenligning, ikke en garanti for pixelidentiske skærmbilleder: live-data, billedindhold, animationstidspunkt og font-rendering kan variere.
+
+## Efterfølgende godkendte designforbedringer
+
+Brugeren har derefter godkendt alle syv mindre forbedringer. De ligger i `frontend/design-polish.css` samt chatstatus og mobilnavigationens label. Originalens CSS-filer er fortsat uændrede.
+
+1. Mere kontrast på dæmpet tekst, herunder undertitel, datoer og hjælpetekst.
+2. Læsbare aktive knapper og en tydeligt mere afdæmpet Private repo-tilstand.
+3. Ensartet minimumsstørrelse på de berørte små status- og GitHub-tekster samt projektmærker.
+4. Strammere afstande i projektkort og handlinger placeret nederst; alle tekster og teknologier er bevaret.
+5. Ens 16:9-billedrammer med hele billeder og diagrammer synlige.
+6. Synlig chatstatus: Ready, Searching CV…, Writing… og Try again, med bevaret terminalglød.
+7. Synlig Navigation-label og tydeligere kant omkring mobilmenuen.
+
+Baseline-tabellen ovenfor dokumenterer tilstanden før disse godkendte ændringer; den beskriver ikke de nye afstande og størrelser.
 
 ## Bevidste forskelle
 

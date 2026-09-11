@@ -136,7 +136,27 @@ test('rate limits do not trigger a second request', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: /What is Gustav's experience/ }).click();
   await expect(page.getByRole('alert')).toContainText('Too many questions');
+  await expect(page.locator('.chat-status')).toHaveText('Try again');
   expect(fallbacks).toBe(0);
+});
+
+test('chat status announces working and ready without allowing duplicate submissions', async ({ page }) => {
+  await mockLive(page);
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/api/cv-chat-stream', async route => {
+    await pending;
+    await route.fulfill({ contentType: 'text/event-stream', body: 'data: {"type":"token","t":"Gustav builds Python systems."}\n\ndata: {"type":"done"}\n\n' });
+  });
+  await page.goto('/');
+  await expect(page.locator('.chat-status')).toHaveText('Ready');
+  await page.getByRole('button', { name: /What is Gustav's experience/ }).click();
+  try {
+    await expect(page.locator('.chat-status')).toHaveText('Searching CV…');
+    await expect(page.getByRole('button', { name: 'WAIT', exact: true })).toBeDisabled();
+  } finally { release(); }
+  await expect(page.locator('.chat-message.assistant')).toContainText('Gustav builds Python systems.');
+  await expect(page.locator('.chat-status')).toHaveText('Ready');
 });
 
 test('chat and live-data errors have usable fallbacks', async ({ page }) => {

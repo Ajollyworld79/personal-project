@@ -2,6 +2,7 @@
    This file contains only React interaction adapters and the requested video dialog. */
 @import './original-navigation.css';
 @import './original-projects.css';
+@import './design-polish.css';
 :root{--pink:var(--accent);--blue:var(--accent-2);--surface-raised:var(--surface-2);--mono:var(--font-mono)}
 .dialog{width:min(720px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);margin:auto;padding:0;border:1px solid #43485e;border-radius:var(--radius);background:var(--surface);color:var(--ink);box-shadow:0 40px 120px #0009;overflow:auto}
 .dialog-wide{width:min(1080px,calc(100vw - 32px),calc((100dvh - 180px)*16/9))}

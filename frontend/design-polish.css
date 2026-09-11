@@ -1,0 +1,93 @@
+/* Seven approved refinements on top of the restored production design. */
+:root { --ink-mute: #9aa69d; }
+
+/* Readable actions, with a distinctly quieter unavailable repository. */
+.hero-actions .button, .cta-actions .button { color: #24131a !important; }
+.hero-actions .button.alt, .cta-actions .button.alt {
+  color: var(--ink) !important;
+  box-shadow: inset 0 0 0 1px #7e596c;
+}
+.project-actions .button:not(.is-disabled) { color: var(--ink) !important; }
+.project-actions .button.primary,
+.project-actions .project-btn { color: #24131a !important; }
+.project-actions .project-btn-alt:not(.is-disabled) {
+  border-color: #7e596c;
+  background: rgba(242, 132, 158, .06);
+}
+.project-actions .project-btn-alt:not(.is-disabled):hover {
+  border-color: var(--accent);
+  background: rgba(242, 132, 158, .14);
+}
+.project-actions .button.is-disabled {
+  color: #9aa69d !important;
+  background: transparent;
+  border-color: var(--border);
+  opacity: 1;
+}
+
+/* Retain the mono hierarchy while giving small labels room to breathe. */
+.status-board-head, .status-state, .gh-total-label, .gh-link, .gh-legend {
+  font-size: .75rem;
+  line-height: 1.6;
+}
+.status-board-head { flex-wrap: wrap; gap: 8px 16px; }
+.projects-page .rag-badge { font-size: .75rem; color: #24131a; }
+.projects-page .tech-badge { font-size: .75rem; padding: .3rem .65rem; }
+
+/* Keep the original grid and complete content, with actions aligned below. */
+.projects-page .project-header { margin-bottom: 1rem; }
+.projects-page .project-description { flex-grow: 0; margin-bottom: 1rem; }
+.projects-page .project-tech { gap: .5rem; margin-bottom: 1.25rem; }
+.projects-page .project-actions { margin-top: auto; gap: .625rem; }
+.projects-page .project-actions .button {
+  min-height: 44px;
+  height: auto;
+  padding: .7rem 1rem;
+  line-height: 1.4;
+  white-space: normal;
+  text-align: center;
+}
+
+/* Give diagrams and screenshots the same frame and preserve their contents. */
+.projects-page .project-thumb {
+  margin: -24px -24px 1.5rem;
+  aspect-ratio: 16 / 9;
+}
+.projects-page button.project-thumb { width: calc(100% + 48px); }
+.projects-page .project-thumb img {
+  aspect-ratio: 16 / 9;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+.projects-page .project-thumb.thumb-zoom img { padding: 12px; }
+.projects-page .project-card:hover .project-thumb img { transform: none; }
+.featured-thumb { aspect-ratio: 16 / 9; }
+.featured-thumb img { object-fit: contain; object-position: center; }
+
+/* Stable status space keeps the terminal from jumping between requests. */
+.chat-widget-header { flex-wrap: wrap; gap: 8px; }
+.chat-status {
+  margin-left: auto;
+  color: var(--ink-mute);
+  font: 500 .75rem/1.5 var(--font-mono);
+}
+.chat-status[data-busy='true'] { color: var(--accent-2); }
+.chat-widget[data-busy='true'] .chat-widget-header .dot {
+  background: var(--accent-2);
+  box-shadow: 0 0 10px rgba(126, 207, 244, .6);
+}
+.chat-widget .chat-input-row button:disabled { cursor: not-allowed; }
+.chat-widget[data-busy='true'] .chat-input-row button { cursor: progress; }
+
+@media (max-width: 736px) {
+  .py-nav-compact .nav-label {
+    display: block;
+    margin: 0 0 6px;
+    font: 500 .75rem/1.5 var(--font-mono);
+    color: var(--ink-mute);
+    letter-spacing: .06em;
+  }
+  .py-nav-compact select { border-color: #42424f; }
+  .py-nav-compact::after { top: auto; bottom: 22px; transform: translateY(50%); }
+}
