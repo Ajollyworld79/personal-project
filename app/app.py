@@ -12,11 +12,12 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from quart import Quart, render_template, jsonify, Response, request
+from quart import Quart, jsonify, Response, request
 from app.config import get_settings
 from app.models import Project
 from app.data import PROJECTS
-from app.pdf_cv import extract_cv_data, generate_cv_pdf
+from app.pdf_cv import generate_cv_pdf
+from app.frontend import render_page, cv_content
 import time
 import ssl
 import random
@@ -114,7 +115,7 @@ async def get_apology():
 
 
 # --- CV chat (mock RAG over Gustav's CV) ---
-# Lightweight keyword-matched responses grounded in the live about.html content.
+# Lightweight keyword-matched responses grounded in Gustav's CV and projects.
 # Swap with a real RAG call (e.g. llm-assistant on Railway) when ready.
 _CV_FACTS = {
     "llm": (
@@ -624,7 +625,25 @@ async def github_activity():
 
     token = os.getenv("GITHUB_TOKEN")
     if not token:
-        # Serve stale cache if available; otherwise tell the frontend to hide
+        # Local preview may reuse the site's already-public contribution calendar.
+        # This is opt-in; production continues to use its own GitHub token.
+        if os.getenv("GITHUB_ACTIVITY_PREVIEW") == "1":
+            try:
+                timeout = aiohttp.ClientTimeout(total=10.0)
+                async with aiohttp.ClientSession(timeout=timeout) as http:
+                    async with http.get(
+                        "https://gustavchristensen.dev/api/github-activity", ssl=_SSL_CTX
+                    ) as resp:
+                        resp.raise_for_status()
+                        public_data = await resp.json()
+                if public_data.get("username") != _GITHUB_USERNAME:
+                    raise ValueError("Preview calendar belongs to another user")
+                if not isinstance(public_data.get("weeks"), list) or not isinstance(public_data.get("total"), int):
+                    raise ValueError("Invalid preview calendar")
+                _GITHUB_CACHE.update(ts=now, data=public_data)
+                return jsonify(public_data)
+            except (aiohttp.ClientError, asyncio.TimeoutError, ValueError):
+                app.logger.warning("Public GitHub preview calendar unavailable")
         if cached:
             return jsonify({**cached, "_stale": True})
         return jsonify({"error": "GITHUB_TOKEN not configured"}), 503
@@ -677,11 +696,8 @@ async def github_activity():
 
 @app.route("/")
 async def index():
-    return await render_template(
-        "index.html",
-        projects=PROJECTS,
-        author=settings.author_name,
-        current_year=datetime.now(timezone.utc).year,
+    return await render_page(
+        "home",
         title="Gustav Christensen — Production AI Engineer",
         meta_description=(
             "Production AI engineer building autonomous LLM workflows, RAG systems, "
@@ -692,10 +708,8 @@ async def index():
 
 @app.route("/about")
 async def about():
-    return await render_template(
-        "about.html",
-        author=settings.author_name,
-        current_year=datetime.now(timezone.utc).year,
+    return await render_page(
+        "about",
         title="About Gustav Christensen — Production AI Engineer",
         meta_description=(
             "Gustav Wind Christensen is a production AI engineer with 15+ years in IT, "
@@ -706,11 +720,8 @@ async def about():
 
 @app.route("/projects")
 async def projects():
-    return await render_template(
-        "projects.html",
-        projects=PROJECTS,
-        author=settings.author_name,
-        current_year=datetime.now(timezone.utc).year,
+    return await render_page(
+        "projects",
         title="Production AI Projects — Gustav Christensen",
         meta_description=(
             "Production AI systems built by Gustav Christensen: autonomous LLM workflows, "
@@ -721,16 +732,8 @@ async def projects():
 
 @app.route("/download_cv")
 async def download_cv():
-    """Generate the CV PDF — about.html stays the single source of truth."""
-    tpl_path = os.path.join(PROJECT_ROOT, "templates", "about.html")
-    try:
-        with open(tpl_path, "r", encoding="utf-8") as fh:
-            raw_tpl = fh.read()
-    except Exception:
-        raw_tpl = ""
-
-    cv_data = extract_cv_data(raw_tpl)
-    packet = generate_cv_pdf(author=settings.author_name, projects=PROJECTS, data=cv_data)
+    """The React about page and PDF share content/cv.json."""
+    packet = generate_cv_pdf(author=settings.author_name, projects=PROJECTS, data=cv_content())
 
     data = packet.getvalue()
     filename = f"CV_{settings.author_name.replace(' ', '_')}.pdf"

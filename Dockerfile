@@ -1,3 +1,22 @@
+FROM python:3.14-slim AS content
+WORKDIR /build
+RUN pip install --no-cache-dir 'pydantic>=2.9.2'
+COPY app/ app/
+COPY content/ content/
+COPY scripts/export_content.py scripts/export_content.py
+RUN python scripts/export_content.py > /build/public-content.json
+
+FROM node:24-slim AS frontend
+WORKDIR /build
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY frontend/ frontend/
+COPY static/fonts/ static/fonts/
+COPY scripts/prerender.mjs scripts/prerender.mjs
+COPY vite.config.ts tsconfig.json ./
+COPY --from=content /build/public-content.json /build/public-content.json
+RUN CONTENT_FILE=/build/public-content.json npm run build
+
 FROM python:3.14-slim
 
 WORKDIR /app
@@ -13,6 +32,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ app/
 COPY templates/ templates/
 COPY static/ static/
+COPY content/ content/
+COPY --from=frontend /build/static/dist/ static/dist/
 # Copy root level files
 COPY run.py .
 COPY Procfile .

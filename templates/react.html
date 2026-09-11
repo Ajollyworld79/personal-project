@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090a10">
+  <meta name="color-scheme" content="dark">
+  <title>{{ title }}</title>
+  <meta name="description" content="{{ meta_description }}">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ meta_description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{{ url_for('static', filename='assets/images/me.jpg', _external=True) }}">
+  <meta property="og:image:alt" content="Gustav Wind Christensen">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{{ url_for('static', filename='assets/images/me.jpg', _external=True) }}">
+  <link rel="icon" type="image/svg+xml" href="/static/assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/assets/css/site.css?v=5">
+  <link rel="stylesheet" href="/static/assets/css/portfolio.css?v=5">
+  {% for href in css %}<link rel="stylesheet" href="{{ href }}">{% endfor %}
+  {% if dev_server %}
+  <script type="module">
+    import RefreshRuntime from '{{ dev_server }}/@react-refresh';
+    RefreshRuntime.injectIntoGlobalHook(window);
+    window.$RefreshReg$ = () => {};
+    window.$RefreshSig$ = () => type => type;
+    window.__vite_plugin_react_preamble_installed__ = true;
+  </script>
+  <script type="module" src="{{ dev_server }}/@vite/client"></script>
+  {% endif %}
+</head>
+<body>
+  <div id="root" data-page="{{ page }}" data-prerendered="{{ 'true' if prerendered else 'false' }}">{{ prerendered|safe }}</div>
+  <script id="site-content" type="application/json">{{ content|tojson }}</script>
+  <script type="module" src="{{ entry }}"></script>
+  <noscript><p>Interactive demos require JavaScript. You can read the pages and <a href="/download_cv">download the CV</a> without it.</p></noscript>
+</body>
+</html>

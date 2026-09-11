@@ -9,3 +9,8 @@ htmlcov/
 .idea/
 .vscode/
 .DS_Store
+node_modules/
+static/dist/
+.build/
+test-results/
+playwright-report/

@@ -1,0 +1,93 @@
+{
+  "contact": {
+    "email": "guch79@gmail.com",
+    "linkedin": "gustav-wind-christensen-b61a0330",
+    "github": "Ajollyworld79",
+    "location": "Denmark",
+    "portfolio": "https://gustavchristensen.dev"
+  },
+  "skills": [
+    "Python (FastAPI, Quart, Flask)",
+    "AI / LLM Integration (RAG, Prompt Engineering)",
+    "Data Engineering & ETL",
+    "SQL & Database Design",
+    "Azure Cloud Services"
+  ],
+  "languages": [
+    "Danish — native",
+    "English — professional"
+  ],
+  "summary": "Experienced developer with 15+ years in IT, spanning support, operations, and software development. Specialized in Python automation, data engineering, and AI/LLM integration. Strong track record in building scalable solutions, troubleshooting complex systems, and seamless database integration. Excellent at cross-functional collaboration from planning to delivery.",
+  "headline": "Production AI engineer with 15+ years in IT. I build autonomous LLM workflows, RAG systems, and data pipelines on a foundation of automation and operations experience.",
+  "roles": [
+    {
+      "date": "2020 — present",
+      "role": "Data Engineer",
+      "company": "3F – Fagligt Fælles Forbund · Copenhagen",
+      "summary": "Building and running the data backbone for one of Denmark's largest trade unions.",
+      "points": [
+        "Design and operate ETL pipelines from Microsoft Dataverse and internal systems into SQL Server — with parallel processing, connection pooling, and circuit breakers.",
+        "Python automation replacing manual workflows across the organisation.",
+        "AI/LLM integration: RAG-based tooling and LLM-assisted automation on Azure."
+      ]
+    },
+    {
+      "date": "2014 — 2020",
+      "role": "IT Operations Specialist",
+      "company": "3F – Fagligt Fælles Forbund",
+      "summary": "Server operations, SCOM development, SLA reporting, and Orchestrator batch automation.",
+      "points": []
+    },
+    {
+      "date": "2008 — 2014",
+      "role": "IT Support Specialist",
+      "company": "3F – Fagligt Fælles Forbund",
+      "summary": "End-user support, troubleshooting, and technical assistance.",
+      "points": []
+    }
+  ],
+  "previous_roles": [
+    {
+      "date": "2008",
+      "text": "EDC — IT Support"
+    },
+    {
+      "date": "2007 — 08",
+      "text": "Bolignet — Technical Consultant"
+    },
+    {
+      "date": "2006 — 07",
+      "text": "Debitel — IP Support"
+    },
+    {
+      "date": "2004 — 06",
+      "text": "DLG TELE — IT Support & DSL Support"
+    },
+    {
+      "date": "2002 — 04",
+      "text": "TELE2 — Technical Support"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certified Entry-Level Python Programmer",
+      "issuer": "Python Institute · PCEP-30-02",
+      "url": "https://www.credly.com/badges/5e99ca10-b73c-40e9-b1d8-c68d780d8ed3/linked_in_profile"
+    },
+    {
+      "name": "Microsoft Certified Professional",
+      "issuer": "Microsoft"
+    }
+  ],
+  "education": [
+    "Zero To Mastery Academy — Python Developer Bootcamp 2023",
+    "Complete Python Developer – Zero to Mastery 2023",
+    "Python Special Methods — Advanced Classes",
+    "Business College Syd — Sales & Commerce 2001",
+    "Køge Handelsskole — Business School 1996–1997",
+    "Bernstorffsminde Efterskole — 10th Grade 1995–1996"
+  ],
+  "education_links": {
+    "Complete Python Developer – Zero to Mastery 2023": "https://udemy-certificate.s3.amazonaws.com/image/UC-6105e32b-5fb2-4f5e-819b-bef728365e45.jpg"
+  }
+}

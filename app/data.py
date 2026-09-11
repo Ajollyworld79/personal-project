@@ -42,11 +42,11 @@ PROJECTS = [
         slug="personal-project",
         title="Professional Portfolio & CV Generator",
         description=(
-            "Production Quart application where the website and downloadable PDF CV share one live content source."
+            "React and TypeScript 7 portfolio with a Python backend, where the website and downloadable PDF CV share one content source."
             "<!--more-->"
-            "Features intelligent HTML-to-PDF conversion with structured data extraction, professional formatting, and clickable links. Built with modern async Python patterns."
+            "Prerendered React pages, a streaming CV assistant, live service checks, and an accessible video player. Vite builds the frontend; Quart serves it alongside the API and PDF generator."
         ),
-        technologies=["Quart", "Uvicorn", "FPDF2", "Async Python", "Jinja2"],
+        technologies=["React", "TypeScript 7", "Vite", "Quart", "FPDF2"],
         repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/personal-project"),
         image="assets/images/projects/personal-project.png",
     ),

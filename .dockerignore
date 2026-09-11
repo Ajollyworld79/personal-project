@@ -5,3 +5,9 @@ __pycache__/
 venv/
 .git/
 .github/
+.venv/
+node_modules/
+static/dist/
+.build/
+test-results/
+playwright-report/

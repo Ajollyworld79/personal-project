@@ -1,0 +1,212 @@
+
+:where(.projects-page) .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+:where(.projects-page) .project-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+:where(.projects-page) .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #f2849e 0%, #7ecff4 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+:where(.projects-page) .project-card:hover::before {
+    transform: scaleX(1);
+}
+
+:where(.projects-page) .project-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(242, 132, 158, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(242, 132, 158, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+:where(.projects-page) .project-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+:where(.projects-page) .project-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(242, 132, 158, 0.1);
+    border: 1px solid rgba(242, 132, 158, 0.3);
+    border-radius: 12px;
+    color: #f2849e;
+}
+
+:where(.projects-page) .project-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+:where(.projects-page) .project-title {
+    /* Responsive sizing so long titles like "Professional Portfolio & CV Generator" can wrap neatly */
+    font-size: clamp(1.1rem, 1.2vw + 0.6rem, 1.5rem);
+    margin: 0;
+    line-height: 1.25;
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    /* Prefer wrapping at word boundaries; only hyphenate for very long tokens */
+    white-space: normal;
+    overflow-wrap: anywhere; /* allow wrap if necessary */
+    word-break: normal;
+    hyphens: auto;
+    max-width: 100%;
+}
+
+@media (max-width: 420px) {
+    :where(.projects-page) .project-title { font-size: 1.15rem; }
+}
+
+:where(.projects-page) .rag-badge {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    background: linear-gradient(135deg, #f2849e 0%, #ff96b0 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    font-size: 0.55em;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(242, 132, 158, 0.3);
+}
+
+:where(.projects-page) .project-description {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+:where(.projects-page) .project-description p {
+    margin: 0 0 1rem 0;
+}
+
+:where(.projects-page) .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+:where(.projects-page) .tech-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
+}
+
+:where(.projects-page) .tech-badge:hover {
+    background: rgba(242, 132, 158, 0.15);
+    border-color: rgba(242, 132, 158, 0.4);
+    color: #f2849e;
+}
+
+:where(.projects-page) .project-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+:where(.projects-page) .project-btn, :where(.projects-page) .project-btn-alt {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 2px solid;
+}
+
+:where(.projects-page) .project-btn {
+    background: #f2849e;
+    border-color: #f2849e;
+    color: #fff;
+}
+
+:where(.projects-page) .project-btn:hover {
+    background: #ff96b0;
+    border-color: #ff96b0;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(242, 132, 158, 0.3);
+}
+
+:where(.projects-page) .project-btn-alt {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+:where(.projects-page) .project-btn-alt:hover {
+    border-color: #7ecff4;
+    color: #7ecff4;
+    background: rgba(126, 207, 244, 0.1);
+    transform: translateY(-2px);
+}
+
+:where(.projects-page) .project-btn-alt.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+@media screen and (max-width: 736px) {
+    :where(.projects-page) .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    :where(.projects-page) .project-card {
+        padding: 1.5rem;
+    }
+    
+    :where(.projects-page) .project-title {
+        font-size: 1.3em;
+    }
+}
