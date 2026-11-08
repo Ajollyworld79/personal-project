@@ -91,7 +91,7 @@ Generated assets are ignored by Git and rebuilt in Docker/CI. A local build does
 
 ## Design
 
-This is a framework migration with the production design as its visual contract. React replaces the Jinja page markup and imperative browser scripts; original CSS, font weights, classes, content order and dimensions are retained. Do not redesign or simplify sections as part of a framework change. See DESIGN-REVIEW.md for comparison evidence and the explicitly retained video-dialog improvement.
+This is a framework migration with the production design as its visual contract. React replaces the Jinja page markup and imperative browser scripts; original CSS, classes, content order and dimensions are retained (body text weight was raised from 300 to 400 for legibility, see `frontend/design-polish.css`). Do not redesign or simplify sections as part of a framework change. See DESIGN-REVIEW.md for comparison evidence and the explicitly retained video-dialog improvement.
 
 ## License
 

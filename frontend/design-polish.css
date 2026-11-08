@@ -1,6 +1,9 @@
 /* Seven approved refinements on top of the restored production design. */
 :root { --ink-mute: #9aa69d; }
 
+/* Body copy at 400 instead of the original 300: thin strokes on the dark background read poorly. */
+body { font-weight: 400; }
+
 /* Keep the portrait's soft glow without concentric outlines. */
 .cv__head .avatar.small {
   border: 0;
