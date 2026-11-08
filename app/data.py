@@ -9,17 +9,17 @@ PROJECTS = [
         description=(
             "Multilingual IT support agent that answers from customer-owned documentation. Runs in production with an inspectable backend, hard cost controls, and a provider-swappable path to EU data residency."
             "<!--more-->"
-            "<strong>Architecture.</strong> Async Quart backend with a local Qdrant vector store and fastembed ONNX embeddings (multilingual incl. Danish; no torch dependency, stays well under 200MB resident). Generation runs on Google <code>gemini-2.5-flash</code> via the google-genai SDK, with automatic fallback to <code>gemini-2.5-flash-lite</code>."
+            "<strong>Architecture.</strong> Async Quart backend with a Qdrant vector store on a persistent volume (chunk text AES-256-GCM encrypted at rest) and Gemini embeddings; fastembed ONNX is available as a local, torch-free alternative. Generation runs on Google <code>gemini-3.6-flash</code> via the google-genai SDK, with automatic fallback to <code>gemini-3.5-flash-lite</code>."
             "<br><br>"
-            "<strong>Provider-agnostic — GDPR-ready by configuration.</strong> The embedding and LLM layers are pluggable: fastembed (local) and Gemini by default, but both can be repointed to Azure OpenAI in an EU region. Because Azure OpenAI runs under Microsoft's EU data-processing terms, the same codebase becomes a GDPR-compliant, EU-data-residency deployment with no architectural changes."
+            "<strong>Provider-agnostic — GDPR-ready by configuration.</strong> The embedding and LLM layers are pluggable: Gemini by default with fastembed (local) as an option, and both can be repointed to Azure OpenAI in an EU region. Because Azure OpenAI runs under Microsoft's EU data-processing terms, the same codebase becomes a GDPR-compliant, EU-data-residency deployment with no architectural changes."
             "<br><br>"
             "<strong>Cost guardrails for a public demo.</strong> Per-IP rate limits (per minute and per day), per-session message caps, and a persistent daily token budget written to disk so a restart loop cannot bypass it."
             "<br><br>"
-            "<strong>Read-only backend dashboard at <code>/backend</code>.</strong> A lockable view customers can open without touching anything: model and region configuration sanitized through an allowlist so no key can leak, plus live usage metrics and rate-limit/budget status. A demo-lock flag enforces 403 on every mutation endpoint."
+            "<strong>Operations console at <code>/backend</code>.</strong> The public view shows model configuration sanitized through an allowlist so no key can leak, plus live usage metrics and rate-limit/budget status. Documents, conversation history and every mutation require an operator token and fail closed; a demo-lock flag can additionally block all mutations."
             "<br><br>"
             "<em>Repository is private — contact guch79@gmail.com for access or commercial options.</em>"
         ),
-        technologies=["Python", "Quart", "Gemini 3.6 Flash", "google-genai", "Qdrant", "fastembed (ONNX)", "RAG", "Azure OpenAI (optional)", "Railway"],
+        technologies=["Python", "Quart", "Gemini 3.6 Flash", "google-genai", "Qdrant", "Gemini embeddings", "fastembed (ONNX, optional)", "RAG", "Azure OpenAI (optional)", "Railway"],
         live_url=cast(HttpUrl, "https://llm-assistant-production-aa36.up.railway.app/"),
         image="assets/images/projects/llm-assistant.webp",
     ),
