@@ -11,7 +11,6 @@ WORKDIR /build
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY frontend/ frontend/
-COPY static/fonts/ static/fonts/
 COPY scripts/prerender.mjs scripts/prerender.mjs
 COPY vite.config.ts tsconfig.json ./
 COPY --from=content /build/public-content.json /build/public-content.json
@@ -37,6 +36,10 @@ COPY --from=frontend /build/static/dist/ static/dist/
 # Copy root level files
 COPY run.py .
 COPY Procfile .
+
+# Run as an unprivileged user: a compromised process cannot modify the app or system.
+RUN useradd --create-home --uid 10001 app
+USER app
 
 # Expose the port
 ENV PORT=8000

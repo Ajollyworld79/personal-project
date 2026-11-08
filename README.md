@@ -12,7 +12,7 @@ React 19.3 + TypeScript 7.0.2 frontend, built with Vite 8.3. Quart serves the pr
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt -r requirements-dev.txt
 npm ci
 npm run build
 python run.py
@@ -52,7 +52,7 @@ Visit http://127.0.0.1:8000, not the Vite URL. API calls remain on the same orig
 | app/app.py | Existing APIs, service checks, YouTube RSS and GitHub activity |
 | app/pdf_cv.py | PDF renderer using structured CV content |
 | scripts/ | Content export and React prerender build |
-| static/fonts/ | Font assets for the PDF; the website uses the original Google Fonts weights |
+| static/fonts/ | TTF fonts for the PDF; the website self-hosts the same Inter and JetBrains Mono weights via @fontsource |
 
 Project descriptions contain **trusted, repository-authored HTML**. Do not pass user-generated or external HTML into these fields without adding sanitization. Chat markdown is rendered separately with raw HTML disabled.
 

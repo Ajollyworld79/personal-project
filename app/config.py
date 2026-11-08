@@ -4,7 +4,7 @@ from functools import lru_cache
 class Settings(BaseSettings):
     app_name: str = "My Portfolio"
     author_name: str = "Gustav Wind Christensen"  
-    debug: bool = True
+    debug: bool = False
     version: str = "0.1.0"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")

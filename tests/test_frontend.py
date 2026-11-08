@@ -21,9 +21,6 @@ async def test_opt_in_github_preview_uses_public_calendar(monkeypatch):
         async def json(self): return data
 
     class Session:
-        def __init__(self, **kwargs): pass
-        async def __aenter__(self): return self
-        async def __aexit__(self, *args): pass
         def get(self, url, **kwargs):
             calls.append(url)
             assert 'headers' not in kwargs
@@ -32,7 +29,7 @@ async def test_opt_in_github_preview_uses_public_calendar(monkeypatch):
     monkeypatch.delenv('GITHUB_TOKEN', raising=False)
     monkeypatch.setenv('GITHUB_ACTIVITY_PREVIEW', '1')
     monkeypatch.setattr(module, '_GITHUB_CACHE', {'ts': 0, 'data': None})
-    monkeypatch.setattr(module.aiohttp, 'ClientSession', Session)
+    monkeypatch.setattr(module, '_http', Session)
     response = await app.test_client().get('/api/github-activity')
     assert response.status_code == 200
     assert await response.get_json() == data

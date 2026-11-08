@@ -7,7 +7,7 @@ Siden skal se ud som [produktionen](https://gustavchristensen.dev/). Det tidlige
 ## Implementering
 
 - De oprindelige `site.css` og `portfolio.css` er genskabt fra repository-versionen.
-- Originalens Google Fonts-indlæsning med alle anvendte vægte er tilbage. De fire lokale fontfiler fra første redesign dækkede ikke de samme vægte.
+- Originalens skrifttyper og vægte (Inter 300–800, JetBrains Mono 400–700) er bevaret, men hostes nu selv via `@fontsource` i stedet for Google Fonts.
 - Navigation, hero, terminalchat, statistik, teknologilogoer, status, projekter, About, GitHub-graf og footer bruger originalens struktur, klasser og rækkefølge.
 - Projekt-templateens særskilte CSS gælder kun Projects. `:where()` bevarer den oprindelige selector-prioritet, så kortenes padding ikke ændres.
 - About bruger originalens `timeline`, `timeline-item` og `timeline-content`. Cirklernes position udledes dermed af den korrekte struktur.

@@ -36,10 +36,59 @@ app = Quart(
     static_folder=os.path.join(PROJECT_ROOT, "static"),
 )
 
-# Serve static files via Quart's builtin static folder (static/ already exists)
-app.static_folder = os.path.join(PROJECT_ROOT, "static")
+# One pooled HTTP client for every outbound call (certifi-backed TLS). Created
+# lazily inside the running event loop and closed on shutdown.
+_http_session: aiohttp.ClientSession | None = None
 
 
+def _http() -> aiohttp.ClientSession:
+    global _http_session
+    if _http_session is None or _http_session.closed:
+        _http_session = aiohttp.ClientSession(
+            connector=aiohttp.TCPConnector(ssl=_SSL_CTX),
+            timeout=aiohttp.ClientTimeout(total=10.0),
+        )
+    return _http_session
+
+
+@app.after_serving
+async def _close_http() -> None:
+    if _http_session is not None:
+        await _http_session.close()
+
+
+# Everything the site loads: own assets, YouTube thumbnails and the
+# privacy-enhanced YouTube player. Inline style attributes come from React.
+_CSP = "; ".join([
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https://i.ytimg.com",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "frame-src https://www.youtube-nocookie.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+])
+
+
+@app.after_request
+async def _security_headers(response):
+    headers = response.headers
+    # The Vite dev server injects inline module scripts, so CSP is production-only.
+    if not os.environ.get("VITE_DEV_SERVER"):
+        headers.setdefault("Content-Security-Policy", _CSP)
+    headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+    headers.setdefault("X-Content-Type-Options", "nosniff")
+    headers.setdefault("X-Frame-Options", "DENY")
+    headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+    # Vite output carries a content hash in the filename, so it never changes.
+    if request.path.startswith("/static/dist/assets/"):
+        headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    return response
 
 
 @app.route("/api/get-apology")
@@ -56,17 +105,15 @@ async def get_apology():
         # The MCP server's /demo endpoint is a plain HTTP wrapper around
         # generate_apology — perfect for a one-shot button click.
 
-        timeout = aiohttp.ClientTimeout(total=10.0)
-        async with aiohttp.ClientSession(timeout=timeout) as http_session:
-            demo_url = "https://apology-as-a-service-production.up.railway.app/demo"
-            params = {"severity": severity, "style": style, "context": context}
-            async with http_session.get(demo_url, params=params) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    apology_text = data.get("text")
-                else:
-                    app.logger.warning(f"Demo endpoint returned {resp.status}")
-                    apology_text = None
+        demo_url = "https://apology-as-a-service-production.up.railway.app/demo"
+        params = {"severity": severity, "style": style, "context": context}
+        async with _http().get(demo_url, params=params) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                apology_text = data.get("text")
+            else:
+                app.logger.warning(f"Demo endpoint returned {resp.status}")
+                apology_text = None
 
         # Use fallback if live generation failed
         if not apology_text:
@@ -109,9 +156,9 @@ async def get_apology():
             }
         )
 
-    except Exception as e:
+    except Exception:
         app.logger.exception("apology endpoint critical failure")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Apology service unavailable"}), 500
 
 
 # --- CV chat (mock RAG over Gustav's CV) ---
@@ -203,14 +250,14 @@ _rate_buckets: dict[str, list[float]] = {}
 
 
 def _client_ip() -> str:
-    """Pick a stable client IP — honour Railway/Cloudflare proxy headers."""
-    fwd = request.headers.get("X-Forwarded-For", "")
-    if fwd:
-        return fwd.split(",")[0].strip()
-    real = request.headers.get("X-Real-IP", "")
-    if real:
-        return real.strip()
-    return request.remote_addr or "unknown"
+    """Client IP for rate limiting.
+
+    Railway's edge overwrites X-Real-IP with the real visitor address, so it
+    cannot be spoofed in production. X-Forwarded-For is deliberately ignored:
+    its first entry is whatever the caller sent.
+    """
+    real = request.headers.get("X-Real-IP", "").strip()
+    return real or request.remote_addr or "unknown"
 
 
 def _is_rate_limited(ip: str) -> bool:
@@ -223,9 +270,10 @@ def _is_rate_limited(ip: str) -> bool:
         return True
     bucket.append(now)
     _rate_buckets[ip] = bucket
-    # Opportunistic cleanup: every ~100 unique IPs, prune empties.
-    if len(_rate_buckets) > 100:
-        for stale_ip in [k for k, v in _rate_buckets.items() if not v]:
+    # Drop IPs whose newest hit is outside the window, so the table only holds
+    # recently active clients instead of growing forever.
+    if len(_rate_buckets) > 1000:
+        for stale_ip in [k for k, v in _rate_buckets.items() if v[-1] <= cutoff]:
             del _rate_buckets[stale_ip]
     return False
 
@@ -254,18 +302,17 @@ def _is_useful_rag_answer(payload: dict) -> bool:
 async def _query_rag_backend(raw_query: str) -> dict | None:
     """Call the llm-assistant /search endpoint. Returns the payload or None."""
     try:
-        timeout = aiohttp.ClientTimeout(total=45.0)
         headers = {"Content-Type": "application/json"}
         if LLM_ASSISTANT_API_KEY:
             headers["Authorization"] = f"Bearer {LLM_ASSISTANT_API_KEY}"
-        connector = aiohttp.TCPConnector(ssl=_SSL_CTX)
-        async with aiohttp.ClientSession(timeout=timeout, connector=connector) as http_session:
-            rag_url = f"{LLM_ASSISTANT_URL.rstrip('/')}/search"
-            payload = {"query": raw_query, "top_k": 10}
-            async with http_session.post(rag_url, json=payload, headers=headers) as resp:
-                if resp.status == 200:
-                    return await resp.json()
-                app.logger.info(f"cv-chat: llm-assistant returned HTTP {resp.status}; using mock")
+        rag_url = f"{LLM_ASSISTANT_URL.rstrip('/')}/search"
+        payload = {"query": raw_query, "top_k": 10}
+        async with _http().post(
+            rag_url, json=payload, headers=headers, timeout=aiohttp.ClientTimeout(total=45.0)
+        ) as resp:
+            if resp.status == 200:
+                return await resp.json()
+            app.logger.info(f"cv-chat: llm-assistant returned HTTP {resp.status}; using mock")
     except (aiohttp.ClientError, OSError) as e:
         app.logger.info(f"cv-chat: llm-assistant unreachable ({e}); using mock")
     except Exception as e:
@@ -335,9 +382,9 @@ async def cv_chat():
 
         answer, matched = _mock_answer(query_lower)
         return jsonify({"answer": answer, "matched": matched, "source": "mock"})
-    except Exception as e:
+    except Exception:
         app.logger.exception("cv-chat endpoint failure")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "The assistant is temporarily unavailable"}), 500
 
 
 @app.route("/api/cv-chat-stream", methods=["POST"])
@@ -379,7 +426,7 @@ async def cv_chat_stream():
                 answer = rag_data.get("answer", "")
                 meta.update({
                     "source": "rag",
-                    "model": "gemini-2.5-flash",
+                    "model": rag_data.get("model") or "gemini",
                     "embedding_provider": rag_data.get("embedding_provider"),
                     "embed_ms": rag_data.get("embed_ms"),
                     "ai_ms": rag_data.get("ai_ms"),
@@ -456,7 +503,7 @@ _STATUS_SERVICES = [
 ]
 
 
-async def _probe_service(http: "aiohttp.ClientSession", svc: dict) -> dict:
+async def _probe_service(http: aiohttp.ClientSession, svc: dict, timeout: aiohttp.ClientTimeout) -> dict:
     result = {
         "id": svc["id"],
         "name": svc["name"],
@@ -470,7 +517,7 @@ async def _probe_service(http: "aiohttp.ClientSession", svc: dict) -> dict:
         return result
     t0 = time.perf_counter()
     try:
-        async with http.get(svc["check"], headers={"User-Agent": "portfolio-status"}) as resp:
+        async with http.get(svc["check"], headers={"User-Agent": "portfolio-status"}, timeout=timeout) as resp:
             result["latency_ms"] = int((time.perf_counter() - t0) * 1000)
             result["status"] = "up" if resp.status < 500 else "down"
     except Exception:
@@ -487,12 +534,11 @@ async def production_status():
     if cached and now - _STATUS_CACHE["ts"] < _STATUS_TTL:
         return jsonify(cached)
 
+    http = _http()
     timeout = aiohttp.ClientTimeout(total=6.0)
-    connector = aiohttp.TCPConnector(ssl=_SSL_CTX)
-    async with aiohttp.ClientSession(timeout=timeout, connector=connector) as http:
-        results = await asyncio.gather(
-            *[_probe_service(http, svc) for svc in _STATUS_SERVICES]
-        )
+    results = await asyncio.gather(
+        *[_probe_service(http, svc, timeout) for svc in _STATUS_SERVICES]
+    )
     services = list(results)
 
     # The Cold File is a scheduled pipeline, not an HTTP service — it is "up"
@@ -537,13 +583,10 @@ async def _get_coldfile_data() -> dict | None:
         return cached
 
     try:
-        timeout = aiohttp.ClientTimeout(total=10.0)
-        connector = aiohttp.TCPConnector(ssl=_SSL_CTX)
-        async with aiohttp.ClientSession(timeout=timeout, connector=connector) as http:
-            async with http.get(_COLDFILE_FEED) as resp:
-                if resp.status != 200:
-                    return cached
-                xml_body = await resp.text()
+        async with _http().get(_COLDFILE_FEED) as resp:
+            if resp.status != 200:
+                return cached
+            xml_body = await resp.text()
     except Exception:
         app.logger.exception("coldfile: RSS fetch failed")
         return cached
@@ -629,13 +672,9 @@ async def github_activity():
         # This is opt-in; production continues to use its own GitHub token.
         if os.getenv("GITHUB_ACTIVITY_PREVIEW") == "1":
             try:
-                timeout = aiohttp.ClientTimeout(total=10.0)
-                async with aiohttp.ClientSession(timeout=timeout) as http:
-                    async with http.get(
-                        "https://gustavchristensen.dev/api/github-activity", ssl=_SSL_CTX
-                    ) as resp:
-                        resp.raise_for_status()
-                        public_data = await resp.json()
+                async with _http().get("https://gustavchristensen.dev/api/github-activity") as resp:
+                    resp.raise_for_status()
+                    public_data = await resp.json()
                 if public_data.get("username") != _GITHUB_USERNAME:
                     raise ValueError("Preview calendar belongs to another user")
                 if not isinstance(public_data.get("weeks"), list) or not isinstance(public_data.get("total"), int):
@@ -656,18 +695,16 @@ async def github_activity():
     payload = {"query": _GITHUB_QUERY, "variables": {"username": _GITHUB_USERNAME}}
 
     try:
-        timeout = aiohttp.ClientTimeout(total=10.0)
-        async with aiohttp.ClientSession(timeout=timeout) as http:
-            async with http.post(
-                "https://api.github.com/graphql", headers=headers, json=payload
-            ) as resp:
-                if resp.status != 200:
-                    body = await resp.text()
-                    app.logger.warning("github graphql %s: %s", resp.status, body[:200])
-                    if cached:
-                        return jsonify({**cached, "_stale": True})
-                    return jsonify({"error": f"GitHub API {resp.status}"}), 502
-                body = await resp.json()
+        async with _http().post(
+            "https://api.github.com/graphql", headers=headers, json=payload
+        ) as resp:
+            if resp.status != 200:
+                body = await resp.text()
+                app.logger.warning("github graphql %s: %s", resp.status, body[:200])
+                if cached:
+                    return jsonify({**cached, "_stale": True})
+                return jsonify({"error": f"GitHub API {resp.status}"}), 502
+            body = await resp.json()
 
         user = (body.get("data") or {}).get("user")
         if not user:
@@ -687,11 +724,11 @@ async def github_activity():
         _GITHUB_CACHE["ts"] = now
         return jsonify(result)
 
-    except Exception as e:
+    except Exception:
         app.logger.exception("github-activity endpoint failed")
         if cached:
             return jsonify({**cached, "_stale": True})
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "GitHub activity unavailable"}), 500
 
 
 @app.route("/")
@@ -732,9 +769,14 @@ async def projects():
 
 @app.route("/download_cv")
 async def download_cv():
-    """The React about page and PDF share content/cv.json."""
-    packet = generate_cv_pdf(author=settings.author_name, projects=PROJECTS, data=cv_content())
+    """The React about page and PDF share content/cv.json.
 
+    Generated fresh on every download (the PDF is dated), in a worker thread so
+    fpdf's CPU work never blocks the event loop.
+    """
+    packet = await asyncio.to_thread(
+        generate_cv_pdf, author=settings.author_name, projects=PROJECTS, data=cv_content()
+    )
     data = packet.getvalue()
     filename = f"CV_{settings.author_name.replace(' ', '_')}.pdf"
     headers = {"Content-Disposition": f'attachment; filename="{filename}"'}

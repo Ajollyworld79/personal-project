@@ -19,9 +19,9 @@ PROJECTS = [
             "<br><br>"
             "<em>Repository is private — contact guch79@gmail.com for access or commercial options.</em>"
         ),
-        technologies=["Python", "Quart", "Gemini 2.5 Flash", "google-genai", "Qdrant", "fastembed (ONNX)", "RAG", "Azure OpenAI (optional)", "Railway"],
+        technologies=["Python", "Quart", "Gemini 3.6 Flash", "google-genai", "Qdrant", "fastembed (ONNX)", "RAG", "Azure OpenAI (optional)", "Railway"],
         live_url=cast(HttpUrl, "https://llm-assistant-production-aa36.up.railway.app/"),
-        image="assets/images/projects/llm-assistant.png",
+        image="assets/images/projects/llm-assistant.webp",
     ),
 
     Project(
@@ -35,7 +35,7 @@ PROJECTS = [
         ),
         technologies=["Python", "Quart", "OCR", "Tesseract", "spaCy", "PDF processing", "NLP"],
         live_url=cast(HttpUrl,"https://document-intelligence-pipeline-production.up.railway.app"),
-        image="assets/images/projects/document-intelligence-pipeline.png",
+        image="assets/images/projects/document-intelligence-pipeline.webp",
     ),
 
     Project(
@@ -48,7 +48,7 @@ PROJECTS = [
         ),
         technologies=["React", "TypeScript 7", "Vite", "Quart", "FPDF2"],
         repo_url=cast(HttpUrl,"https://github.com/Ajollyworld79/personal-project"),
-        image="assets/images/projects/personal-project.png",
+        image="assets/images/projects/personal-project.webp",
     ),
     Project(
         slug="apology-service",
