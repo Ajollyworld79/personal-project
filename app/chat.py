@@ -70,7 +70,7 @@ def _is_rate_limited(ip: str) -> bool:
 # Used when the RAG backend is unreachable or has no useful answer. Every fact is
 # derived from content/cv.json and app/data.py, the same sources as the site and
 # the PDF, so the chat cannot drift from the published CV.
-_AI_TECH_MARKERS = ("RAG", "Claude", "Gemini", "MCP", "LLM")
+_AI_TECH_MARKERS = ("RAG", "GPT", "Gemini", "MCP", "LLM", "OpenAI")
 
 # (word prefixes, topic): first topic with a word starting with a prefix wins.
 _FALLBACK_KEYWORDS = [

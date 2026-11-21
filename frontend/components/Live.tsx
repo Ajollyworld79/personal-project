@@ -1,21 +1,21 @@
 import { useState } from 'react';
-import { coldfileSchema, statusSchema } from '../types';
+import { channelSchema, statusSchema } from '../types';
 import type { GitHubData } from '../types';
 import { useResource } from '../lib/api';
 import type { Resource } from '../lib/api';
 import { Dialog } from './Dialog';
 
 export function ColdFile(): React.JSX.Element {
-  const channel=useResource('/api/coldfile',coldfileSchema);
+  const channel=useResource('/api/channel/cold-file',channelSchema);
   const [playing,setPlaying]=useState(false);
   const latest=channel.status === 'ready' ? channel.data.latest : null;
   const days=latest ? Math.max(0,Math.floor((Date.now()-new Date(latest.published).getTime())/86400000)) : null;
   // An exact count comes from the uploads playlist; without it only the RSS feed (max 15 entries) is known.
-  const episodes=channel.status !== 'ready' ? '—' : channel.data.episode_count_exact || channel.data.episode_count < 15 ? String(channel.data.episode_count) : '15+';
+  const episodes=channel.status !== 'ready' ? '—' : channel.data.upload_count_exact || channel.data.upload_count < 15 ? String(channel.data.upload_count) : '15+';
   const runtime=channel.status === 'ready' && channel.data.runtime_minutes ? channel.data.runtime_minutes : null;
   return <section className="reveal revealed coldfile" id="coldfile-section"><header className="major"><h2>This Channel Runs Itself</h2><p className="muted">Every episode below was written, voiced, illustrated, rendered, and uploaded by a Python pipeline I built — zero human edits. The pipeline wakes up hourly on Railway; this data is read live from the channel.</p></header><div className="coldfile-grid"><div className="coldfile-player"><div className="coldfile-frame">
     {latest ? <button type="button" className="video-preview" aria-haspopup="dialog" aria-label={`Play episode: ${latest.title}`} onClick={()=>setPlaying(true)}><img src={`https://i.ytimg.com/vi/${latest.video_id}/hqdefault.jpg`} alt="" loading="lazy" /><span className="play-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7Z" /></svg></span></button> : <a className="video-preview" href="https://www.youtube.com/@The_Cold_File" target="_blank" rel="noopener noreferrer"><img src="/static/assets/images/projects/the-cold-file.jpg" alt="The Cold File channel" loading="lazy" /></a>}
-    </div><p className="coldfile-latest"><span className="dim">latest_upload:</span> {latest?.title ?? (channel.status === 'loading' ? 'Finding the latest episode…' : 'Latest episode unavailable.')}</p></div><div className="coldfile-meta"><dl className="coldfile-stats"><div><dt>episodes_shipped</dt><dd>{episodes}</dd></div><div><dt>last_upload</dt><dd>{days === null ? '—' : days === 0 ? 'today' : `${days} ${days===1?'day':'days'} ago`}</dd></div><div><dt>runtime_per_episode</dt><dd>{runtime === null ? '—' : runtime[0] === runtime[1] ? `${runtime[0]} min` : `${runtime[0]}–${runtime[1]} min`}</dd></div><div><dt>human_edits</dt><dd className="accent">0</dd></div></dl><p className="coldfile-desc">Claude writes the dual- or triple-host script, scores candidate concepts against a retention rubric, tunes the TTS voices per scene, prompts every image, and answers the comments. <a href="/projects#the-cold-file">Read how it works →</a></p><a className="button" href="https://www.youtube.com/@The_Cold_File" target="_blank" rel="noopener noreferrer">Watch on YouTube</a></div></div>
+    </div><p className="coldfile-latest"><span className="dim">latest_upload:</span> {latest?.title ?? (channel.status === 'loading' ? 'Finding the latest episode…' : 'Latest episode unavailable.')}</p></div><div className="coldfile-meta"><dl className="coldfile-stats"><div><dt>episodes_shipped</dt><dd>{episodes}</dd></div><div><dt>last_upload</dt><dd>{days === null ? '—' : days === 0 ? 'today' : `${days} ${days===1?'day':'days'} ago`}</dd></div><div><dt>runtime_per_episode</dt><dd>{runtime === null ? '—' : runtime[0] === runtime[1] ? `${runtime[0]} min` : `${runtime[0]}–${runtime[1]} min`}</dd></div><div><dt>human_edits</dt><dd className="accent">0</dd></div></dl><p className="coldfile-desc">GPT-6 writes the dual- or triple-host script, scores candidate concepts against a retention rubric, casts the caller voices, prompts every image, and answers the comments. <a href="/projects#the-cold-file">Read how it works →</a></p><a className="button" href="https://www.youtube.com/@The_Cold_File" target="_blank" rel="noopener noreferrer">Watch on YouTube</a></div></div>
     {playing && latest ? <Dialog title="The Cold File / now playing" wide onClose={()=>setPlaying(false)}><div className="video-frame"><iframe src={`https://www.youtube-nocookie.com/embed/${latest.video_id}?autoplay=1&rel=0`} title={latest.title} allow="autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /></div><div className="dialog-body"><h3>{latest.title}</h3><a href={`https://www.youtube.com/watch?v=${latest.video_id}`} target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></div></Dialog> : null}
   </section>;
 }

@@ -13,6 +13,29 @@ DIST = ROOT / "static/dist"
 def cv_content() -> dict:
     return json.loads((ROOT / "content/cv.json").read_text(encoding="utf-8"))
 
+PAGE_PATHS = {"home": "/", "about": "/about", "projects": "/projects"}
+
+def base_url() -> str:
+    return cv_content()["contact"]["portfolio"].rstrip("/")
+
+def page_url(page: str) -> str:
+    return base_url() + PAGE_PATHS[page]
+
+def person_schema(cv: dict) -> dict:
+    contact = cv["contact"]
+    return {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Gustav Wind Christensen",
+        "url": contact["portfolio"],
+        "jobTitle": "Production AI Engineer",
+        "email": "mailto:" + contact["email"],
+        "address": {"@type": "PostalAddress", "addressCountry": "DK"},
+        "sameAs": [f"https://www.linkedin.com/in/{contact['linkedin']}",
+                   f"https://github.com/{contact['github']}"],
+        "knowsAbout": cv["skills"],
+    }
+
 @lru_cache
 def _built_page(page: str) -> tuple[str, list[str], str, dict]:
     """Build output is fixed for the life of the process, so read it once per page."""
@@ -33,6 +56,7 @@ async def render_page(page: str, title: str, meta_description: str) -> str:
         entry, css, prerendered = f"{dev_server}/frontend/main.tsx", [], ""
     else:
         entry, css, prerendered, content = _built_page(page)
+    cv = cv_content()
     return await render_template("react.html", page=page, title=title, meta_description=meta_description,
                                  content=content, entry=entry, css=css, prerendered=prerendered,
-                                 dev_server=dev_server)
+                                 dev_server=dev_server, canonical=page_url(page), json_ld=person_schema(cv))

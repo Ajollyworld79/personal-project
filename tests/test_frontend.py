@@ -1,4 +1,6 @@
 import json
+import re
+import xml.etree.ElementTree as ET
 from pathlib import Path
 import pytest
 from app.app import app
@@ -62,3 +64,41 @@ async def test_dev_urls_include_vite_base(monkeypatch):
     assert 'http://127.0.0.1:5173/static/dist/frontend/main.tsx' in html
     assert 'http://127.0.0.1:5173/static/dist/@react-refresh' in html
     assert 'data-prerendered="false"' in html
+
+BASE = 'https://gustavchristensen.dev'
+PAGES = [('/', BASE + '/'), ('/about', BASE + '/about'), ('/projects', BASE + '/projects')]
+
+@pytest.mark.asyncio
+async def test_robots_txt_names_sitemap():
+    response = await app.test_client().get('/robots.txt')
+    assert response.status_code == 200
+    assert response.content_type.startswith('text/plain')
+    body = await response.get_data(as_text=True)
+    assert 'Allow: /' in body
+    assert f'Sitemap: {BASE}/sitemap.xml' in body
+
+@pytest.mark.asyncio
+async def test_sitemap_lists_canonical_pages():
+    response = await app.test_client().get('/sitemap.xml')
+    assert response.status_code == 200
+    assert 'xml' in response.content_type
+    root = ET.fromstring(await response.get_data(as_text=True))
+    ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+    assert [loc.text for loc in root.findall('s:url/s:loc', ns)] == [url for _, url in PAGES]
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('path,url', PAGES)
+async def test_page_canonical_and_person_json_ld(path, url):
+    html = await (await app.test_client().get(path)).get_data(as_text=True)
+    assert f'<link rel="canonical" href="{url}">' in html
+    assert f'<meta property="og:url" content="{url}">' in html
+    block = re.search(r'<script type="application/ld\+json">(.*?)</script>', html, re.S)
+    data = json.loads(block.group(1))
+    assert data['@type'] == 'Person'
+    assert data['url'] == BASE
+    assert data['jobTitle'] == 'Production AI Engineer'
+    assert data['sameAs'] == [
+        'https://www.linkedin.com/in/gustav-wind-christensen-b61a0330',
+        'https://github.com/Ajollyworld79',
+    ]
+    assert data['knowsAbout'] == cv_content()['skills']

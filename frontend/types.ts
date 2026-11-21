@@ -21,8 +21,8 @@ export type Content = z.infer<typeof contentSchema>;
 export type Project = z.infer<typeof projectSchema>;
 export const pageSchema = z.enum(['home', 'about', 'projects']);
 export type Page = z.infer<typeof pageSchema>;
-export const coldfileSchema = z.object({
-  episode_count: z.number(), episode_count_exact: z.boolean().optional(),
+export const channelSchema = z.object({
+  upload_count: z.number(), upload_count_exact: z.boolean().optional(),
   runtime_minutes: z.tuple([z.number(), z.number()]).nullable().optional(),
   latest: z.object({ video_id: z.string().regex(/^[\w-]{11}$/), title: z.string(), published: z.string() }),
 });

@@ -7,19 +7,21 @@ PROJECTS = [
         slug="llm-assistant",
         title="AI-Powered IT Support Agent with RAG",
         description=(
-            "Multilingual IT support agent that answers from customer-owned documentation. Runs in production with an inspectable backend, hard cost controls, and a provider-swappable path to EU data residency."
+            "Multilingual IT support agent that answers from customer-owned documentation. Runs in production with encrypted storage, hard cost controls, and an inspectable operations console."
             "<!--more-->"
-            "<strong>Architecture.</strong> Async Quart backend with a Qdrant vector store on a persistent volume (chunk text AES-256-GCM encrypted at rest) and Gemini embeddings; fastembed ONNX is available as a local, torch-free alternative. Generation runs on Google <code>gemini-3.6-flash</code> via the google-genai SDK, with automatic fallback to <code>gemini-3.5-flash-lite</code>."
+            "<strong>Architecture.</strong> Async Quart backend with a Qdrant vector store on a persistent volume (chunk text AES-256-GCM encrypted at rest). Gemini embeddings (<code>gemini-embedding-001</code>, 768-dim) in production, with a local multilingual fastembed/ONNX model as the torch-free default for self-hosting. Generation runs on Google <code>gemini-3.6-flash</code> via the google-genai SDK, with automatic fallback to <code>gemini-3.5-flash-lite</code>. Questions can include images (multimodal), and documents are ingested from PDF, DOCX, PPTX, TXT and CSV."
             "<br><br>"
-            "<strong>Provider-agnostic — GDPR-ready by configuration.</strong> The embedding and LLM layers are pluggable: Gemini by default with fastembed (local) as an option, and both can be repointed to Azure OpenAI in an EU region. Because Azure OpenAI runs under Microsoft's EU data-processing terms, the same codebase becomes a GDPR-compliant, EU-data-residency deployment with no architectural changes."
+            "<strong>Structured, grounded answers.</strong> Every answer is structured output that states its source (documents, general knowledge or refusal), its language and any refusal reason. Prompt-injection attempts are refused, and truncated model output is recovered instead of failing the request."
             "<br><br>"
             "<strong>Cost guardrails for a public demo.</strong> Per-IP rate limits (per minute and per day), per-session message caps, and a persistent daily token budget written to disk so a restart loop cannot bypass it."
             "<br><br>"
-            "<strong>Operations console at <code>/backend</code>.</strong> The public view shows model configuration sanitized through an allowlist so no key can leak, plus live usage metrics and rate-limit/budget status. Documents, conversation history and every mutation require an operator token and fail closed; a demo-lock flag can additionally block all mutations."
+            "<strong>Operations console at <code>/backend</code>.</strong> The public view shows model configuration sanitized through an allowlist so no key can leak, plus live usage metrics and rate-limit/budget status. Per-call token accounting (including cached tokens and fallback use) feeds a timeseries of requests, tokens, cache-hit ratio and fallback rate, and a searchable conversation log records embed/AI/total latency per exchange in Postgres. Documents, conversation history and every mutation require an operator token and fail closed; a demo-lock flag can additionally block all mutations."
+            "<br><br>"
+            "<strong>Security.</strong> The chat page authenticates with a signed HttpOnly, SameSite=Strict session cookie, so no token ever reaches the browser; server-to-server callers, like the CV chat on this site, use a separate least-privilege search token. Strict CSP with no inline JavaScript, self-hosted fonts and sanitized upload filenames."
             "<br><br>"
             "<em>Repository is private — contact guch79@gmail.com for access or commercial options.</em>"
         ),
-        technologies=["Python", "Quart", "Gemini 3.6 Flash", "google-genai", "Qdrant", "Gemini embeddings", "fastembed (ONNX, optional)", "RAG", "Azure OpenAI (optional)", "Railway"],
+        technologies=["Python", "Quart", "Gemini 3.6 Flash", "google-genai", "Qdrant", "Gemini embeddings", "fastembed (ONNX)", "RAG", "PostgreSQL", "Railway"],
         live_url=cast(HttpUrl, "https://llm-assistant-production-aa36.up.railway.app/"),
         image="assets/images/projects/llm-assistant.webp",
     ),
@@ -30,10 +32,14 @@ PROJECTS = [
         description=(
             "Local-first pipeline that turns PDFs, DOCX files, and scans into structured JSON — including OCR, tables, key values, entities, layout, and summaries."
             "<!--more-->"
+            "<strong>Pipeline.</strong> Each document is classified first, then OCR'd with Tesseract in the language you choose (for example <code>eng+dan</code>) or the one it detects; pages where OCR confidence is low fall back to handwriting recognition (Kraken/Calamari). Tables, key values, entities (spaCy), layout and a local TF-IDF summary are extracted, and progress streams live to the browser over Server-Sent Events. No external APIs — everything runs locally."
+            "<br><br>"
+            "<strong>Hardened for a public demo.</strong> Validated uploads with 10 MB / 30-page limits, at most two concurrent jobs, one document per hour per IP, hourly cleanup of uploads and results, a slim non-root Docker image and a CSP without inline JavaScript."
+            "<br><br>"
             "Results are produced as structured JSON suitable for downstream ingestion (data lakes, BI, search indexes). "
             "Repository is private — contact guch79@gmail.com for access and commercial options."
         ),
-        technologies=["Python", "Quart", "OCR", "Tesseract", "spaCy", "PDF processing", "NLP"],
+        technologies=["Python", "Quart", "OCR", "Tesseract", "Kraken (HTR)", "spaCy", "PDF processing", "NLP", "SSE"],
         live_url=cast(HttpUrl,"https://document-intelligence-pipeline-production.up.railway.app"),
         image="assets/images/projects/document-intelligence-pipeline.webp",
     ),
@@ -54,15 +60,16 @@ PROJECTS = [
         slug="apology-service",
         title="Apology-as-a-Service (MCP Server)",
         description=(
-            "Live MCP server that gives AI agents context-aware crisis communication over SSE, with an interactive demo and ready-to-use connection config."
+            "Public MCP server that gives AI agents context-aware crisis communication over Streamable HTTP (with SSE for older clients), plus an interactive demo and ready-to-use connection config."
             "<!--more-->"
             "Test it live right here with the 'Generate Live Apology' button, or "
             "<a href='/static/mcp-config.json' target='_blank' rel='noopener noreferrer' style='color:#f2849e;'>download the config</a> "
-            "to connect your own agent. Features multiple severity levels, styles (including Haiku), and SSE support."
+            "to connect your own agent to <code>/mcp</code>. Three tools: <code>generate_apology</code> (5 severity levels × 15 styles, from Haiku and Shakespearean to Gen Z, Viking and Soap Opera), "
+            "<code>escalation_ladder</code> (the same apology at every severity level) and <code>rate_my_apology</code> (scores sincerity, cringe and hedging 0–10 with a one-line verdict), plus a <code>save_my_ass</code> crisis prompt."
         ),
-        technologies=["Python", "MCP Protocol", "SSE", "Docker", "Async", "FastMCP"],
+        technologies=["Python", "MCP Protocol", "Streamable HTTP", "SSE", "FastMCP", "Docker"],
         repo_url=cast(HttpUrl, "https://github.com/Ajollyworld79/Apology-as-a-Service"),
-        live_url=cast(HttpUrl, "https://apology-as-a-service-production.up.railway.app/sse"),
+        live_url=cast(HttpUrl, "https://apology-as-a-service-production.up.railway.app/"),
         image="assets/images/projects/apology-service.svg",
     ),
     Project(
@@ -89,25 +96,45 @@ PROJECTS = [
             "<strong>The show is a fictional dual- or triple-host podcast.</strong> Every case is AI-invented — no real names, locations, or events — which eliminates defamation, YouTube-strike, and family-complaint risk. Two length profiles keep episodes tight: compact (6,500–7,500 words, about 40–47 minutes) and standard (8,000–9,500 words, about 50–60 minutes) of finished podcast audio rendered as YouTube video; listener calls and guest turns count against the same word budget. Earlier episodes ran longer, up to 75 minutes. <em>Dr. Christy Hart</em> (criminal psychologist) hosts every episode with a male co-host who strictly alternates from one episode to the next — <em>Jake Morgan</em> (investigative journalist) or <em>Marcus Reed</em> (retired LAPD homicide detective). The pick is pinned on the concept, so the persona named in the dialogue always matches the voice the TTS layer plays. "
             "On guest episodes a recurring specialist joins as a third host for the whole episode — a forensic pathologist, a private investigator, a retired crime reporter, a digital-forensics analyst, or a defense attorney — matched to the case type, with memory of their earlier cases so the hosts can refer back to them. Listener call-ins add new ground mid-episode."
             "<br><br>"
-            "<strong>Claude is not just the writer.</strong> Opus generates concepts and full multi-voice scripts across 14 case types (<code>MURDER_MYSTERY</code>, <code>COLD_CASE</code>, <code>SERIAL_KILLER</code>, <code>KIDNAPPING</code>, <code>CULT</code>, <code>WRONGFUL_CONVICTION</code>, <code>FINANCIAL_CRIME</code>, <code>HEIST</code>, <code>STALKER_TO_MURDER</code>, <code>CORPORATE_CONSPIRACY</code>, <code>FAMILY_MURDER</code>, …) and 6 structural variants (linear chronology, case-file walkthrough, retrospective, whodunit, reverse-chronology, parallel investigations) — both rotated least-recently-used to keep the catalog fresh. "
-            "A separate Sonnet pass is the <em>quality gate</em> (LLM-as-judge): it scores N parallel candidate concepts against a weighted rubric (hook 35%, retention 30%, etc.) — only the winner enters production, losers are logged for prompt-tuning. "
-            "Sonnet then plays <em>casting director</em>: it tunes Azure MultiTalker inference parameters (temperature/top_p/cfg_scale) per host to match the case's emotional register — measured clinical vs. urgent vs. retrospective. "
-            "Claude also authors every per-scene image prompt, gated through case-file atmosphere maps and safety clauses (no recognizable faces, no celebrities, documentary framing only) — fictional cases must never produce imagery that resembles real victims or perpetrators."
+            "<strong>GPT-6 writes, judges and casts.</strong> Azure OpenAI <em>GPT-6 Sol</em> (public OpenAI as fallback) generates concepts and full multi-voice scripts — act by act, at high reasoning effort — across 14 case types (<code>MURDER_MYSTERY</code>, <code>COLD_CASE</code>, <code>SERIAL_KILLER</code>, <code>KIDNAPPING</code>, <code>CULT</code>, <code>WRONGFUL_CONVICTION</code>, <code>FINANCIAL_CRIME</code>, <code>HEIST</code>, <code>STALKER_TO_MURDER</code>, <code>CORPORATE_CONSPIRACY</code>, <code>FAMILY_MURDER</code>, …) and 6 structural variants (linear chronology, case-file walkthrough, retrospective, whodunit, reverse-chronology, parallel investigations) — both rotated least-recently-used to keep the catalog fresh. "
+            "A separate Sol pass is the <em>quality gate</em> (LLM-as-judge): it scores three candidate concepts against a weighted rubric (hook 35%, retention 30%, twist 20%, visual 15%) — only the winner enters production, losers are logged for prompt-tuning. "
+            "Sol also plays <em>casting director</em> for everyone outside the studio — listener callers, 911 operators, news reporters, recordings — choosing from tiered Azure Dragon HD Omni and HD voices, while hosts and guests speak through Azure's multi-speaker Dragon HD MultiTalker model. "
+            "GPT-6 also authors every per-scene image prompt, gated through case-file atmosphere maps and safety clauses (no recognizable faces, no celebrities, documentary framing only) — fictional cases must never produce imagery that resembles real victims or perpetrators."
             "<br><br>"
-            "<strong>Image generation has a two-tier fallback.</strong> Primary path is Azure Flux 2 Pro; when Flux's content filter rejects a prompt (common on crime-scene imagery), the pipeline retries the original unmutated prompt via <em>Nano Banana</em> (Gemini 2.5 Flash Image through Fal.ai) which has a different filter profile — so a rejected scene still ships an image instead of falling back to a generic placeholder."
+            "<strong>Image generation has a fallback.</strong> Primary path is Azure OpenAI <em>GPT Image 2.5</em>. When Azure rejects a single prompt (common on crime-scene imagery), that one image is retried on the same model through fal.ai and the next image goes back to Azure; other Azure failures trigger a cooldown — so a rejected scene still ships an image instead of a generic placeholder."
             "<br><br>"
-            "<strong>Real-world signal in, abstracted prompt fuel out.</strong> A topical-signal miner pulls Google Trends + NewsAPI headlines from the true-crime space, then Claude distills them into structural <em>beat shapes</em> (e.g. \"DNA match decades later\", \"convicted-killer-dies cases reopen\") — never leaking real case names into the fictional show. Raw headlines stay in <code>raw_examples</code> for audit only. A title miner analyzes competitor channels for winning title structures, and a YouTube Analytics feedback loop produces weekly insights that feed back into concept generation."
+            "<strong>Real-world signal in, abstracted prompt fuel out.</strong> A topical-signal miner pulls Google Trends + NewsAPI headlines from the true-crime space, then GPT-6 distills them into structural <em>beat shapes</em> (e.g. \"DNA match decades later\", \"convicted-killer-dies cases reopen\") — never leaking real case names into the fictional show. Raw headlines stay in <code>raw_examples</code> for audit only. A title miner analyzes competitor channels for winning title structures, and a YouTube Analytics feedback loop produces weekly insights that feed back into concept generation."
             "<br><br>"
-            "<strong>13+ Postgres tables</strong> track everything: <code>stories</code>, <code>concept_candidates</code>, <code>cold_open_attempts</code>, <code>video_performance</code>, <code>weekly_insights</code>, <code>title_patterns</code>, <code>topical_signals</code>, <code>comment_interactions</code>, <code>schedule</code>, plus dedup history that prevents repeating case concepts or titles. "
-            "FFmpeg compiles 1080p video with <code>CASE FILE</code> / <code>COLD CASE</code> / <code>UNSOLVED</code> / <code>CASE CLOSED</code> thumbnail badges derived from the case's <code>resolution</code> field; YouTube Data API v3 handles uploads, Shorts trailers, and chapter markers. Runs hourly on Railway."
+            "<strong>13 Postgres tables</strong> track everything: <code>stories</code>, <code>concept_candidates</code>, <code>cold_open_attempts</code>, <code>video_performance</code>, <code>weekly_insights</code>, <code>title_patterns</code>, <code>topical_signals</code>, <code>comment_interactions</code>, <code>schedule</code>, plus dedup history that prevents repeating case concepts or titles. "
+            "FFmpeg renders 1440p video (2560×1440) with <code>CASE FILE</code> / <code>COLD CASE</code> / <code>UNSOLVED</code> / <code>CASE CLOSED</code> thumbnail badges derived from the case's <code>resolution</code> field; YouTube Data API v3 handles uploads, Shorts trailers, and chapter markers. The scheduler wakes up hourly on Railway; episodes release on a persisted, randomized 5–8 day schedule."
             "<br><br>"
-            "<strong>Claude also runs the comment section.</strong> A Haiku-powered community engagement loop scans every uploaded video on two passes — a fast pass over the newest 15 videos every cycle to catch fresh comments, and a deep pass that rotates through the full back catalog so a comment on video #200 still gets answered within a day or two. Haiku writes the actual replies using a rotation of tone presets and pulls the original case context from Postgres so replies stay on-topic. Questions that need real case knowledge escalate dynamically to Sonnet — model routing decided per comment. Daily YouTube API quota is tracked in DB and the loop self-throttles when it hits the limit."
+            "<strong>GPT-6 also runs the comment section.</strong> A community engagement loop scans every uploaded video on two passes — a fast pass over the newest 15 videos every cycle to catch fresh comments, and a deep pass that rotates through the full back catalog so a comment on video #200 still gets answered within a day or two. Sol writes the replies with a rotation of tone presets and pulls the original case context from Postgres so replies stay on-topic. Daily YouTube API quota is tracked in DB and the loop self-throttles when it hits the limit."
             "<br><br>"
             "<em>Repository is private — contact guch79@gmail.com for access or commercial options.</em>"
         ),
-        technologies=["Python", "Claude (Opus/Sonnet/Haiku)", "Anthropic SDK", "LLM-as-judge", "Azure Flux", "Nano Banana (Gemini Image)", "Azure MultiTalker TTS", "FFmpeg", "PostgreSQL", "YouTube API", "NewsAPI", "Railway"],
+        technologies=["Python", "Azure OpenAI (GPT-6 Sol/Luna)", "OpenAI API", "LLM-as-judge", "GPT Image 2.5", "fal.ai", "Azure Speech (Dragon HD)", "FFmpeg", "PostgreSQL", "YouTube API", "NewsAPI", "Railway"],
         live_url=cast(HttpUrl, "https://www.youtube.com/@The_Cold_File"),
         image="assets/images/projects/the-cold-file.jpg",
+    ),
+
+    Project(
+        slug="ai-trader",
+        title="AI-Trader — Security-First Trading Platform for Saxo",
+        description=(
+            "Trading platform in Python where deterministic market analysis and risk management decide everything that touches money — AI may only classify. <strong>Not tested yet:</strong> it runs in paper/Saxo SIM mode by default and has not traded real money."
+            "<!--more-->"
+            "<strong>AI can never size a trade.</strong> Position size, stop loss, take profit, exposure and order approval are computed in Python. AI (GPT-5.4 Mini on Azure OpenAI with OpenAI as fallback, escalating to GPT-5.4 only when uncertain and for at most 5% of calls) only classifies, and a missing provider fails closed to <code>hold</code>. Every provider attempt is logged with model, tokens, latency and price."
+            "<br><br>"
+            "<strong>Risk engine.</strong> 0.5% risk per trade, at most 10 positions, 20% sector exposure, 2% daily loss and 10% drawdown limits; long-only, no leverage, with spread, earnings and data-quality checks. A deterministic market-regime classifier on Saxo benchmark data rejects new longs in bearish or extremely volatile markets before AI is consulted."
+            "<br><br>"
+            "<strong>Safe order flow.</strong> An order accepts only a fresh, stored buy signal that can be used once; prices, account value, exposure, stop, target and quantity are fetched or computed server-side, and Saxo's pre-check runs before an entry with broker-native related stop/take-profit orders. Order POSTs are never retried automatically, positions are reconciled with a high-watermark trailing stop, and Saxo OAuth tokens are stored encrypted and rotated behind a database lease."
+            "<br><br>"
+            "<strong>Research and operations.</strong> Deterministic indicators (EMA, SMA, RSI, ATR, MACD, ADX, Bollinger Bands, volume profile, …), an event-driven backtester with commission, spread, slippage, dividends, splits and walk-forward windows, Alpha Vantage news sentiment and earnings calendar treated as untrusted input, and separate worker roles on Railway. Quality gates: pytest with at least 80% coverage, ruff, black, mypy, bandit and pip-audit. LIVE trading is off by default and needs the kill switch released plus a separate confirmation token."
+            "<br><br>"
+            "<em>Work in progress and not financial advice — not yet tested against a live account.</em>"
+        ),
+        technologies=["Python", "FastAPI", "PostgreSQL", "SQLAlchemy", "Alembic", "Saxo OpenAPI", "Azure OpenAI", "Alpha Vantage", "Railway"],
+        repo_url=cast(HttpUrl, "https://github.com/Ajollyworld79/AI-Trader"),
     ),
 
 ]
@@ -118,6 +145,7 @@ _ORDER = [
     "llm-assistant",
     "document-intelligence-pipeline",
     "apology-service",
+    "ai-trader",
     "data-pipeline",
     "personal-project",
 ]

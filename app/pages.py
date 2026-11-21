@@ -5,7 +5,7 @@ from quart import Blueprint, Response, redirect
 
 from app.config import get_settings
 from app.data import PROJECTS
-from app.frontend import cv_content, render_page
+from app.frontend import PAGE_PATHS, base_url, cv_content, page_url, render_page
 from app.pdf_cv import generate_cv_pdf
 
 bp = Blueprint("pages", __name__)
@@ -46,6 +46,20 @@ async def projects():
             "RAG support, document intelligence, MCP, and data pipelines."
         ),
     )
+
+
+@bp.get("/robots.txt")
+async def robots():
+    body = f"User-agent: *\nAllow: /\nSitemap: {base_url()}/sitemap.xml\n"
+    return Response(body, mimetype="text/plain")
+
+
+@bp.get("/sitemap.xml")
+async def sitemap():
+    urls = "".join(f"  <url><loc>{page_url(page)}</loc></url>\n" for page in PAGE_PATHS)
+    body = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
+    return Response(body, mimetype="application/xml")
 
 
 @bp.get("/download_cv")

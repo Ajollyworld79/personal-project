@@ -50,7 +50,7 @@ Visit http://127.0.0.1:8000, not the Vite URL. API calls remain on the same orig
 | app/data.py | Ordered project descriptions, technologies and links |
 | app/frontend.py | Vite manifest, prerendered HTML and matching bootstrap data |
 | app/app.py | Quart app, security headers and blueprint registration |
-| app/pages.py | Page routes, PDF download and icon paths |
+| app/pages.py | Page routes, PDF download, icon paths, robots.txt and sitemap.xml |
 | app/chat.py | CV chat proxy to llm-assistant, per-IP rate limit, 2000-character question limit and fallback answers from cv.json and data.py |
 | app/live.py | Service checks, YouTube RSS, GitHub activity and the apology demo |
 | app/cache.py, app/client.py | Single-flight TTL cache and the shared outbound HTTP client |

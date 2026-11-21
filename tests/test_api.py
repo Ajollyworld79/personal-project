@@ -126,16 +126,19 @@ async def test_stream_falls_back_when_backend_is_down(http):
 
 # --- Status board -------------------------------------------------------------------
 
+COLD = live.CHANNELS["cold-file"]
+
+
 def route_health(http, status=200):
     for svc in live._STATUS_SERVICES:
-        if svc["check"]:
+        if svc.get("check"):
             http.respond(svc["check"], status=status)
 
 
 @pytest.mark.parametrize("days_ago,status", [(3, "up"), (20, "idle")])
 async def test_status_derives_cold_file_health_from_last_upload(http, days_ago, status):
     route_health(http)
-    http.respond(live._COLDFILE_FEED, text=rss(datetime.now(timezone.utc) - timedelta(days=days_ago, hours=1)))
+    http.respond(COLD.feed_url, text=rss(datetime.now(timezone.utc) - timedelta(days=days_ago, hours=1)))
     data = await (await app.test_client().get("/api/status")).get_json()
     services = {s["id"]: s for s in data["services"]}
     assert services["cold-file"]["status"] == status
@@ -155,28 +158,29 @@ async def test_concurrent_status_requests_probe_each_service_once(http):
     route_health(http)
     test_client = app.test_client()
     await asyncio.gather(*[test_client.get("/api/status") for _ in range(5)])
-    probes = [url for _, url, _ in http.calls if url != live._COLDFILE_FEED]
-    assert sorted(probes) == sorted(s["check"] for s in live._STATUS_SERVICES if s["check"])
+    probes = [url for _, url, _ in http.calls if url != COLD.feed_url]
+    assert sorted(probes) == sorted(s["check"] for s in live._STATUS_SERVICES if s.get("check"))
 
 
 # --- The Cold File feed ---------------------------------------------------------------
 
-async def test_coldfile_serves_last_good_copy_when_feed_breaks(monkeypatch, http):
-    monkeypatch.setattr(live, "_coldfile_cache", TTLCache(0))  # every request refetches
+async def test_channel_serves_last_good_copy_when_feed_breaks(monkeypatch, http):
+    monkeypatch.setattr(COLD, "feed_cache", TTLCache(0))  # every request refetches
     now = datetime.now(timezone.utc)
-    http.respond(live._COLDFILE_FEED, text=rss(now, now - timedelta(days=7)))
-    first = await (await app.test_client().get("/api/coldfile")).get_json()
-    assert first["episode_count"] == 2 and first["latest"]["video_id"] == "vid00000000"
+    http.respond(COLD.feed_url, text=rss(now, now - timedelta(days=7)))
+    first = await (await app.test_client().get("/api/channel/cold-file")).get_json()
+    assert first["upload_count"] == 2 and first["latest"]["video_id"] == "vid00000000"
 
-    http.respond(live._COLDFILE_FEED, text="<feed>not closed")
-    stale = await app.test_client().get("/api/coldfile")
+    http.respond(COLD.feed_url, text="<feed>not closed")
+    stale = await app.test_client().get("/api/channel/cold-file")
     assert stale.status_code == 200
     assert await stale.get_json() == first
 
 
-async def test_coldfile_without_any_data_is_503(http):
-    http.respond(live._COLDFILE_FEED, text=rss())
-    assert (await app.test_client().get("/api/coldfile")).status_code == 503
+async def test_channel_without_any_data_is_503_and_unknown_channel_is_404(http):
+    http.respond(COLD.feed_url, text=rss())
+    assert (await app.test_client().get("/api/channel/cold-file")).status_code == 503
+    assert (await app.test_client().get("/api/channel/nope")).status_code == 404
 
 
 def uploads_page(count_label: str, *durations: str) -> str:
@@ -190,23 +194,23 @@ def uploads_page(count_label: str, *durations: str) -> str:
     return f"<script>var ytInitialData = {json.dumps(data)};</script>"
 
 
-async def test_coldfile_reports_the_real_episode_count_and_runtime(http):
+async def test_channel_reports_the_real_upload_count_and_runtime(http):
     now = datetime.now(timezone.utc)
-    http.respond(live._COLDFILE_FEED, text=rss(*[now - timedelta(days=i) for i in range(15)]))
-    http.respond(live._UPLOADS_PAGE, text=uploads_page("1,029 videos", "38:17", "1:14:37", "45:29"))
-    data = await (await app.test_client().get("/api/coldfile")).get_json()
-    assert data["episode_count"] == 1029 and data["episode_count_exact"] is True
+    http.respond(COLD.feed_url, text=rss(*[now - timedelta(days=i) for i in range(15)]))
+    http.respond(COLD.uploads_url, text=uploads_page("1,029 videos", "38:17", "1:14:37", "45:29"))
+    data = await (await app.test_client().get("/api/channel/cold-file")).get_json()
+    assert data["upload_count"] == 1029 and data["upload_count_exact"] is True
     assert data["runtime_minutes"] == [38, 75]
 
 
 @pytest.mark.parametrize("page", [None, "<html>consent wall</html>", uploads_page("no videos")])
-async def test_coldfile_falls_back_to_rss_count_when_uploads_page_fails(http, page):
+async def test_channel_falls_back_to_rss_count_when_uploads_page_fails(http, page):
     now = datetime.now(timezone.utc)
-    http.respond(live._COLDFILE_FEED, text=rss(*[now - timedelta(days=i) for i in range(15)]))
+    http.respond(COLD.feed_url, text=rss(*[now - timedelta(days=i) for i in range(15)]))
     if page is not None:
-        http.respond(live._UPLOADS_PAGE, text=page)
-    data = await (await app.test_client().get("/api/coldfile")).get_json()
-    assert data["episode_count"] == 15 and data["episode_count_exact"] is False
+        http.respond(COLD.uploads_url, text=page)
+    data = await (await app.test_client().get("/api/channel/cold-file")).get_json()
+    assert data["upload_count"] == 15 and data["upload_count_exact"] is False
     assert data["runtime_minutes"] is None
 
 

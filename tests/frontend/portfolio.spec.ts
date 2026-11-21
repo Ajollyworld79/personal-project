@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
 async function mockLive(page: Page): Promise<void> {
-  await page.route('**/api/coldfile', route => route.fulfill({ json: { episode_count: 15, latest: { video_id: 'dQw4w9WgXcQ', title: 'The mystery of the northern lights', published: '2026-09-10T12:00:00Z' } } }));
+  await page.route('**/api/channel/cold-file', route => route.fulfill({ json: { upload_count: 15, latest: { video_id: 'dQw4w9WgXcQ', title: 'The mystery of the northern lights', published: '2026-09-10T12:00:00Z' } } }));
   await page.route('**/api/status', route => route.fulfill({ json: { checked_at: '2026-09-11T12:00:00Z', services: [{ id: 'site', name: 'gustavchristensen.dev', desc: 'Portfolio', url: 'https://gustavchristensen.dev', status: 'up', latency_ms: 12 }] } }));
   await page.route('**/api/github-activity', route => route.fulfill({ json: { username: 'Ajollyworld79', total: 693, weeks: Array.from({ length: 53 }, (_, index) => ({ contributionDays: index === 0 ? [{ date: '2026-09-10', contributionCount: 3, weekday: 4 }] : [] })) } }));
   await page.route('https://www.youtube-nocookie.com/**', route => route.fulfill({ contentType: 'text/html', body: '<p>Mock video</p>' }));
@@ -32,7 +32,7 @@ test('prerendered content and navigation work without JavaScript', async ({ brow
   const page = await context.newPage();
   await page.goto('http://127.0.0.1:8010/projects');
   await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible();
-  await expect(page.locator('.project-card')).toHaveCount(6);
+  await expect(page.locator('.project-card')).toHaveCount(7);
   await page.getByRole('link', { name: 'About', exact: true }).click();
   await expect(page.getByRole('heading', { name: /Experience/ })).toBeVisible();
   await context.close();

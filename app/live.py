@@ -21,9 +21,11 @@ bp = Blueprint("live", __name__)
 async def get_apology():
     """Fetch a live apology from the MCP server with robust parsing and fallbacks."""
     severity = random.choice(["TRIVIAL", "MINOR", "MAJOR", "CRITICAL", "NUCLEAR"])
+    # Every style the server's Style enum accepts (unknown values silently become CASUAL).
     style = random.choice([
         "PROFESSIONAL", "CASUAL", "POETIC", "GROVELING", "HAIKU",
         "LEGAL_DISCLAIMER", "CORPORATE_DOUBLESPEAK", "SHAKESPEAREAN", "PIRATE",
+        "PASSIVE_AGGRESSIVE", "GEN_Z", "VIKING", "ROBOT", "EXISTENTIAL", "SOAP_OPERA",
     ])
     context = "the live demo button"
 
@@ -82,179 +84,24 @@ async def get_apology():
         return jsonify({"error": "Apology service unavailable"}), 500
 
 
-# --- Production status board -------------------------------------------------
-# Pings the live Railway deployments in parallel and caches for 60s so a page
-# load never fans out more than once a minute.
-_status_cache: TTLCache[dict] = TTLCache(60)
-
-_STATUS_SERVICES = [
-    {
-        "id": "portfolio",
-        "name": "gustavchristensen.dev",
-        "desc": "this site — async Quart + RAG chat proxy",
-        "kind": "web",
-        "url": "https://gustavchristensen.dev/",
-        "check": "https://gustavchristensen.dev/",
-    },
-    {
-        "id": "llm-assistant",
-        "name": "llm-assistant",
-        "desc": "RAG backend — answers the CV chat on this page",
-        "kind": "web",
-        "url": "https://llm-assistant-production-aa36.up.railway.app/",
-        "check": "https://llm-assistant-production-aa36.up.railway.app/health",
-    },
-    {
-        "id": "doc-intel",
-        "name": "document-intelligence",
-        "desc": "OCR + structured document extraction demo",
-        "kind": "web",
-        "url": "https://document-intelligence-pipeline-production.up.railway.app/",
-        "check": "https://document-intelligence-pipeline-production.up.railway.app/health",
-    },
-    {
-        "id": "apology",
-        "name": "apology-as-a-service",
-        "desc": "live MCP server (SSE) for AI agents",
-        "kind": "mcp",
-        "url": "https://github.com/Ajollyworld79/Apology-as-a-Service",
-        "check": "https://apology-as-a-service-production.up.railway.app/health",
-    },
-    {
-        "id": "cold-file",
-        "name": "the-cold-file",
-        "desc": "autonomous podcast pipeline — hourly on Railway",
-        "kind": "pipeline",
-        "url": "https://www.youtube.com/@The_Cold_File",
-        "check": None,  # status derived from latest YouTube upload instead
-    },
-]
-
-
-async def _probe_service(http: aiohttp.ClientSession, svc: dict, timeout: aiohttp.ClientTimeout) -> dict:
-    result = {
-        "id": svc["id"],
-        "name": svc["name"],
-        "desc": svc["desc"],
-        "kind": svc["kind"],
-        "url": svc["url"],
-        "status": "down",
-        "latency_ms": None,
-    }
-    if not svc.get("check"):
-        return result
-    t0 = time.perf_counter()
-    try:
-        async with http.get(svc["check"], headers={"User-Agent": "portfolio-status"}, timeout=timeout) as resp:
-            result["latency_ms"] = int((time.perf_counter() - t0) * 1000)
-            result["status"] = "up" if resp.status < 500 else "down"
-    except Exception:
-        result["latency_ms"] = None
-        result["status"] = "down"
-    return result
-
-
-async def _check_services() -> dict:
-    http = client.session()
-    timeout = aiohttp.ClientTimeout(total=6.0)
-    services = list(await asyncio.gather(
-        *[_probe_service(http, svc, timeout) for svc in _STATUS_SERVICES]
-    ))
-
-    # The Cold File is a scheduled pipeline, not an HTTP service — it is "up"
-    # if the channel got a new autonomous upload within the weekly cadence (+ slack).
-    try:
-        cold = await _get_coldfile_data()
-        latest = (cold or {}).get("latest")
-        for svc in services:
-            if svc["id"] == "cold-file" and latest:
-                published = datetime.fromisoformat(latest["published"])
-                age_days = (datetime.now(timezone.utc) - published).days
-                svc["status"] = "up" if age_days <= 9 else "idle"
-                svc["detail"] = f"last episode {age_days}d ago"
-    except Exception:
-        current_app.logger.exception("status: cold-file check failed")
-
-    return {
-        "services": services,
-        "checked_at": datetime.now(timezone.utc).isoformat(),
-    }
-
-
-@bp.get("/api/status")
-async def production_status():
-    """Live health of every production deployment, checked in parallel."""
-    return jsonify(await _status_cache.get(_check_services))
-
-
-# --- The Cold File — live channel data (YouTube RSS, no API key needed) -------
-_coldfile_cache: TTLCache[dict] = TTLCache(1800)  # 30 min
-_COLDFILE_CHANNEL_ID = os.getenv("COLDFILE_CHANNEL_ID", "UCN8k1J6MXu-ucl6anByx_oQ")
-_COLDFILE_FEED = f"https://www.youtube.com/feeds/videos.xml?channel_id={_COLDFILE_CHANNEL_ID}"
+# --- YouTube channels run by autonomous pipelines (no API key needed) ----------
 _ATOM_NS = {
     "a": "http://www.w3.org/2005/Atom",
     "yt": "http://www.youtube.com/xml/schemas/2015",
     "media": "http://search.yahoo.com/mrss/",
 }
-
-
-async def _fetch_coldfile() -> dict | None:
-    try:
-        async with client.session().get(_COLDFILE_FEED) as resp:
-            if resp.status != 200:
-                return None
-            xml_body = await resp.text()
-    except Exception:
-        current_app.logger.exception("coldfile: RSS fetch failed")
-        return None
-
-    try:
-        root = ET.fromstring(xml_body)
-        episodes = []
-        for entry in root.findall("a:entry", _ATOM_NS):
-            vid = entry.find("yt:videoId", _ATOM_NS)
-            title = entry.find("a:title", _ATOM_NS)
-            published = entry.find("a:published", _ATOM_NS)
-            if vid is None or title is None or published is None:
-                continue
-            episodes.append({
-                "video_id": vid.text,
-                "title": title.text,
-                "published": published.text,
-                "thumbnail": f"https://i.ytimg.com/vi/{vid.text}/hqdefault.jpg",
-            })
-        if not episodes:
-            return None
-        return {
-            "channel_url": "https://www.youtube.com/@The_Cold_File",
-            # RSS caps at 15 entries; the uploads playlist below supplies the real count.
-            "episode_count": len(episodes),
-            "latest": episodes[0],
-            "episodes": episodes[:3],
-        }
-    except Exception:
-        current_app.logger.exception("coldfile: RSS parse failed")
-        return None
-
-
-async def _get_coldfile_data() -> dict | None:
-    """Fresh channel data, else the last good copy, else None."""
-    return await _coldfile_cache.get(_fetch_coldfile) or _coldfile_cache.value
-
-
-# The real episode count and runtimes come from the channel's long-form uploads
-# playlist (UULF…, Shorts excluded), recounted every 6 hours. YouTube offers no
-# key-free API for this, so the page's embedded ytInitialData is parsed; when
-# that fails the section falls back to the RSS count ("15+").
-_stats_cache: TTLCache[dict] = TTLCache(6 * 3600)
-_UPLOADS_PAGE = f"https://www.youtube.com/playlist?list=UULF{_COLDFILE_CHANNEL_ID[2:]}"
 _INITIAL_DATA = re.compile(r"var ytInitialData = (\{.*?\});</script>", re.S)
 _VIDEO_COUNT = re.compile(r"^(\d[\d,]*) videos?$")
 _DURATION = re.compile(r"^(?:(\d+):)?(\d{1,2}):(\d{2})$")
+_BROWSER_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Cookie": "SOCS=CAI",  # skips the EU consent interstitial
+}
 
 
 def _parse_uploads_page(html: str) -> dict | None:
-    """{"episode_count", "runtime_minutes": [shortest, longest] | None} or None if the count is missing."""
+    """{"upload_count", "runtime_minutes": [shortest, longest] | None} or None if the count is missing."""
     match = _INITIAL_DATA.search(html)
     if not match:
         return None
@@ -289,40 +136,215 @@ def _parse_uploads_page(html: str) -> dict | None:
     if count is None:
         return None
     runtime = [min(seconds) // 60, -(-max(seconds) // 60)] if seconds else None
-    return {"episode_count": count, "runtime_minutes": runtime}
+    return {"upload_count": count, "runtime_minutes": runtime}
 
 
-async def _fetch_channel_stats() -> dict | None:
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Cookie": "SOCS=CAI",  # skips the EU consent interstitial
-    }
-    try:
-        async with client.session().get(_UPLOADS_PAGE, headers=headers) as resp:
-            if resp.status != 200:
-                current_app.logger.warning("coldfile: uploads page returned %s", resp.status)
-                return None
-            html = await resp.text()
-        stats = _parse_uploads_page(html)
-    except Exception:
-        current_app.logger.exception("coldfile: uploads page failed")
-        return None
-    if stats is None:
-        current_app.logger.warning("coldfile: uploads page had no video count")
-    return stats
+class Channel:
+    """A YouTube channel published by one of the pipelines.
+
+    Latest uploads come from the RSS feed (capped at 15 entries, refreshed every
+    30 min). The real upload count and runtimes come from the long-form uploads
+    playlist (UULF…, Shorts excluded), recounted every 6 hours; YouTube offers
+    no key-free API for this, so the page's embedded ytInitialData is parsed and
+    the feed count is the fallback.
+    """
+
+    def __init__(self, slug: str, handle: str, channel_id: str, noun: str, max_age_days: int) -> None:
+        self.slug = slug
+        self.url = f"https://www.youtube.com/@{handle}"
+        self.feed_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
+        self.uploads_url = f"https://www.youtube.com/playlist?list=UULF{channel_id[2:]}"
+        self.noun = noun
+        # The pipeline counts as running while uploads keep within its cadence (+ slack).
+        self.max_age_days = max_age_days
+        self.feed_cache: TTLCache[dict] = TTLCache(1800)
+        self.stats_cache: TTLCache[dict] = TTLCache(6 * 3600)
+
+    async def feed(self) -> dict | None:
+        """Fresh feed data, else the last good copy, else None."""
+        return await self.feed_cache.get(self._fetch_feed) or self.feed_cache.value
+
+    async def payload(self) -> dict | None:
+        feed = await self.feed()
+        if not feed:
+            return None
+        stats = await self.stats_cache.get(self._fetch_stats) or self.stats_cache.value
+        if stats:
+            return {**feed, **stats, "upload_count_exact": True}
+        return {**feed, "upload_count_exact": False, "runtime_minutes": None}
+
+    async def _fetch_feed(self) -> dict | None:
+        log = current_app.logger
+        try:
+            async with client.session().get(self.feed_url) as resp:
+                if resp.status != 200:
+                    return None
+                xml_body = await resp.text()
+        except Exception:
+            log.exception("%s: RSS fetch failed", self.slug)
+            return None
+        try:
+            uploads = []
+            for entry in ET.fromstring(xml_body).findall("a:entry", _ATOM_NS):
+                vid = entry.find("yt:videoId", _ATOM_NS)
+                title = entry.find("a:title", _ATOM_NS)
+                published = entry.find("a:published", _ATOM_NS)
+                if vid is None or title is None or published is None:
+                    continue
+                uploads.append({
+                    "video_id": vid.text,
+                    "title": title.text,
+                    "published": published.text,
+                    "thumbnail": f"https://i.ytimg.com/vi/{vid.text}/hqdefault.jpg",
+                })
+        except Exception:
+            log.exception("%s: RSS parse failed", self.slug)
+            return None
+        if not uploads:
+            return None
+        return {
+            "channel_url": self.url,
+            "upload_count": len(uploads),
+            "latest": uploads[0],
+            "uploads": uploads[:3],
+        }
+
+    async def _fetch_stats(self) -> dict | None:
+        log = current_app.logger
+        try:
+            async with client.session().get(self.uploads_url, headers=_BROWSER_HEADERS) as resp:
+                if resp.status != 200:
+                    log.warning("%s: uploads page returned %s", self.slug, resp.status)
+                    return None
+                html = await resp.text()
+            stats = _parse_uploads_page(html)
+        except Exception:
+            log.exception("%s: uploads page failed", self.slug)
+            return None
+        if stats is None:
+            log.warning("%s: uploads page had no video count", self.slug)
+        return stats
 
 
-@bp.get("/api/coldfile")
-async def coldfile():
-    """Live data for The Cold File section — latest autonomous episodes."""
-    data = await _get_coldfile_data()
+CHANNELS = {channel.slug: channel for channel in [
+    # Releases every 5–8 days.
+    Channel("cold-file", "The_Cold_File", os.getenv("COLDFILE_CHANNEL_ID", "UCN8k1J6MXu-ucl6anByx_oQ"),
+            noun="episode", max_age_days=9),
+]}
+
+
+@bp.get("/api/channel/<slug>")
+async def channel(slug: str):
+    """Live data for a pipeline's YouTube channel: latest uploads, real count, runtimes."""
+    chan = CHANNELS.get(slug)
+    if chan is None:
+        return jsonify({"error": "unknown channel"}), 404
+    data = await chan.payload()
     if not data:
         return jsonify({"error": "channel data unavailable"}), 503
-    stats = await _stats_cache.get(_fetch_channel_stats) or _stats_cache.value
-    if stats:
-        return jsonify({**data, **stats, "episode_count_exact": True})
-    return jsonify({**data, "episode_count_exact": False, "runtime_minutes": None})
+    return jsonify(data)
+
+
+# --- Production status board -------------------------------------------------
+# Pings the live Railway deployments in parallel and caches for 60s so a page
+# load never fans out more than once a minute.
+_status_cache: TTLCache[dict] = TTLCache(60)
+
+_STATUS_SERVICES = [
+    {
+        "id": "portfolio",
+        "name": "gustavchristensen.dev",
+        "desc": "this site — async Quart + RAG chat proxy",
+        "kind": "web",
+        "url": "https://gustavchristensen.dev/",
+        "check": "https://gustavchristensen.dev/",
+    },
+    {
+        "id": "llm-assistant",
+        "name": "llm-assistant",
+        "desc": "RAG backend — answers the CV chat on this page",
+        "kind": "web",
+        "url": "https://llm-assistant-production-aa36.up.railway.app/",
+        "check": "https://llm-assistant-production-aa36.up.railway.app/health",
+    },
+    {
+        "id": "doc-intel",
+        "name": "document-intelligence",
+        "desc": "OCR + structured document extraction demo",
+        "kind": "web",
+        "url": "https://document-intelligence-pipeline-production.up.railway.app/",
+        "check": "https://document-intelligence-pipeline-production.up.railway.app/health",
+    },
+    {
+        "id": "apology",
+        "name": "apology-as-a-service",
+        "desc": "public MCP server (Streamable HTTP + SSE) for AI agents",
+        "kind": "mcp",
+        "url": "https://github.com/Ajollyworld79/Apology-as-a-Service",
+        "check": "https://apology-as-a-service-production.up.railway.app/health",
+    },
+    # A scheduled pipeline, not an HTTP service: status comes from the latest upload.
+    {
+        "id": "cold-file",
+        "name": "the-cold-file",
+        "desc": "autonomous true-crime podcast pipeline on Railway",
+        "kind": "pipeline",
+        "url": CHANNELS["cold-file"].url,
+        "channel": "cold-file",
+    },
+]
+
+
+async def _probe_service(http: aiohttp.ClientSession, svc: dict, timeout: aiohttp.ClientTimeout) -> dict:
+    result = {
+        "id": svc["id"],
+        "name": svc["name"],
+        "desc": svc["desc"],
+        "kind": svc["kind"],
+        "url": svc["url"],
+        "status": "down",
+        "latency_ms": None,
+    }
+    if svc.get("channel"):
+        return await _pipeline_status(result, CHANNELS[svc["channel"]])
+    t0 = time.perf_counter()
+    try:
+        async with http.get(svc["check"], headers={"User-Agent": "portfolio-status"}, timeout=timeout) as resp:
+            result["latency_ms"] = int((time.perf_counter() - t0) * 1000)
+            result["status"] = "up" if resp.status < 500 else "down"
+    except Exception:
+        result["latency_ms"] = None
+        result["status"] = "down"
+    return result
+
+
+async def _pipeline_status(result: dict, chan: Channel) -> dict:
+    """Up while uploads keep within the pipeline's cadence, idle after that."""
+    try:
+        latest = ((await chan.feed()) or {}).get("latest")
+        if latest:
+            age_days = (datetime.now(timezone.utc) - datetime.fromisoformat(latest["published"])).days
+            result["status"] = "up" if age_days <= chan.max_age_days else "idle"
+            result["detail"] = f"last {chan.noun} {age_days}d ago"
+    except Exception:
+        current_app.logger.exception("status: %s check failed", chan.slug)
+    return result
+
+
+async def _check_services() -> dict:
+    http = client.session()
+    timeout = aiohttp.ClientTimeout(total=6.0)
+    services = await asyncio.gather(*[_probe_service(http, svc, timeout) for svc in _STATUS_SERVICES])
+    return {
+        "services": list(services),
+        "checked_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@bp.get("/api/status")
+async def production_status():
+    """Live health of every production deployment, checked in parallel."""
+    return jsonify(await _status_cache.get(_check_services))
 
 
 # --- GitHub activity (contribution heatmap) ---

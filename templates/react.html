@@ -10,6 +10,8 @@
   <meta property="og:title" content="{{ title }}">
   <meta property="og:description" content="{{ meta_description }}">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ canonical }}">
+  <link rel="canonical" href="{{ canonical }}">
   <meta property="og:image" content="{{ url_for('static', filename='assets/images/me.jpg', _external=True) }}">
   <meta property="og:image:alt" content="Gustav Wind Christensen">
   <meta name="twitter:card" content="summary_large_image">
@@ -33,6 +35,7 @@
 <body>
   <div id="root" data-page="{{ page }}" data-prerendered="{{ 'true' if prerendered else 'false' }}">{{ prerendered|safe }}</div>
   <script id="site-content" type="application/json">{{ content|tojson }}</script>
+  <script type="application/ld+json">{{ json_ld|tojson }}</script>
   <script type="module" src="{{ entry }}"></script>
   <noscript><p>Interactive demos require JavaScript. You can read the pages and <a href="/download_cv">download the CV</a> without it.</p></noscript>
 </body>
