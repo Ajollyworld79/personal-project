@@ -18,10 +18,9 @@ PROJECTS = [
             "<strong>Operations console at <code>/backend</code>.</strong> The public view shows model configuration sanitized through an allowlist so no key can leak, plus live usage metrics and rate-limit/budget status. Per-call token accounting (including cached tokens and fallback use) feeds a timeseries of requests, tokens, cache-hit ratio and fallback rate, and a searchable conversation log records embed/AI/total latency per exchange in Postgres. Documents, conversation history and every mutation require an operator token and fail closed; a demo-lock flag can additionally block all mutations."
             "<br><br>"
             "<strong>Security.</strong> The chat page authenticates with a signed HttpOnly, SameSite=Strict session cookie, so no token ever reaches the browser; server-to-server callers, like the CV chat on this site, use a separate least-privilege search token. Strict CSP with no inline JavaScript, self-hosted fonts and sanitized upload filenames."
-            "<br><br>"
-            "<em>Repository is private — contact guch79@gmail.com for access or commercial options.</em>"
         ),
         technologies=["Python", "Quart", "Gemini 3.6 Flash", "google-genai", "Qdrant", "Gemini embeddings", "fastembed (ONNX)", "RAG", "PostgreSQL", "Railway"],
+        repo_url=cast(HttpUrl, "https://github.com/Ajollyworld79/llm-assistant"),
         live_url=cast(HttpUrl, "https://llm-assistant-production-aa36.up.railway.app/"),
         image="assets/images/projects/llm-assistant.webp",
     ),
