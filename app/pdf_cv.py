@@ -11,7 +11,7 @@ import html as html_lib
 import io
 import os
 import re
-from typing import Optional, cast
+from typing import cast
 
 from fpdf import FPDF
 

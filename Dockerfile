@@ -1,6 +1,7 @@
 FROM python:3.14-slim AS content
 WORKDIR /build
-RUN pip install --no-cache-dir 'pydantic>=2.9.2'
+COPY requirements.txt .
+RUN pip install --no-cache-dir "$(grep '^pydantic==' requirements.txt)"
 COPY app/ app/
 COPY content/ content/
 COPY scripts/export_content.py scripts/export_content.py
@@ -19,9 +20,6 @@ RUN CONTENT_FILE=/build/public-content.json npm run build
 FROM python:3.14-slim
 
 WORKDIR /app
-
-# Install system dependencies (needed for FPDF sometimes, though usually pure python)
-# RUN apt-get update && apt-get install -y build-essential
 
 # Copy requirements and install dependencies
 COPY requirements.txt .

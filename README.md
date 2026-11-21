@@ -46,10 +46,14 @@ Visit http://127.0.0.1:8000, not the Vite URL. API calls remain on the same orig
 | static/assets/css/site.css, portfolio.css | Original production stylesheets, retained for visual fidelity |
 | frontend/styles.css | Interaction adapters, video dialog and keyboard support |
 | frontend/original-navigation.css, original-projects.css | Original template styles; project rules retain their page-only scope and specificity |
-| content/cv.json | Shared source for the about page and PDF CV |
+| content/cv.json | Shared source for the about page, PDF CV and the chat's fallback answers |
 | app/data.py | Ordered project descriptions, technologies and links |
 | app/frontend.py | Vite manifest, prerendered HTML and matching bootstrap data |
-| app/app.py | Existing APIs, service checks, YouTube RSS and GitHub activity |
+| app/app.py | Quart app, security headers and blueprint registration |
+| app/pages.py | Page routes, PDF download and icon paths |
+| app/chat.py | CV chat proxy to llm-assistant, per-IP rate limit, 2000-character question limit and fallback answers from cv.json and data.py |
+| app/live.py | Service checks, YouTube RSS, GitHub activity and the apology demo |
+| app/cache.py, app/client.py | Single-flight TTL cache and the shared outbound HTTP client |
 | app/pdf_cv.py | PDF renderer using structured CV content |
 | scripts/ | Content export and React prerender build |
 | static/fonts/ | TTF fonts for the PDF; the website self-hosts the same Inter and JetBrains Mono weights via @fontsource |
@@ -68,7 +72,7 @@ npx playwright install chromium
 npm test
 ```
 
-On a Mac with Chrome installed, use PLAYWRIGHT_CHANNEL=chrome npm test. Browser tests start a server on port 8010 and mock external APIs/YouTube. They cover four screen widths, hydration, no-JavaScript content, dialogs, streaming chat, rate limits, safe markdown, the actual GitHub calendar response format and offline states. Backend tests cover routes, assets, PDF generation and the opt-in public GitHub preview. Screenshots and failed traces are written to ignored test-results/.
+On a Mac with Chrome installed, use PLAYWRIGHT_CHANNEL=chrome npm test. Browser tests start a server on port 8010 and mock external APIs/YouTube. They cover four screen widths, hydration, no-JavaScript content, dialogs, streaming chat, rate limits, safe markdown, the actual GitHub calendar response format and offline states. Backend tests cover routes, assets, PDF generation, icons, the opt-in public GitHub preview, and the APIs against a fake outbound HTTP client (tests/conftest.py): chat rate limit and question length, RAG-to-fallback decisions, SSE event order, status checks, single-flight caching, and stale data from RSS and GitHub. Screenshots and failed traces are written to ignored test-results/.
 
 For a local preview without a GitHub token, start the server with:
 

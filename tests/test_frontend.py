@@ -1,5 +1,4 @@
 import json
-import importlib
 from pathlib import Path
 import pytest
 from app.app import app
@@ -8,33 +7,19 @@ from app.frontend import cv_content
 ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.mark.asyncio
-async def test_opt_in_github_preview_uses_public_calendar(monkeypatch):
-    module = importlib.import_module('app.app')
+async def test_opt_in_github_preview_uses_public_calendar(monkeypatch, http):
     data = {'username': 'Ajollyworld79', 'total': 871, 'weeks': [{'contributionDays': [
         {'date': '2026-09-10', 'contributionCount': 3, 'weekday': 4}]}]}
-    calls = []
-
-    class Response:
-        async def __aenter__(self): return self
-        async def __aexit__(self, *args): pass
-        def raise_for_status(self): pass
-        async def json(self): return data
-
-    class Session:
-        def get(self, url, **kwargs):
-            calls.append(url)
-            assert 'headers' not in kwargs
-            return Response()
-
+    url = 'https://gustavchristensen.dev/api/github-activity'
+    http.respond(url, json=data)
     monkeypatch.delenv('GITHUB_TOKEN', raising=False)
     monkeypatch.setenv('GITHUB_ACTIVITY_PREVIEW', '1')
-    monkeypatch.setattr(module, '_GITHUB_CACHE', {'ts': 0, 'data': None})
-    monkeypatch.setattr(module, '_http', Session)
     response = await app.test_client().get('/api/github-activity')
     assert response.status_code == 200
     assert await response.get_json() == data
     await app.test_client().get('/api/github-activity')
-    assert calls == ['https://gustavchristensen.dev/api/github-activity']
+    assert [(method, called) for method, called, _ in http.calls] == [('GET', url)]
+    assert 'headers' not in http.calls[0][2]
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('path,title', [('/', 'Production AI Engineer'), ('/about', 'About Gustav'), ('/projects', 'Production AI Projects')])

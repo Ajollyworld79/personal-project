@@ -10,6 +10,3 @@ class Project(BaseModel):
     live_url: Optional[HttpUrl] = None
     # Static-relative path to a card thumbnail, e.g. "assets/images/projects/llm-assistant.png"
     image: Optional[str] = None
-
-class ProjectsResponse(BaseModel):
-    projects: List[Project]
