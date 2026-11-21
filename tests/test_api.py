@@ -179,6 +179,37 @@ async def test_coldfile_without_any_data_is_503(http):
     assert (await app.test_client().get("/api/coldfile")).status_code == 503
 
 
+def uploads_page(count_label: str, *durations: str) -> str:
+    """Minimal playlist page in YouTube's current shape: header stats plus one lockup per video."""
+    tiles = [{"lockupViewModel": {"contentImage": {"thumbnailViewModel": {"overlays": [
+        {"thumbnailBottomOverlayViewModel": {"badges": [{"thumbnailBadgeViewModel": {"text": d}}]}}]}}}}
+        for d in durations]
+    data = {"header": {"stats": [{"runs": [{"text": count_label.split()[0]}, {"text": " videos"}]},
+                                 {"simpleText": "No views"}]},
+            "contents": tiles}
+    return f"<script>var ytInitialData = {json.dumps(data)};</script>"
+
+
+async def test_coldfile_reports_the_real_episode_count_and_runtime(http):
+    now = datetime.now(timezone.utc)
+    http.respond(live._COLDFILE_FEED, text=rss(*[now - timedelta(days=i) for i in range(15)]))
+    http.respond(live._UPLOADS_PAGE, text=uploads_page("1,029 videos", "38:17", "1:14:37", "45:29"))
+    data = await (await app.test_client().get("/api/coldfile")).get_json()
+    assert data["episode_count"] == 1029 and data["episode_count_exact"] is True
+    assert data["runtime_minutes"] == [38, 75]
+
+
+@pytest.mark.parametrize("page", [None, "<html>consent wall</html>", uploads_page("no videos")])
+async def test_coldfile_falls_back_to_rss_count_when_uploads_page_fails(http, page):
+    now = datetime.now(timezone.utc)
+    http.respond(live._COLDFILE_FEED, text=rss(*[now - timedelta(days=i) for i in range(15)]))
+    if page is not None:
+        http.respond(live._UPLOADS_PAGE, text=page)
+    data = await (await app.test_client().get("/api/coldfile")).get_json()
+    assert data["episode_count"] == 15 and data["episode_count_exact"] is False
+    assert data["runtime_minutes"] is None
+
+
 # --- GitHub activity ------------------------------------------------------------------
 
 GRAPHQL_URL = "https://api.github.com/graphql"

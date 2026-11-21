@@ -62,4 +62,5 @@ def http(monkeypatch):
     monkeypatch.setattr(live, "_status_cache", TTLCache(60))
     monkeypatch.setattr(live, "_coldfile_cache", TTLCache(1800))
     monkeypatch.setattr(live, "_github_cache", TTLCache(3600))
+    monkeypatch.setattr(live, "_stats_cache", TTLCache(6 * 3600))
     return fake

@@ -1,7 +1,9 @@
 """Live data on the site: service status, The Cold File channel, GitHub activity and the apology demo."""
 import asyncio
+import json
 import os
 import random
+import re
 import time
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -225,7 +227,7 @@ async def _fetch_coldfile() -> dict | None:
             return None
         return {
             "channel_url": "https://www.youtube.com/@The_Cold_File",
-            # RSS caps at 15 entries; the frontend renders 15 as "15+".
+            # RSS caps at 15 entries; the uploads playlist below supplies the real count.
             "episode_count": len(episodes),
             "latest": episodes[0],
             "episodes": episodes[:3],
@@ -240,13 +242,87 @@ async def _get_coldfile_data() -> dict | None:
     return await _coldfile_cache.get(_fetch_coldfile) or _coldfile_cache.value
 
 
+# The real episode count and runtimes come from the channel's long-form uploads
+# playlist (UULF…, Shorts excluded), recounted every 6 hours. YouTube offers no
+# key-free API for this, so the page's embedded ytInitialData is parsed; when
+# that fails the section falls back to the RSS count ("15+").
+_stats_cache: TTLCache[dict] = TTLCache(6 * 3600)
+_UPLOADS_PAGE = f"https://www.youtube.com/playlist?list=UULF{_COLDFILE_CHANNEL_ID[2:]}"
+_INITIAL_DATA = re.compile(r"var ytInitialData = (\{.*?\});</script>", re.S)
+_VIDEO_COUNT = re.compile(r"^(\d[\d,]*) videos?$")
+_DURATION = re.compile(r"^(?:(\d+):)?(\d{1,2}):(\d{2})$")
+
+
+def _parse_uploads_page(html: str) -> dict | None:
+    """{"episode_count", "runtime_minutes": [shortest, longest] | None} or None if the count is missing."""
+    match = _INITIAL_DATA.search(html)
+    if not match:
+        return None
+
+    def dicts(node):
+        """Every dict in the tree, depth-first in document order."""
+        if isinstance(node, dict):
+            yield node
+            for value in node.values():
+                yield from dicts(value)
+        elif isinstance(node, list):
+            for value in node:
+                yield from dicts(value)
+
+    def first_duration(tile: dict) -> int | None:
+        for node in dicts(tile):
+            text = node.get("text")
+            if isinstance(text, str) and (found := _DURATION.match(text)):
+                return int(found.group(1) or 0) * 3600 + int(found.group(2)) * 60 + int(found.group(3))
+        return None
+
+    count: int | None = None
+    seconds: list[int] = []
+    for node in dicts(json.loads(match.group(1))):
+        runs = node.get("runs")
+        if count is None and isinstance(runs, list):
+            label = "".join(r.get("text", "") for r in runs if isinstance(r, dict)).strip()
+            if found := _VIDEO_COUNT.match(label):
+                count = int(found.group(1).replace(",", ""))
+        if "lockupViewModel" in node and (length := first_duration(node["lockupViewModel"])):
+            seconds.append(length)
+    if count is None:
+        return None
+    runtime = [min(seconds) // 60, -(-max(seconds) // 60)] if seconds else None
+    return {"episode_count": count, "runtime_minutes": runtime}
+
+
+async def _fetch_channel_stats() -> dict | None:
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Cookie": "SOCS=CAI",  # skips the EU consent interstitial
+    }
+    try:
+        async with client.session().get(_UPLOADS_PAGE, headers=headers) as resp:
+            if resp.status != 200:
+                current_app.logger.warning("coldfile: uploads page returned %s", resp.status)
+                return None
+            html = await resp.text()
+        stats = _parse_uploads_page(html)
+    except Exception:
+        current_app.logger.exception("coldfile: uploads page failed")
+        return None
+    if stats is None:
+        current_app.logger.warning("coldfile: uploads page had no video count")
+    return stats
+
+
 @bp.get("/api/coldfile")
 async def coldfile():
     """Live data for The Cold File section — latest autonomous episodes."""
     data = await _get_coldfile_data()
     if not data:
         return jsonify({"error": "channel data unavailable"}), 503
-    return jsonify(data)
+    stats = await _stats_cache.get(_fetch_channel_stats) or _stats_cache.value
+    if stats:
+        return jsonify({**data, **stats, "episode_count_exact": True})
+    return jsonify({**data, "episode_count_exact": False, "runtime_minutes": None})
 
 
 # --- GitHub activity (contribution heatmap) ---
